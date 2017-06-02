@@ -19,7 +19,11 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'passport\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+        'sso' => [
+            'class' => 'passport\modules\sso\Module'
+        ]
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-passport',
@@ -28,10 +32,15 @@ return [
             'class' => 'yii\web\Response',
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-                $response->data = [
-                    'success' => $response->isSuccessful,
-                    'data' => $response->data,
-                ];
+                if ($response->data !== null) {
+                    $response->data = [
+                        'success' => $response->isSuccessful,
+                        'message' => isset($response->data['message']) ? $response->data['message'] : "",
+                        'err_code' => isset($response->data['code']) ? $response->data['code'] : 0,
+                        'data' => isset($response->data['data']) ? $response->data : null,
+                    ];
+                    $response->statusCode = 200;
+                }
             },
         ],
         'user' => [
