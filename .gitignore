@@ -36,3 +36,4 @@ phpunit.phar
 /docker/
 /docker-compose.yml
 /composer.lock
+/wiki
