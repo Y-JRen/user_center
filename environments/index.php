@@ -35,7 +35,6 @@ return [
             'backend/runtime',
             'backend/web/assets',
             'passport/runtime',
-            'passport/web/assets',
         ],
         'setExecutable' => [
             'yii',
@@ -43,7 +42,7 @@ return [
         ],
         'setCookieValidationKey' => [
             'backend/config/main-local.php',
-            'frontend/config/main-local.php',
+            'passport/config/main-local.php',
         ],
     ],
     'Production' => [
@@ -52,7 +51,6 @@ return [
             'backend/runtime',
             'backend/web/assets',
             'passport/runtime',
-            'passport/web/assets',
         ],
         'setExecutable' => [
             'yii',
