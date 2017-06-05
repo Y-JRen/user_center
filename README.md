@@ -10,3 +10,12 @@
     ]
 ```
 
+2、在passport\config\params-local.php里面添加配置
+```
+'projects'=>[
+        'che.com' => [
+            'allowIps' => ['*'],
+            'tokenKey' => 'dRpg6fPFVyz6vVCC6gbCep3sOL-4qvtZ'
+        ]
+    ]
+```

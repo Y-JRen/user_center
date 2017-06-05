@@ -6,6 +6,8 @@
  * Time: 10:40
  */
 
+use yii\helpers\ArrayHelper;
+
 $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
@@ -33,12 +35,21 @@ return [
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
                 if ($response->data !== null) {
-                    $response->data = [
-                        'success' => $response->isSuccessful,
-                        'message' => isset($response->data['message']) ? $response->data['message'] : "",
-                        'err_code' => isset($response->data['code']) ? $response->data['code'] : 0,
-                        'data' => isset($response->data['data']) ? $response->data : null,
-                    ];
+                    if ($response->isSuccessful) {
+                        $response->data = [
+                            'success' => $response->isSuccessful,
+                            'message' => ArrayHelper::getValue($response->data, 'message', ''),
+                            'err_code' => ArrayHelper::getValue($response->data, 'code', 0),
+                            'data' => ArrayHelper::getValue($response->data, 'data'),
+                        ];
+                    } else {
+                        $response->data = [
+                            'success' => $response->isSuccessful,
+                            'message' => Yii::$app->errorHandler->exception->getMessage(),
+                            'err_code' => Yii::$app->errorHandler->exception->getCode(),
+                            'data' => null,
+                        ];
+                    }
                     $response->statusCode = 200;
                 }
             },
@@ -64,12 +75,12 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'urlManager' => [
+        /*'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
-        ],
+        ],*/
     ],
     'params' => $params,
 ];
