@@ -172,7 +172,8 @@ class PayCore extends Logic
         //禁止引用外部xml实体
         libxml_disable_entity_loader(true);
         $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        $filePath = 'wechat_pay_' . date("Y-m-d") . 'data';
+        $filePath = \Yii::$app->getRuntimePath() . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'wechat' .
+            DIRECTORY_SEPARATOR . date("Y-m") . DIRECTORY_SEPARATOR . 'wechat_pay_'.date("Y-m-d").'data';
         //写入日志
         ApiLogsLogic::instance()->addLogging($filePath, $values);
         return $values;
