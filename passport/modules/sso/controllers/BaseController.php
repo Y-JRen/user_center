@@ -22,35 +22,37 @@ class BaseController extends Controller
      */
     public function init()
     {
-        $get = Yii::$app->request->get();
-        $post = Yii::$app->request->post();
-        $params = array_merge($get, $post);
+        if (!YII_ENV_DEV) {
+            $get = Yii::$app->request->get();
+            $post = Yii::$app->request->post();
+            $params = array_merge($get, $post);
 
-        $domain = ArrayHelper::getValue($params, 'domain');
-        if (empty($domain)) {
-            throw new HttpException(401, '参数不正确', -999);
-        }
+            $domain = ArrayHelper::getValue($params, 'domain');
+            if (empty($domain)) {
+                throw new HttpException(401, '参数不正确', -999);
+            }
 
-        $domainInfo = Config::params($domain);
-        if (empty($domainInfo)) {
-            throw new HttpException(401, '参数不正确', -998);
-        }
+            $domainInfo = Config::params($domain);
+            if (empty($domainInfo)) {
+                throw new HttpException(401, '参数不正确', -998);
+            }
 
-        $requestIp = Yii::$app->request->getUserIP();
-        if ($requestIp != '*' && !in_array($requestIp, $domainInfo['allowIps'])) {
-            throw new HttpException(401, '该IP不在允许范围内', -997);
-        }
+            $requestIp = Yii::$app->request->getUserIP();
+            if ($requestIp != '*' && !in_array($requestIp, $domainInfo['allowIps'])) {
+                throw new HttpException(401, '该IP不在允许范围内', -997);
+            }
 
-        $accessToken = ArrayHelper::getValue($params, 'accessToken');
-        if (empty($accessToken)) {
-            throw new HttpException(401, '参数不正确', -996);
-        }
+            $accessToken = ArrayHelper::getValue($params, 'accessToken');
+            if (empty($accessToken)) {
+                throw new HttpException(401, '参数不正确', -996);
+            }
 
-        unset($params['accessToken']);
-        ksort($params);
-        $verifyToken = md5(http_build_query($params) . $domainInfo['tokenKey']);
-        if ($verifyToken != $accessToken) {
-            throw new HttpException(401, '参数不正确', -995);
+            unset($params['accessToken']);
+            ksort($params);
+            $verifyToken = md5(http_build_query($params) . $domainInfo['tokenKey']);
+            if ($verifyToken != $accessToken) {
+                throw new HttpException(401, '参数不正确', -995);
+            }
         }
     }
 
