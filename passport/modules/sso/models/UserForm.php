@@ -27,32 +27,33 @@ class UserForm extends Model
 	{
 		return [
 				[	
-					['phone', 'passwd'], 
+					['user_name', 'passwd'], 
 					'required',
 					'on' => [self::SCENARIO_REG,self::SCENARIO_LOGIN],
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['repasswd', 'verify_code', 'channel'], 
+					['repasswd', 'verify_code', 'channel','isAgreement'], 
 					'required',
 				    'on' => [self::SCENARIO_REG],
 					'message' => '{attribute}不能为空'
 				],
 		        
-		        ['phone','unique','targetClass' => '\common\models\User','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
-				['phone', 'string', 'max' => 12,'message'=>'手机号不正确'],
+				['user_name', 'string', 'max' => 12,'message'=>'手机号不正确'],
+		        ['user_name','unique','targetClass' => '\common\models\User','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
 				['passwd', 'string', 'length' => 32,'message'=>'密码格式错误'],
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
+		        ['isAgreement','compare', 'compareAttribute' => 1,'message' => '必需同意协议']
 		];
 	}
 	
 	public function scenarios()
 	{
 		return [
-				self::SCENARIO_REG => ['phone', 'passwd', 'repasswd','verify_code','channel'],
-				self::SCENARIO_LOGIN => ['phone', 'passwd'],
+				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','isAgreement'],
+				self::SCENARIO_LOGIN => ['user_name', 'passwd'],
 		];
 	}
 	/**
@@ -78,8 +79,8 @@ class UserForm extends Model
 	public function reg()
 	{
 		$model = new User();
-		$model->phone = $this->phone;
-		$model->user_name = $this->phone; 
+		$model->phone = $this->user_name;
+		$model->user_name = $this->user_name; 
 		$model->email = ''; 
 		$model->passwd = $this->encyptPasswd($this->passwd); 
 		$model->from_platform = Config::getPlatform();
@@ -99,7 +100,7 @@ class UserForm extends Model
 	public function checkLogin()
 	{
 	    $model = new User();
-	    $user = $model->findOne(['phone' => $this->phone]);
+	    $user = $model->findOne(['phone' => $this->user_name]);
 	    if(!$user){
 	        return ['status'=>false,'msg'=>'用户不存在'];
 	    }

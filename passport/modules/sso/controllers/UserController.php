@@ -17,7 +17,7 @@ class UserController extends BaseController
 	public function actionReg()
 	{
 	    $arr=[
-	        'phone' => '13761590659',
+	        'user_name' => '13761590659',
 	        'passwd' => md5('123456'),
 	        'repasswd' => md5('123456'),
 	        'verify_code' => 'xxx',
@@ -47,7 +47,7 @@ class UserController extends BaseController
 	public function actionLogin()
 	{
 	    $arr=[
-	        'phone' => '13761590658',
+	        'user_name' => '13761590658',
 	        'passwd' => md5('123456'),
 	    ];
 	    $data['UserForm'] = $arr;
