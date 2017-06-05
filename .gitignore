@@ -36,3 +36,7 @@ phpunit.phar
 /docker/
 /docker-compose.yml
 /composer.lock
+/wiki
+/passport/runtime/
+/passport/web/assets/
+
