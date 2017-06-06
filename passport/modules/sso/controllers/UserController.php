@@ -64,7 +64,7 @@ class UserController extends BaseController
 	    }
 	    $res = $model->checkLogin();
 	    if(!$res['status']){
-		    return $this->_error(1002,$res['msg']);
+		    return $this->_error(1003,$res['msg']);
 		}
 		$token = $model->login($res['user_id']);
 		return $this->_return(['token' => $token, 'uid' => $res['user_id']]);
