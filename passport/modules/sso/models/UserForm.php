@@ -130,7 +130,9 @@ class UserForm extends Model
 	 */
 	protected function encyptPasswd($passwd)
 	{
-	    $password = $passwd;
+	    $salt = '$*I_$%@#Abc^!';
+	    $tmp = substr($password, -6);
+	    $password = md5($passwd.$salt.$tmp);
 	    return $password;
 	}
 }
