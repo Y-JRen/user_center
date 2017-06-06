@@ -82,7 +82,7 @@ class BaseController extends Controller
      */
     public function _return($data, $code = 0, $message = 'success')
     {
-        $message = (!$message) ? static::$errorStatuses[$code] : $message;
+        $message = (!$message) ? ArrayHelper::getValue(static::$errorStatuses, $code, 'fail') : $message;
         return compact('data', 'message', 'code');
     }
 
@@ -90,10 +90,11 @@ class BaseController extends Controller
      * 错误信息返回
      * @param int $code
      * @param string|array|object $data
+     * @param string $message
      * @return array
      */
-    public function _error($code, $data = null)
+    public function _error($code, $data = null, $message = null)
     {
-        return $this->_return($data, $code);
+        return $this->_return($data, $code, $message);
     }
 }
