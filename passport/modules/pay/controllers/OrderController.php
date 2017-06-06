@@ -9,7 +9,10 @@
 namespace passport\modules\pay\controllers;
 
 
+use dosamigos\qrcode\QrCode;
 use passport\controllers\BaseController;
+use passport\modules\pay\forms\OrderForm;
+use passport\modules\pay\logic\PayLogic;
 
 /**
  * 下单订单
@@ -21,10 +24,27 @@ use passport\controllers\BaseController;
 class OrderController extends BaseController
 {
     /**
+     * 生成订单
      *
      */
     public function actionIndex()
     {
-        
+        $param = \Yii::$app->request->post();
+        $data['OrderForm'] = $param;
+        $data['OrderForm']['status'] = 1;
+        $model = new OrderForm();
+        if($model->load($data) && $model->save()){
+            $rest = PayLogic::instance()->pay($model);
+
+            return $this->_return($rest);
+        } else {
+            return $this->_error(400, $model->errors);
+        }
     }
+
+    public function actionWechatNotify()
+    {
+        return true;
+    }
+
 }

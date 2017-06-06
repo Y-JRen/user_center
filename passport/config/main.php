@@ -18,6 +18,7 @@ $params = array_merge(
 
 return [
     'id' => 'passport',
+    'language' => 'zh-CN',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'passport\controllers',
     'bootstrap' => ['log'],

@@ -23,9 +23,28 @@ class Config
         }
 
     }
-    
+
+    /**
+     * 获取平台ID
+     * @return int
+     */
     public static function getPlatform()
     {
         return 1;
+    }
+
+    /**
+     * 生成订单ID
+     *
+     * @return string
+     */
+    public static function createOrderId()
+    {
+        return date('YmdHis').static::getPlatform().rand(100,999);
+    }
+
+    public static function getWeChatConfig()
+    {
+        return Yii::$app->params['wechat']['che.com'];
     }
 }

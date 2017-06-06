@@ -6,11 +6,12 @@
  * Time: 14:12
  */
 
-namespace common\lib\wechat\pay;
+namespace common\lib\pay\wechat;
 
 
 use common\logic\ApiLogsLogic;
 use common\logic\Logic;
+use passport\helpers\Config;
 use Yii;
 
 /**
@@ -45,22 +46,42 @@ class PayCore extends Logic
      */
     const CLOSE_ORDER ='https://api.mch.weixin.qq.com/pay/closeorder';
 
+    const SHORT_URL = 'https://api.mch.weixin.qq.com/tools/shorturl';
+
 
     /**
-     * 微信接口请求
+     * 统一下单
      *
-     * @param $data
-     * @param $type
+     * @param array $data
      * @return bool|mixed
      */
-    public function pay(array $data, $type)
+    public function unifiedOrder($data)
     {
-        $data['mch_appid'] = Yii::$app->params['wechat']['appid'];
-        $data['mchid'] = Yii::$app->params['wechat']['mch_id'];
+        $weChatConfig = Config::getWeChatConfig();
+        $data['appid'] = $weChatConfig['appid'];
+        $data['mch_id'] = $weChatConfig['mch_id'];
+        $data['device_info'] = 'web';
         $data['nonce_str'] = $this->nonceStr();
-        $data['sign'] = $this->sign($data, Yii::$app->params['wechat']['pay_key']);
+        $data['sign'] = $this->sign($data, $weChatConfig['pay_key']);
         $dataXml = $this->buildXml($data);
-        return $this->http($type, $dataXml);
+        return $this->http(static::UNIFIED_ORDER , $dataXml);
+    }
+
+    /**
+     * 转换短链接
+     * @param $longUrl
+     * @return bool|mixed
+     */
+    public function shortUrl($longUrl)
+    {
+        $data['long_url'] = $longUrl;
+        $weChatConfig = Config::getWeChatConfig();
+        $data['appid'] = $weChatConfig['appid'];
+        $data['mch_id'] = $weChatConfig['mch_id'];
+        $data['nonce_str'] = $this->nonceStr();
+        $data['sign'] = $this->sign($data, $weChatConfig['pay_key']);
+        $dataXml = $this->buildXml($data);
+        return $this->http(static::UNIFIED_ORDER , $dataXml);
     }
 
     /**
@@ -86,9 +107,10 @@ class PayCore extends Logic
      * @param $url
      * @param string $xml
      * @param integer $second
+     * @param boolean $check 是否需要验证证书
      * @return bool|mixed
      */
-    protected function http($url, $xml, $second = 30)
+    protected function http($url, $xml, $second = 30, $check = false)
     {
         //初始化curl
         $ch = curl_init();
@@ -101,9 +123,12 @@ class PayCore extends Logic
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
-        curl_setopt($ch, CURLOPT_SSLCERT, \Yii::$app->basePath . '/../apiclient_cert.pem');
-        curl_setopt($ch, CURLOPT_SSLKEY, \Yii::$app->basePath . '/../apiclient_key.pem');
+
+        if($check) {
+            curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
+            curl_setopt($ch, CURLOPT_SSLCERT, \Yii::$app->basePath . '/../apiclient_cert.pem');
+            curl_setopt($ch, CURLOPT_SSLKEY, \Yii::$app->basePath . '/../apiclient_key.pem');
+        }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
         $data = curl_exec($ch);
         if ($data) {
@@ -145,7 +170,7 @@ class PayCore extends Logic
      * @param string $key
      * @return string
      */
-    public function sign(array $nonceArr, $key)
+    public function sign($nonceArr, $key)
     {
         if (empty($nonceArr)) {
             return false;
@@ -173,7 +198,7 @@ class PayCore extends Logic
         libxml_disable_entity_loader(true);
         $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
         $filePath = \Yii::$app->getRuntimePath() . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'wechat' .
-            DIRECTORY_SEPARATOR . date("Y-m") . DIRECTORY_SEPARATOR . 'wechat_pay_'.date("Y-m-d").'data';
+            DIRECTORY_SEPARATOR . date("Y-m") . DIRECTORY_SEPARATOR . 'wechat_pay_'.date("Y-m-d").'.data';
         //写入日志
         ApiLogsLogic::instance()->addLogging($filePath, $values);
         return $values;
