@@ -10,12 +10,28 @@ namespace passport\controllers;
 
 use passport\helpers\Config;
 use Yii;
+use yii\filters\ContentNegotiator;
 use yii\helpers\ArrayHelper;
 use yii\rest\Controller;
 use yii\web\HttpException;
+use yii\web\Response;
 
 class BaseController extends Controller
 {
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'contentNegotiator' => [
+                'class' => ContentNegotiator::className(),
+                'formats' => [
+                    'application/json' => Response::FORMAT_JSON
+                ],
+            ],
+        ];
+    }
     /**
      * 验证IP、以及token是否正确
      * @throws HttpException
@@ -38,16 +54,16 @@ class BaseController extends Controller
             }
 
             $requestIp = Yii::$app->request->getUserIP();
-            if ($requestIp != '*' && !in_array($requestIp, $domainInfo['allowIps'])) {
+            if (!in_array('*', $domainInfo['allowIps']) && !in_array($requestIp, $domainInfo['allowIps'])) {
                 throw new HttpException(401, '该IP不在允许范围内', -997);
             }
 
-            $accessToken = ArrayHelper::getValue($params, 'accessToken');
+            $accessToken = ArrayHelper::getValue($params, 'access_token');
             if (empty($accessToken)) {
                 throw new HttpException(401, '参数不正确', -996);
             }
 
-            unset($params['accessToken']);
+            unset($params['access_token']);
             ksort($params);
             $verifyToken = md5(http_build_query($params) . $domainInfo['tokenKey']);
             if ($verifyToken != $accessToken) {

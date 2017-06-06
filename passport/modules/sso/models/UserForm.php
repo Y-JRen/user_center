@@ -75,7 +75,7 @@ class UserForm extends Model
 	{
 		//create token
 		$token = Token::encodeToken($user_id,time(),Config::getPlatform());
-		\Yii::$app->redis->set($token,$user_id,'EX 2592000');
+//		\Yii::$app->redis->set($token,$user_id,'EX 2592000');
 		return $token;
 	}
 	
@@ -128,12 +128,12 @@ class UserForm extends Model
 	}
 	/**
 	 * 密码加密
-	 * @param unknown $passwd
+	 * @param $passwd
 	 */
 	protected function encyptPasswd($passwd)
 	{
 	    $salt = '$*I_$%@#Abc^!';
-	    $tmp = substr($password, -6);
+	    $tmp = substr($passwd, -6);
 	    $password = md5($passwd.$salt.$tmp);
 	    return $password;
 	}
