@@ -9,7 +9,23 @@
 namespace passport\modules\pay\logic;
 
 
-class OrderLogic
-{
+use common\logic\Logic;
 
+/**
+ * 订单类
+ *
+ * Class OrderLogic
+ * @package passport\modules\pay\logic
+ */
+class OrderLogic extends Logic
+{
+    /**
+     * 新增订单
+     *
+     * @param
+     */
+    public function pay()
+    {
+
+    }
 }
