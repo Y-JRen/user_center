@@ -24,6 +24,9 @@ return [
     'modules' => [
         'sso' => [
             'class' => 'passport\modules\sso\Module'
+        ],
+        'pay' => [
+            'class' => 'passport\modules\pay\Module'
         ]
     ],
     'components' => [
@@ -37,16 +40,14 @@ return [
                 if ($response->data !== null) {
                     if ($response->isSuccessful) {
                         $response->data = [
-                            'success' => $response->isSuccessful,
                             'message' => ArrayHelper::getValue($response->data, 'message', ''),
-                            'err_code' => ArrayHelper::getValue($response->data, 'code', 0),
+                            'err_code' => intval(ArrayHelper::getValue($response->data, 'code', 0)),
                             'data' => ArrayHelper::getValue($response->data, 'data'),
                         ];
                     } else {
                         $response->data = [
-                            'success' => $response->isSuccessful,
                             'message' => Yii::$app->errorHandler->exception->getMessage(),
-                            'err_code' => Yii::$app->errorHandler->exception->getCode(),
+                            'err_code' => intval(Yii::$app->errorHandler->exception->getCode()),
                             'data' => null,
                         ];
                     }
@@ -67,7 +68,7 @@ return [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error'],
+                    'levels' => ['info'],
                     'logVars' => ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION']
                 ],
             ],
@@ -75,12 +76,12 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*'urlManager' => [
+        'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
-        ],*/
+        ],
     ],
     'params' => $params,
 ];
