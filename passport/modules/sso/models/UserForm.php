@@ -6,6 +6,9 @@ use yii\base\Model;
 use common\models\User;
 use passport\helpers\Token;
 use passport\helpers\Config;
+use yii;
+use passport\logic\SmsLogic;
+use yii\helpers\ArrayHelper;
 
 
 class UserForm extends Model
@@ -14,8 +17,11 @@ class UserForm extends Model
 	const SCENARIO_REG = 'reg';
 	/**登入场景*/
 	const SCENARIO_LOGIN = 'login';
+	/**已登录场景*/
+	const SCENARIO_LOGGED = 'logged';
 	
-	
+	public $uid;
+	public $token;
 	public $user_name;
 	public $passwd;
 	public $repasswd;
@@ -39,6 +45,12 @@ class UserForm extends Model
 				    'on' => [self::SCENARIO_REG],
 					'message' => '{attribute}不能为空'
 				],
+				[
+					['uid','token'],
+					'required',
+					'on' => [self::SCENARIO_LOGGED],
+					'message' => '{attribute}不能为空'
+				],
 		        
 				['user_name', 'string', 'max' => 12,'message'=>'手机号不正确'],
 		        ['user_name','unique','targetClass' => '\common\models\User','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
@@ -46,7 +58,8 @@ class UserForm extends Model
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
-		        ['is_agreement','integer', 'message' => '必需同意协议']
+		        ['is_agreement','integer', 'message' => '必需同意协议'],
+				['token','validateToken'],
 		];
 	}
 	
@@ -55,6 +68,7 @@ class UserForm extends Model
 		return [
 				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'],
 				self::SCENARIO_LOGIN => ['user_name', 'passwd'],
+				self::SCENARIO_LOGGED => ['uid','token'],
 		];
 	}
 	/**
@@ -65,17 +79,40 @@ class UserForm extends Model
 	public function validateCode($attribute, $params)
 	{
 		if (!$this->hasErrors()) {
-		    if($this->$attribute != '1234'){
+			$bool = SmsLogic::instance()->checkCode(1,$this->$attribute, $this->user_name);
+			if(!$bool){
 			     $this->addError($attribute, '验证码错误！');
 		    }
 		}
 	}
 	
+	public function validateToken($attribute, $params)
+	{
+		if (!$this->hasErrors()) {
+			$plat = Config::getPlatform();//获取平台
+			$client = Config::getClientType();//获取客户端类型
+			
+			$redis = yii::$app->redis;
+			$_token = $redis->get("LOGIN_TOKEN:{$this->uid}:{$plat}_{$client}");
+			if($_token != $this->$attribute){
+				$this->addError($attribute, '未登录！');
+			}
+		}
+	}
+	
 	public function login($user_id)
 	{
+		$time_out = 3600;
+		$plat = Config::getPlatform();//获取平台
+		$client = Config::getClientType();//获取客户端类型
 		//create token
-		$token = Token::encodeToken($user_id,time(),Config::getPlatform());
-//		\Yii::$app->redis->set($token,$user_id,'EX 2592000');
+		$token = Token::encodeToken($user_id,time(),$plat, $client);
+		//save in redis
+		$redis = yii::$app->redis;
+		$redis->set("LOGIN_TOKEN:{$user_id}:{$plat}_{$client}", $token);
+		$redis->expire("LOGIN_TOKEN:{$user_id}:{$plat}_{$client}" , $time_out );
+		$redis->set($token,$user_id);
+		$redis->expire($token, $time_out );
 		return $token;
 	}
 	
@@ -103,7 +140,7 @@ class UserForm extends Model
 	public function checkLogin()
 	{
 	    $model = new User();
-	    $user = $model->findOne(['phone' => $this->user_name]);
+	    $user = $model::findOne(['phone' => $this->user_name]);
 	    if(!$user){
 	        return ['status'=>false,'msg'=>'用户不存在'];
 	    }
@@ -112,6 +149,13 @@ class UserForm extends Model
 	    }
 	    return ['status'=>true,'user_id' => $user->id];
 	}
+	
+	public function getUserInfo()
+	{
+		$res = User::find()->where(['id'=>$this->uid])->asArray()->one();
+		return $res;
+	}
+	
 	/**
 	 * 获取来源
 	 */
