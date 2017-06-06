@@ -16,11 +16,12 @@ class UserForm extends Model
 	const SCENARIO_LOGIN = 'login';
 	
 	
-	public $phone;
+	public $user_name;
 	public $passwd;
 	public $repasswd;
 	public $verify_code;
 	public $channel;
+	public $isAgreement;
 	
 	
 	public function rules()
@@ -45,7 +46,7 @@ class UserForm extends Model
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
-		        ['isAgreement','compare', 'compareAttribute' => 1,'message' => '必需同意协议']
+		        ['isAgreement','integer', 'message' => '必需同意协议']
 		];
 	}
 	

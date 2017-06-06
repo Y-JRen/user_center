@@ -16,15 +16,17 @@ class UserController extends BaseController
 	 */
 	public function actionReg()
 	{
+		/*
 	    $arr=[
 	        'user_name' => '13761590659',
 	        'passwd' => md5('123456'),
 	        'repasswd' => md5('123456'),
 	        'verify_code' => 'xxx',
 	        'channel' => 'crm',
+	        'isAgreement'=>'12',
 	    ];
 	    $data['UserForm'] = $arr;
-	    
+	    */
 	    
 	    $data['UserForm'] = \yii::$app->request->post();
 		$model = new UserForm();
@@ -46,12 +48,13 @@ class UserController extends BaseController
 	 */
 	public function actionLogin()
 	{
+		/*
 	    $arr=[
 	        'user_name' => '13761590658',
 	        'passwd' => md5('123456'),
 	    ];
 	    $data['UserForm'] = $arr;
-	    
+	    */
 	    $data['UserForm'] = \yii::$app->request->post();
 	    $model = new UserForm();
 	    $model->setScenario($model::SCENARIO_LOGIN);
