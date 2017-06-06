@@ -35,7 +35,7 @@ class User extends BaseModel
     public function rules()
     {
         return [
-            [['user_name', 'email', 'passwd', 'from_channel', 'reg_time', 'reg_ip', 'login_time'], 'required'],
+            [['user_name', 'passwd', 'from_platform', 'reg_time', 'reg_ip', 'login_time'], 'required'],
             [['status', 'from_platform', 'reg_time', 'login_time'], 'integer'],
             [['phone'], 'string', 'max' => 12],
             [['user_name'], 'string', 'max' => 30],
