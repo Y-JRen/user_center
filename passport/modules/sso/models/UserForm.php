@@ -21,7 +21,7 @@ class UserForm extends Model
 	public $repasswd;
 	public $verify_code;
 	public $channel;
-	public $isAgreement;
+	public $is_agreement;
 	
 	
 	public function rules()
@@ -34,7 +34,7 @@ class UserForm extends Model
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['repasswd', 'verify_code', 'channel','isAgreement'], 
+					['repasswd', 'verify_code', 'channel','is_agreement'], 
 					'required',
 				    'on' => [self::SCENARIO_REG],
 					'message' => '{attribute}不能为空'
@@ -46,14 +46,14 @@ class UserForm extends Model
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
-		        ['isAgreement','integer', 'message' => '必需同意协议']
+		        ['is_agreement','integer', 'message' => '必需同意协议']
 		];
 	}
 	
 	public function scenarios()
 	{
 		return [
-				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','isAgreement'],
+				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'],
 				self::SCENARIO_LOGIN => ['user_name', 'passwd'],
 		];
 	}
@@ -74,7 +74,9 @@ class UserForm extends Model
 	public function login($user_id)
 	{
 		//create token
-		return Token::encodeToken($user_id,time());
+		$token = Token::encodeToken($user_id,time(),Config::getPlatform());
+		\Yii::$app->redis->set($token,$user_id,'EX 2592000');
+		return $token;
 	}
 	
 	public function reg()
