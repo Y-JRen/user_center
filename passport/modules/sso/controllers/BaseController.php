@@ -62,7 +62,9 @@ class BaseController extends Controller
      * @var array
      */
     public static $errorStatuses = [
-
+        1001 => '参数错误',
+        1002 => '注册失败',
+        1003 => '登入失败',
     ];
 
     /**

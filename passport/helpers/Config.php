@@ -23,4 +23,9 @@ class Config
         }
 
     }
+    
+    public static function getPlatform()
+    {
+        return 1;
+    }
 }
