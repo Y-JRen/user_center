@@ -16,18 +16,19 @@ use yii\helpers\Url;
 
 class PayLogic extends Logic
 {
-
-
     /**
      * @param Order $order
      * @return  array
      */
     public function pay($order)
     {
-        switch ($order->order_subtype)
-        {
+        switch ($order->order_subtype) {
             case 1:
                 return $this->weChatPay($order);
+                break;
+            case 'alipay_pc';
+            case 'alipay_wap':
+                return AlipayLogic::instance()->pay($order);
                 break;
         }
     }
@@ -51,6 +52,20 @@ class PayLogic extends Logic
             'trade_type' => $tradeType
         ];
         $result = $pay->unifiedOrder($param);
-        return $result;
+        if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
+            $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
+            return [
+                'data' => [
+                    'order_id' => $order->order_id,
+                    'qrcode' => $qrCode,
+                    'platform_order_id' => $order->platform_order_id
+                ],
+                'status' => 0
+            ];
+        }
+        return [
+            'status' => 2002,
+            'data' => $result
+        ];
     }
 }

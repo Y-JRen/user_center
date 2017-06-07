@@ -12,6 +12,7 @@ namespace passport\modules\pay\controllers;
 use passport\controllers\BaseController;
 use passport\modules\pay\forms\OrderForm;
 use passport\modules\pay\logic\PayLogic;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /**
@@ -24,7 +25,7 @@ use yii\helpers\Url;
 class OrderController extends BaseController
 {
     /**
-     * 生成订单
+     * 充值订单
      *
      */
     public function actionIndex()
@@ -34,17 +35,17 @@ class OrderController extends BaseController
         //初始化订单状态默认位 1
         $data['OrderForm']['status'] = 1;
         $model = new OrderForm();
-        if($model->load($data) && $model->save()){
-            $result = PayLogic::instance()->pay($model);
-            if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
-                $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
-                return $this->_return([
-                    'order_id' => $model->order_id,
-                    'qrcode' => $qrCode,
-                    'platform_order_id' => $model->platform_order_id
-                ]);
+        if ($model->load($data) && $model->save()) {
+            if ($model->order_type == 1) {
+                $result = PayLogic::instance()->pay($model);
+                if (is_array($result)) {
+                    return $this->_return(ArrayHelper::getValue($result, 'status', 0), ArrayHelper::getValue($result, 'data'));
+                } else {
+                    return $this->_return($result);
+                }
+
             }
-            return $this->_return(2002 ,$result);
+
         } else {
             return $this->_error(2001, $model->errors);
         }

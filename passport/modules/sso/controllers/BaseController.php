@@ -24,5 +24,6 @@ class BaseController extends \passport\controllers\BaseController
         1003 => '帐号密码不正确',
         1004 => '登入失败',
     	1005 => '验证失败',
+    	1006 => '更改密码失败'
     ];
 }

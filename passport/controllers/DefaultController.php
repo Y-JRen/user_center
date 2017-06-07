@@ -22,6 +22,7 @@ use yii\web\Controller;
  */
 class DefaultController extends Controller
 {
+    public $enableCsrfValidation = false;
     /**
      * 生成图片二维码
      *
@@ -36,9 +37,9 @@ class DefaultController extends Controller
      * 二维码示例
      *
      */
-    public function actionDemo()
+    public function actionDemo($url)
     {
-        echo "<img src='http://127.0.0.1:8081/default/qrcode?url=weixin://wxpay/bizpayurl?pr=5eYlGha'>";
+        echo "<img src=".$url.">";
     }
 
     /**
@@ -47,32 +48,41 @@ class DefaultController extends Controller
      */
     public function actionWechatNotify()
     {
-        $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
+        $xml = \Yii::$app->request->getRawBody();
+
 
         $pay = PayCore::instance();
         $data = $pay->xmlToArray($xml);
-        $sign = $data['sign'];
-        unset($data['sign']);
-        if ($sign == $pay->sign($data)) {
-            $result = OrderLogic::instance()->notify($data);
-            if ($result) {
-                $data = [
-                    'return_code' => 'SUCCESS',
-                    'return_msg' => 'OK'
-                ];
+        if(empty($data)) {
+            $return = [
+                'return_code' => 'FAIL',
+                'return_msg' => '参数错误'
+            ];
+        } else {
+            $sign = $data['sign'];
+            unset($data['sign']);
+            if ($sign == $pay->sign($data)) {
+                $result = OrderLogic::instance()->notify($data);
+                if ($result) {
+                    $return = [
+                        'return_code' => 'SUCCESS',
+                        'return_msg' => 'OK'
+                    ];
+                } else {
+                    $return = [
+                        'return_code' => 'FAIL',
+                        'return_msg' => '订单更新失败'
+                    ];
+                }
+
             } else {
-                $data = [
+                $return = [
                     'return_code' => 'FAIL',
                     'return_msg' => '签名失败'
                 ];
             }
-
-        } else {
-            $data = [
-                'return_code' => 'FAIL',
-                'return_msg' => '签名失败'
-            ];
         }
-        echo $pay->buildXml($data);exit();
+        header("Content-type:text/xml");
+        echo $pay->buildXml($return);exit();
     }
 }
