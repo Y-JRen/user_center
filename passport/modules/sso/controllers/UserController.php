@@ -9,9 +9,7 @@ class UserController extends BaseController
 {
 	public function actionIndex()
 	{
-		$token = yii::$app->request->get('t');
-		$data = Yii::$app->redis->get($token);
-		var_dump($data);die();
+		
 	}
 	/**
 	 * 注册
