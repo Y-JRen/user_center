@@ -34,11 +34,11 @@ class OrderLogic extends Logic
     public function notify($param)
     {
         $orderId = ArrayHelper::getValue($param, 'out_trade_no');
-        if($orderId) {
+        if(!$orderId) {
             return false;
         }
-        $order = Order::findOne($orderId);
-        $cashFee = ArrayHelper::getValue($param, 'out_trade_no');
+        $order = Order::findOne(['order_id' => $orderId]);
+        $cashFee = ArrayHelper::getValue($param, 'cash_fee');
         if(!empty($order) && $order->amount * 100 == $cashFee ) {
             $db = \Yii::$app->db;
             $transaction = $db->beginTransaction();
@@ -47,14 +47,17 @@ class OrderLogic extends Logic
                 $order->status = 2;
                 $order->save();
                 if(!$order) {
-                   new Exception('订单更新失败');
+                   throw new Exception('订单更新失败');
                 }
                 $userBalance = UserBalance::findOne($order->uid);
-                $userBalance->amount += $order/100;
+                if(!$userBalance) {
+                    $userBalance = new UserBalance();
+                    $userBalance->uid = $order->uid;
+                }
+                $userBalance->amount += $cashFee /100;
+                $userBalance->updated_at = time();
                 if (!$userBalance->save()) {
-                    if(!$order) {
-                        new Exception('余额更新失败');
-                    }
+                    throw new Exception('余额更新失败', $userBalance->errors);
                 }
                 $transaction->commit();
                 return true;

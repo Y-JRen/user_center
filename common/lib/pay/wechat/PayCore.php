@@ -174,7 +174,6 @@ class PayCore extends Logic
     /**
      * 签名
      * @param array $nonceArr
-     * @param string $key
      * @return string
      */
     public function sign($nonceArr)
