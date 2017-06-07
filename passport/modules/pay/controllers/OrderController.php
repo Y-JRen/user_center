@@ -9,7 +9,6 @@
 namespace passport\modules\pay\controllers;
 
 
-use dosamigos\qrcode\QrCode;
 use passport\controllers\BaseController;
 use passport\modules\pay\forms\OrderForm;
 use passport\modules\pay\logic\PayLogic;
@@ -41,10 +40,4 @@ class OrderController extends BaseController
             return $this->_error(400, $model->errors);
         }
     }
-
-    public function actionWechatNotify()
-    {
-        return true;
-    }
-
 }
