@@ -49,6 +49,14 @@ class PayCore extends Logic
     const SHORT_URL = 'https://api.mch.weixin.qq.com/tools/shorturl';
 
 
+    public $weChatConfig;
+
+    public function init()
+    {
+        $this->weChatConfig = Config::getWeChatConfig();
+    }
+
+
     /**
      * 统一下单
      *
@@ -57,12 +65,11 @@ class PayCore extends Logic
      */
     public function unifiedOrder($data)
     {
-        $weChatConfig = Config::getWeChatConfig();
-        $data['appid'] = $weChatConfig['appid'];
-        $data['mch_id'] = $weChatConfig['mch_id'];
+        $data['appid'] = $this->weChatConfig['appid'];
+        $data['mch_id'] = $this->weChatConfig['mch_id'];
         $data['device_info'] = 'web';
         $data['nonce_str'] = $this->nonceStr();
-        $data['sign'] = $this->sign($data, $weChatConfig['pay_key']);
+        $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);
         return $this->http(static::UNIFIED_ORDER , $dataXml);
     }
@@ -79,7 +86,7 @@ class PayCore extends Logic
         $data['appid'] = $weChatConfig['appid'];
         $data['mch_id'] = $weChatConfig['mch_id'];
         $data['nonce_str'] = $this->nonceStr();
-        $data['sign'] = $this->sign($data, $weChatConfig['pay_key']);
+        $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);
         return $this->http(static::UNIFIED_ORDER , $dataXml);
     }
@@ -170,7 +177,7 @@ class PayCore extends Logic
      * @param string $key
      * @return string
      */
-    public function sign($nonceArr, $key)
+    public function sign($nonceArr)
     {
         if (empty($nonceArr)) {
             return false;
@@ -183,7 +190,7 @@ class PayCore extends Logic
         if (strlen($buff) > 0) {
             $buff = substr($buff, 0, strlen($buff) - 1);
         }
-        $stringSignTemp = $buff . "&key=" . $key;
+        $stringSignTemp = $buff . "&key=" . $this->weChatConfig['pay_key'];
         return strtoupper(md5($stringSignTemp));
     }
 

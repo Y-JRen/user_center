@@ -8,7 +8,7 @@ class Token
     /**
      * 加密token
      */
-    public static function encodeToken($user_id,$platform, $client)
+    protected static function encodeToken($user_id,$platform, $client)
     {
         return md5($user_id.time().$platform.$client);
     }

@@ -75,14 +75,14 @@ class UserController extends BaseController
 	
 	public function actionCheckLogin()
 	{
-		die();
 		$post = yii::$app->request->post();
-		if(!isset($post['uid']) || !isset($post['token'])){
+		if(!isset($post['token'])){
 			$this->_error(1001);
 		}
+		$data['UserForm'] = $post;
 		$model = new UserForm();
 		$model->setScenario($model::SCENARIO_LOGGED);
-		$model->load($post);
+		$model->load($data);
 		if( !$model->validate()){
 	        return $this->_error(1005,current($model -> getErrors())[0]);
 	    }
