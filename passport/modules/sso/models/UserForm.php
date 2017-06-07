@@ -8,7 +8,6 @@ use passport\helpers\Token;
 use passport\helpers\Config;
 use yii;
 use passport\logic\SmsLogic;
-use yii\helpers\ArrayHelper;
 
 
 class UserForm extends Model
@@ -19,8 +18,9 @@ class UserForm extends Model
 	const SCENARIO_LOGIN = 'login';
 	/**已登录场景*/
 	const SCENARIO_LOGGED = 'logged';
+	/**更改密码场景*/
+	const SCENARIO_REPASSWD = 'repasswd';
 	
-	public $uid;
 	public $token;
 	public $user_name;
 	public $passwd;
@@ -34,21 +34,27 @@ class UserForm extends Model
 	{
 		return [
 				[	
-					['user_name', 'passwd'], 
+					['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'], 
 					'required',
-					'on' => [self::SCENARIO_REG,self::SCENARIO_LOGIN],
+					'on' => [self::SCENARIO_REG],
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['repasswd', 'verify_code', 'channel','is_agreement'], 
+					['user_name', 'passwd'],
 					'required',
-				    'on' => [self::SCENARIO_REG],
+					'on' => [self::SCENARIO_LOGIN],
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['uid','token'],
+					['token'], 
 					'required',
-					'on' => [self::SCENARIO_LOGGED],
+				    'on' => [self::SCENARIO_LOGGED],
+					'message' => '{attribute}不能为空'
+				],
+				[
+					['user_name', 'passwd', 'repasswd','verify_code'],
+					'required',
+					'on' => [self::SCENARIO_REPASSWD],
 					'message' => '{attribute}不能为空'
 				],
 		        
@@ -68,13 +74,12 @@ class UserForm extends Model
 		return [
 				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'],
 				self::SCENARIO_LOGIN => ['user_name', 'passwd'],
-				self::SCENARIO_LOGGED => ['uid','token'],
+				self::SCENARIO_LOGGED => ['token'],
+				self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd','verify_code'],
 		];
 	}
 	/**
 	 * 验证码验证
-	 * @param unknown $attribute
-	 * @param unknown $params
 	 */
 	public function validateCode($attribute, $params)
 	{
@@ -85,34 +90,23 @@ class UserForm extends Model
 		    }
 		}
 	}
-	
+	/**
+	 * 验证token
+	 */
 	public function validateToken($attribute, $params)
 	{
 		if (!$this->hasErrors()) {
-			$plat = Config::getPlatform();//获取平台
-			$client = Config::getClientType();//获取客户端类型
-			
-			$redis = yii::$app->redis;
-			$_token = $redis->get("LOGIN_TOKEN:{$this->uid}:{$plat}_{$client}");
-			if($_token != $this->$attribute){
-				$this->addError($attribute, '未登录！');
+			if(!Token::checkToken($this->$attribute)){
+				$this->addError($attribute, 'token不正确！');
 			}
 		}
 	}
 	
 	public function login($user_id)
 	{
-		$time_out = 3600;
-		$plat = Config::getPlatform();//获取平台
-		$client = Config::getClientType();//获取客户端类型
 		//create token
-		$token = Token::encodeToken($user_id,time(),$plat, $client);
-		//save in redis
-		$redis = yii::$app->redis;
-		$redis->set("LOGIN_TOKEN:{$user_id}:{$plat}_{$client}", $token);
-		$redis->expire("LOGIN_TOKEN:{$user_id}:{$plat}_{$client}" , $time_out );
-		$redis->set($token,$user_id);
-		$redis->expire($token, $time_out );
+		$token = Token::createToken($user_id);
+		
 		return $token;
 	}
 	
@@ -149,10 +143,14 @@ class UserForm extends Model
 	    }
 	    return ['status'=>true,'user_id' => $user->id];
 	}
-	
+	/**
+	 * 获取用户信息
+	 */
 	public function getUserInfo()
 	{
-		$res = User::find()->where(['id'=>$this->uid])->asArray()->one();
+		$data = Token::getToken($this->token);
+		$uid = $data['uid'];
+		$res = User::find()->where(['id'=>$uid])->asArray()->one();
 		return $res;
 	}
 	
@@ -168,7 +166,7 @@ class UserForm extends Model
 	 */
 	protected function getIp()
 	{
-	    return \yii::$app->request->userIP;
+	    return yii::$app->request->userIP;
 	}
 	/**
 	 * 密码加密

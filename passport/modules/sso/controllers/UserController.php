@@ -75,6 +75,7 @@ class UserController extends BaseController
 	
 	public function actionCheckLogin()
 	{
+		die();
 		$post = yii::$app->request->post();
 		if(!isset($post['uid']) || !isset($post['token'])){
 			$this->_error(1001);
@@ -91,7 +92,7 @@ class UserController extends BaseController
 	public function actionGetInfo()
 	{
 		$post = yii::$app->request->post();
-		if(!isset($post['uid']) || !isset($post['token'])){
+		if(!isset($post['token'])){
 			$this->_error(1001);
 		}
 		$data['UserForm'] = $post;
