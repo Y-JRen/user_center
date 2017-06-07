@@ -150,7 +150,7 @@ class UserForm extends Model
 	{
 		$data = Token::getToken($this->token);
 		$uid = $data['uid'];
-		$res = User::find()->where(['id'=>$uid])->asArray()->one();
+		$res = User::find()->select(['user_name','phone'])->where(['id'=>$uid])->asArray()->one();
 		return $res;
 	}
 	
