@@ -6,6 +6,8 @@ use yii\base\Model;
 use common\models\User;
 use passport\helpers\Token;
 use passport\helpers\Config;
+use yii;
+use passport\logic\SmsLogic;
 
 
 class UserForm extends Model
@@ -14,8 +16,12 @@ class UserForm extends Model
 	const SCENARIO_REG = 'reg';
 	/**登入场景*/
 	const SCENARIO_LOGIN = 'login';
+	/**已登录场景*/
+	const SCENARIO_LOGGED = 'logged';
+	/**更改密码场景*/
+	const SCENARIO_REPASSWD = 'repasswd';
 	
-	
+	public $token;
 	public $user_name;
 	public $passwd;
 	public $repasswd;
@@ -28,15 +34,27 @@ class UserForm extends Model
 	{
 		return [
 				[	
-					['user_name', 'passwd'], 
+					['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'], 
 					'required',
-					'on' => [self::SCENARIO_REG,self::SCENARIO_LOGIN],
+					'on' => [self::SCENARIO_REG],
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['repasswd', 'verify_code', 'channel','is_agreement'], 
+					['user_name', 'passwd'],
 					'required',
-				    'on' => [self::SCENARIO_REG],
+					'on' => [self::SCENARIO_LOGIN],
+					'message' => '{attribute}不能为空'
+				],
+				[
+					['token'], 
+					'required',
+				    'on' => [self::SCENARIO_LOGGED],
+					'message' => '{attribute}不能为空'
+				],
+				[
+					['user_name', 'passwd', 'repasswd','verify_code'],
+					'required',
+					'on' => [self::SCENARIO_REPASSWD],
 					'message' => '{attribute}不能为空'
 				],
 		        
@@ -46,7 +64,8 @@ class UserForm extends Model
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
-		        ['is_agreement','integer', 'message' => '必需同意协议']
+		        ['is_agreement','integer', 'message' => '必需同意协议'],
+				['token','validateToken'],
 		];
 	}
 	
@@ -55,27 +74,39 @@ class UserForm extends Model
 		return [
 				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'],
 				self::SCENARIO_LOGIN => ['user_name', 'passwd'],
+				self::SCENARIO_LOGGED => ['token'],
+				self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd','verify_code'],
 		];
 	}
 	/**
 	 * 验证码验证
-	 * @param unknown $attribute
-	 * @param unknown $params
 	 */
 	public function validateCode($attribute, $params)
 	{
 		if (!$this->hasErrors()) {
-		    if($this->$attribute != '1234'){
+			$bool = SmsLogic::instance()->checkCode(1,$this->$attribute, $this->user_name);
+			if(!$bool){
 			     $this->addError($attribute, '验证码错误！');
 		    }
+		}
+	}
+	/**
+	 * 验证token
+	 */
+	public function validateToken($attribute, $params)
+	{
+		if (!$this->hasErrors()) {
+			if(!Token::checkToken($this->$attribute)){
+				$this->addError($attribute, 'token不正确！');
+			}
 		}
 	}
 	
 	public function login($user_id)
 	{
 		//create token
-		$token = Token::encodeToken($user_id,time(),Config::getPlatform());
-//		\Yii::$app->redis->set($token,$user_id,'EX 2592000');
+		$token = Token::createToken($user_id);
+		
 		return $token;
 	}
 	
@@ -103,7 +134,7 @@ class UserForm extends Model
 	public function checkLogin()
 	{
 	    $model = new User();
-	    $user = $model->findOne(['phone' => $this->user_name]);
+	    $user = $model::findOne(['phone' => $this->user_name]);
 	    if(!$user){
 	        return ['status'=>false,'msg'=>'用户不存在'];
 	    }
@@ -112,6 +143,17 @@ class UserForm extends Model
 	    }
 	    return ['status'=>true,'user_id' => $user->id];
 	}
+	/**
+	 * 获取用户信息
+	 */
+	public function getUserInfo()
+	{
+		$data = Token::getToken($this->token);
+		$uid = $data['uid'];
+		$res = User::find()->where(['id'=>$uid])->asArray()->one();
+		return $res;
+	}
+	
 	/**
 	 * 获取来源
 	 */
@@ -124,7 +166,7 @@ class UserForm extends Model
 	 */
 	protected function getIp()
 	{
-	    return \yii::$app->request->userIP;
+	    return yii::$app->request->userIP;
 	}
 	/**
 	 * 密码加密

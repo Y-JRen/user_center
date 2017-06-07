@@ -47,4 +47,9 @@ class Config
     {
         return Yii::$app->params['wechat']['che.com'];
     }
+    
+    public static function getClientType()
+    {
+    	return 'web';
+    }
 }
