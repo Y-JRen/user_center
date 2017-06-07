@@ -86,19 +86,9 @@ class PayCore extends Logic
         $data['appid'] = $weChatConfig['appid'];
         $data['mch_id'] = $weChatConfig['mch_id'];
         $data['nonce_str'] = $this->nonceStr();
-        $data['sign'] = $this->sign($data, $weChatConfig['pay_key']);
+        $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);
         return $this->http(static::UNIFIED_ORDER , $dataXml);
-    }
-
-
-    /**
-     * 微信回调
-     * @param $param
-     */
-    public function notify($param)
-    {
-
     }
 
     /**

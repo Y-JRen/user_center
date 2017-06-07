@@ -78,7 +78,9 @@ class BaseController extends Controller
      * @var array
      */
     public static $errorStatuses = [
-
+        //充值类错误
+        2001 => '充值订单创建失败',
+        2002 => '微信支付下单失败',
     ];
 
     /**
@@ -103,6 +105,6 @@ class BaseController extends Controller
      */
     public function _error($code, $data = null)
     {
-        return $this->_return($data, $code);
+        return $this->_return($data, $code, null);
     }
 }
