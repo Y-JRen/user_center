@@ -5,9 +5,27 @@ namespace passport\modules\sso\controllers;
 use passport\logic\SmsLogic;
 use yii;
 use yii\helpers\ArrayHelper;
+use yii\filters\VerbFilter;
 
 class SmsController extends BaseController
 {
+	/**
+	 * @inheritdoc
+	 */
+	public function behaviors()
+	{
+		return ArrayHelper::merge(
+				parent::behaviors(), 
+				[
+					'verbs' => [
+							'class' => VerbFilter::className(),
+							'actions' => [
+								'get-msg' => ['get'],
+							],
+					],
+				]
+		);
+	}
     public function actionIndex()
     {
         
