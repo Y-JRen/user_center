@@ -70,7 +70,9 @@ class UserController extends BaseController
 		$token = $model->login($res['user_id']);
 		return $this->_return(['token' => $token, 'uid' => $res['user_id']]);
 	}
-	
+	/**
+	 * 判断是否登入
+	 */
 	public function actionCheckLogin()
 	{
 		$post = yii::$app->request->post();
@@ -86,7 +88,9 @@ class UserController extends BaseController
 	    }
 		$this->_return('已登录');
 	}
-	
+	/**
+	 * 获取用户信息
+	 */
 	public function actionGetInfo()
 	{
 		$post = yii::$app->request->post();
@@ -102,5 +106,24 @@ class UserController extends BaseController
 	    }
 	    $info = $model->getUserInfo();
 	    return $this->_return($info);
+	}
+	/**
+	 * 忘记密码
+	 */
+	public function actionForgetPasswd()
+	{
+		$post = yii::$app->request->post();
+		$data['UserForm'] = $post;
+		$model = new UserForm();
+		$model->setScenario($model::SCENARIO_REPASSWD);
+		$model->load($data);
+		if( !$model->validate()){
+			return $this->_error(1001,current($model -> getErrors())[0]);
+		}
+		$res = $model->changePassword();
+		if(!$res['status']){
+			return $this->_error(1006,$res['msg']);
+		}
+		return $this->_return('成功');
 	}
 }
