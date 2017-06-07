@@ -42,7 +42,7 @@ class OrderForm extends Order
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
             ['order_type','in', 'range' => [1,2,3,4]],
-            ['order_subtype', 'in','range' => [1,2,3]],
+            ['order_subtype', 'in','range' => [1,2,3,'alipay_pc', 'alipay_wap']],
         ];
     }
 
