@@ -51,6 +51,20 @@ class PayLogic extends Logic
             'trade_type' => $tradeType
         ];
         $result = $pay->unifiedOrder($param);
-        return $result;
+        if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
+            $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
+            return [
+                'data' => [
+                    'order_id' => $order->order_id,
+                    'qrcode' => $qrCode,
+                    'platform_order_id' => $order->platform_order_id
+                ],
+                'status' => 1
+            ];
+        }
+        return [
+            'status' => 0,
+            'data' => $result
+        ];
     }
 }

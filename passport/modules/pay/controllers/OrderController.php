@@ -24,7 +24,7 @@ use yii\helpers\Url;
 class OrderController extends BaseController
 {
     /**
-     * 生成订单
+     * 充值订单
      *
      */
     public function actionIndex()
@@ -35,16 +35,13 @@ class OrderController extends BaseController
         $data['OrderForm']['status'] = 1;
         $model = new OrderForm();
         if($model->load($data) && $model->save()){
-            $result = PayLogic::instance()->pay($model);
-            if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
-                $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
-                return $this->_return([
-                    'order_id' => $model->order_id,
-                    'qrcode' => $qrCode,
-                    'platform_order_id' => $model->platform_order_id
-                ]);
+            if ($model->order_type == 1) {
+                $result = PayLogic::instance()->pay($model);
+                if($result['status']) {
+                    return $result['data'];
+                }
+                return $this->_return(2002 ,$result['data']);
             }
-            return $this->_return(2002 ,$result);
         } else {
             return $this->_error(2001, $model->errors);
         }
