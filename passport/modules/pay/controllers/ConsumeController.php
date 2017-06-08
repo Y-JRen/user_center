@@ -43,7 +43,7 @@ class ConsumeController extends AuthController
         return $this->_return([
             'list' => $data->getModels(),
             'pages' => [
-                'totalCount' => $pagination->totalCount,
+                'totalCount' => intval($pagination->totalCount),
                 'pageCount' => $pagination->getPageCount(),
                 'currentPage' => $pagination->getPage() + 1,
                 'perPage' => $pagination->getPageSize(),
