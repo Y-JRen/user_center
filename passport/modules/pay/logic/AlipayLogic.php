@@ -9,11 +9,14 @@
 namespace passport\modules\pay\logic;
 
 
+use common\lib\pay\alipay\PayCore;
 use common\lib\pay\alipay\PayPc;
 use common\lib\pay\alipay\PayWap;
 use common\models\Order;
 use passport\helpers\Config;
+use passport\helpers\Redis;
 use passport\logic\Logic;
+use yii\helpers\Url;
 
 class AlipayLogic extends Logic
 {
@@ -27,33 +30,37 @@ class AlipayLogic extends Logic
     {
         $result = ['status' => 0, 'data' => ''];
         $config = Config::getAlipayConfig();
-        $params = $this->setParam($order);
 
         switch ($order->order_subtype) {
             case 'alipay_pc':
-                $pc = new PayPc($config);
-                $result['data'] = $pc->pay($params);
+                $alipay = new PayCore($config);
+
+                $pc = new PayPc();
+                $pc->setSubject($order->desc);
+                $pc->setTotalAmount($order->amount);
+                $pc->setOutTradeNo($order->order_id);
+
+                $html = $alipay->pagePay($pc, $alipay->getReturnUrl(), $alipay->getNotifyUrl());
                 break;
             case 'alipay_wap':
-                $wap = new PayWap($config);
-                $result['data'] = $wap->pay($params);
+                $alipay = new PayCore($config);
+
+                $wap = new PayWap();
+                $wap->setSubject($order->desc);
+                $wap->setTotalAmount($order->amount);
+                $wap->setOutTradeNo($order->order_id);
+
+                $html = $alipay->wapPay($wap, $alipay->getReturnUrl(), $alipay->getNotifyUrl());
                 break;
         }
 
-        empty($result['data']) ? $result['status'] = 2004 : null;
-        return $result;
-    }
+        if (isset($html) && $html) {
+            Redis::setAlipayOrderHtml($order->order_id, $html);
+            $result['data']['url'] = Url::to(['/alipay/show', 'orderId' => $order->order_id], true);
+        } else {
+            $result['status'] = 2004;
+        }
 
-    /**
-     * 设置支付宝充值的参数
-     * @param $order Order
-     * @return array
-     */
-    protected function setParam($order)
-    {
-        $result['out_trade_no'] = $order->platform_order_id;
-        $result['amount'] = $order->amount;
-        $result['subject'] = $order->desc ? $order->desc : "支付宝充值{$order->amount}";
         return $result;
     }
 
