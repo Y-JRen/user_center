@@ -65,5 +65,10 @@ class Token
     	$res = json_decode($tmp,1);
     	return $res;
     }
+
+    public static function getUid($token)
+    {
+        return yii\helpers\ArrayHelper::getValue(static::getToken($token), 'uid');
+    }
     
 }

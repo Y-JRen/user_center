@@ -30,13 +30,14 @@ class AlipayLogic extends Logic
     {
         $result = ['status' => 0, 'data' => ''];
         $config = Config::getAlipayConfig();
+        $subject = empty($order->desc) ? '支付宝充值' : $order->desc;
 
         switch ($order->order_subtype) {
             case 'alipay_pc':
                 $alipay = new PayCore($config);
 
                 $pc = new PayPc();
-                $pc->setSubject($order->desc);
+                $pc->setSubject($subject);
                 $pc->setTotalAmount($order->amount);
                 $pc->setOutTradeNo($order->order_id);
 
@@ -46,7 +47,7 @@ class AlipayLogic extends Logic
                 $alipay = new PayCore($config);
 
                 $wap = new PayWap();
-                $wap->setSubject($order->desc);
+                $wap->setSubject($subject);
                 $wap->setTotalAmount($order->amount);
                 $wap->setOutTradeNo($order->order_id);
 

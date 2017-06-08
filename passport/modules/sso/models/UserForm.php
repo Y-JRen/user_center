@@ -7,6 +7,7 @@ use passport\helpers\Token;
 use passport\helpers\Config;
 use yii;
 use passport\logic\SmsLogic;
+use passport\logic\ImgcodeLogic;
 
 
 class UserForm extends Model
@@ -27,6 +28,7 @@ class UserForm extends Model
 	public $verify_code;
 	public $channel;
 	public $is_agreement;
+	public $img_code;
 	
 	
 	public function rules()
@@ -39,7 +41,7 @@ class UserForm extends Model
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['user_name', 'passwd'],
+					['user_name', 'passwd', 'img_code'],
 					'required',
 					'on' => [self::SCENARIO_LOGIN],
 					'message' => '{attribute}不能为空'
@@ -57,13 +59,14 @@ class UserForm extends Model
 					'message' => '{attribute}不能为空'
 				],
 		        
-				['user_name', 'string', 'max' => 12,'message'=>'手机号不正确'],
-		        ['user_name','unique','targetClass' => '\common\models\User','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
+				['user_name','match','pattern'=>'/^1\d{10}/','message'=>'手机号不正确'],
+		        ['user_name','unique','targetClass' => '\common\models\User','targetAttribute'=>'phone','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
 				['passwd', 'string', 'length' => 32,'message'=>'密码格式错误'],
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
 		        ['is_agreement','integer', 'message' => '必需同意协议'],
+				['img_code','validateImgcode'],
 				['token','validateToken'],
 		];
 	}
@@ -72,7 +75,7 @@ class UserForm extends Model
 	{
 		return [
 				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'],
-				self::SCENARIO_LOGIN => ['user_name', 'passwd'],
+				self::SCENARIO_LOGIN => ['user_name', 'passwd','img_code'],
 				self::SCENARIO_LOGGED => ['token'],
 				self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd','verify_code'],
 		];
@@ -97,6 +100,18 @@ class UserForm extends Model
 		if (!$this->hasErrors()) {
 			if(!Token::checkToken($this->$attribute)){
 				$this->addError($attribute, 'token不正确！');
+			}
+		}
+	}
+	/**
+	 * 验证图形验证码
+	 */
+	public function validateImgcode($attribute, $params)
+	{
+		if (!$this->hasErrors()) {
+			$bool = ImgcodeLogic::instance()->checkImgCode($this->$attribute);
+			if(!$bool){
+				$this->addError($attribute, '图形验证码错误！');
 			}
 		}
 	}

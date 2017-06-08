@@ -33,7 +33,6 @@ class AuthController extends BaseController
             ],
             'basicAuth' => [
                 'class' => BaseAuth::className(),
-                'tokenParam ' => 'userToken'
             ],
             'rateLimiter' => [
                 'class' => RateLimiter::className(),

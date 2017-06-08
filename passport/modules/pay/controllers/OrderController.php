@@ -13,7 +13,6 @@ use passport\controllers\BaseController;
 use passport\modules\pay\forms\OrderForm;
 use passport\modules\pay\logic\PayLogic;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 
 /**
  * 下单订单
@@ -75,8 +74,14 @@ class OrderController extends BaseController
         //初始化订单状态默认位 1
         $data['OrderForm']['status'] = 1;
         $model = new OrderForm();
-        if ($model->load($data)) {
+        if ($model->load($data) ) {
             $model->consumeSave();
+            $data['platform_order_id'] = $model->platform_order_id;
+            $data['order_id'] = $model->order_id;
+            $data['notice_platform_param'] = $model->notice_platform_param;
+            return $data;
+        } else {
+            return $this->_error(2001, $model->errors);
         }
     }
 }
