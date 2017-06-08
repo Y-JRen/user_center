@@ -27,9 +27,12 @@ class PayLogic extends Logic
             case 'wechat_jsapi':
                 return WechatPayLogic::instance()->weChatPayJS($order);
                 break;
-            case 'alipay_pc';
+            case 'alipay_pc':
             case 'alipay_wap':
                 return AlipayLogic::instance()->pay($order);
+                break;
+            case 'line_down':// 线下支付只要生成订单
+                return ['status' => 0];
                 break;
         }
     }

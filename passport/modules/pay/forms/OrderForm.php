@@ -44,8 +44,8 @@ class OrderForm extends Order
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            ['order_type','in', 'range' => [1,2,3,4]],
-            ['order_subtype', 'in','range' => ['wechat_code', 'wechat_jsapi','alipay_pc', 'alipay_wap']],
+            ['order_type', 'in', 'range' => [1, 2, 3, 4]],
+            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'line_down']],
         ];
     }
 
@@ -55,7 +55,7 @@ class OrderForm extends Order
      */
     public function beforeSave($insert)
     {
-        if($this->isNewRecord){
+        if ($this->isNewRecord) {
             $this->platform = Config::getPlatform();
             $this->order_id = Config::createOrderId();
         }
@@ -76,7 +76,7 @@ class OrderForm extends Order
             return false;
         }
         $transaction = \Yii::$app->db->beginTransaction();
-        try{
+        try {
             if (!$this->save()) {
                 throw new Exception('订单生成失败');
             }
@@ -85,12 +85,7 @@ class OrderForm extends Order
             if (!$userBalance->save()) {
                 throw new Exception('余额扣除失败');
             }
-//            $userFreeze = UserFreeze::findOne($this->uid);
-//            if(empty($userFreeze)) {
-//                $userFreeze = new UserFreeze();
-//            }
-//            $userFreeze->amount += $this->amount;
-//            $userFreeze->updated_at = time();
+
             $transaction->commit();
             return true;
         } catch (Exception $e) {
