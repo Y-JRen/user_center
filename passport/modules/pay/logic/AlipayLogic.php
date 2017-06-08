@@ -25,22 +25,23 @@ class AlipayLogic extends Logic
 
     public function pay($order)
     {
+        $result = ['status' => 0, 'data' => ''];
         $config = Config::getAlipayConfig();
         $params = $this->setParam($order);
 
         switch ($order->order_subtype) {
             case 'alipay_pc':
                 $pc = new PayPc($config);
-                $html = $pc->pay($params);
+                $result['data'] = $pc->pay($params);
                 break;
             case 'alipay_wap':
                 $wap = new PayWap($config);
-                $html = $wap->pay($params);
+                $result['data'] = $wap->pay($params);
                 break;
-            default:
-                $html = ['status' => 2004];
         }
-        return $html;
+
+        empty($result['data']) ? $result['status'] = 2004 : null;
+        return $result;
     }
 
     /**

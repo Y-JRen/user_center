@@ -48,19 +48,15 @@ class PayLogic extends Logic
             'out_trade_no' => $order->order_id,
             'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
             'total_fee' => $order->amount * 100,
-            'notify_url' => 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/wechat-notify']),
+            'notify_url' => 'http://' . $_SERVER['HTTP_HOST'] . Url::to(['/default/wechat-notify']),
             'trade_type' => $tradeType
         ];
         $result = $pay->unifiedOrder($param);
-        if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
-            $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
+        if ($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
+            $qrCode = 'http://' . $_SERVER['HTTP_HOST'] . Url::to(['/default/qrcode', 'url' => $result['code_url']]);
             return [
-                'data' => [
-                    'order_id' => $order->order_id,
-                    'qrcode' => $qrCode,
-                    'platform_order_id' => $order->platform_order_id
-                ],
-                'status' => 0
+                'status' => 0,
+                'data' => $qrCode
             ];
         }
         return [
