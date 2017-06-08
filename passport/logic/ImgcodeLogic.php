@@ -30,8 +30,12 @@ class ImgcodeLogic extends Logic
 	{
 		$plat = Config::getPlatform();//获取平台
 		$client = Config::getClientType();//获取客户端类型
-			
-		$bool = $code == yii::$app->redis->get("ImgCode:{$plat}_{$client}");
+		
+		$redis = yii::$app->redis;
+		$bool = $code == $redis->get("ImgCode:{$plat}_{$client}");
+		if($bool){
+			$redis->del("ImgCode:{$plat}_{$client}");
+		}
 		return $bool;
 	}
 }

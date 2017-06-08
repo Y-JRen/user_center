@@ -59,8 +59,8 @@ class UserForm extends Model
 					'message' => '{attribute}不能为空'
 				],
 		        
-				['user_name', 'string', 'max' => 12,'message'=>'手机号不正确'],
-		        ['user_name','unique','targetClass' => '\common\models\User','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
+				['user_name','match','pattern'=>'/^1\d{10}/','message'=>'手机号不正确'],
+		        ['user_name','unique','targetClass' => '\common\models\User','targetAttribute'=>'phone','on'=> [self::SCENARIO_REG], 'message' => '手机号存在.'],
 				['passwd', 'string', 'length' => 32,'message'=>'密码格式错误'],
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
