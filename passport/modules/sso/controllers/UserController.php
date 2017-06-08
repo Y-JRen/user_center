@@ -9,7 +9,7 @@ class UserController extends BaseController
 {
 	public function actionIndex()
 	{
-		
+		;
 	}
 	/**
 	 * 注册
@@ -76,9 +76,7 @@ class UserController extends BaseController
 	public function actionCheckLogin()
 	{
 		$post = yii::$app->request->post();
-		if(!isset($post['token'])){
-			$this->_error(1001);
-		}
+		
 		$data['UserForm'] = $post;
 		$model = new UserForm();
 		$model->setScenario($model::SCENARIO_LOGGED);
@@ -94,9 +92,7 @@ class UserController extends BaseController
 	public function actionGetInfo()
 	{
 		$post = yii::$app->request->post();
-		if(!isset($post['token'])){
-			$this->_error(1001);
-		}
+		
 		$data['UserForm'] = $post;
 		$model = new UserForm();
 		$model->setScenario($model::SCENARIO_LOGGED);
