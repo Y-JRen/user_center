@@ -9,29 +9,44 @@
 namespace common\auth;
 
 
+use common\models\User;
+use passport\helpers\Token;
 use yii\filters\auth\QueryParamAuth;
+use yii\helpers\ArrayHelper;
+use yii\web\HttpException;
 
 class BaseAuth extends QueryParamAuth
 {
     /**
-     * @inheritdoc
+     * @var string the parameter name for passing the access token
+     */
+    public $tokenParam = 'user-token';
+
+    /**
+     * @param \yii\web\User $user
+     * @param \yii\web\Request $request
+     * @param \yii\web\Response $response
+     * @return bool |object
+     * @throws HttpException
      */
     public function authenticate($user, $request, $response)
     {
-        $accessToken = $request->get($this->tokenParam);
-        if (!$accessToken) {
-            $accessToken = $request->post($this->tokenParam);
+        $userToken = $request->get($this->tokenParam);
+        if (!$userToken) {
+            $userToken = $request->post($this->tokenParam);
         }
-        if (is_string($accessToken)) {
-            $identity = $user->loginByAccessToken($accessToken, get_class($this));
+        if ($userToken) {
+            $data = Token::getToken($userToken);
+            if (!$data) {
+                throw new HttpException(401, 'USER_TOKEN请重新登陆', 401);
+            }
+            $uid = ArrayHelper::getValue($data, 'uid');
+            $identity = $user->login(User::findOne($uid), get_class($this));
             if ($identity !== null) {
                 return $identity;
             }
-        }
-        if ($accessToken !== null) {
-            $this->handleFailure($response);
-        }
 
-        return null;
+        }
+        throw new HttpException(403, '参数异常', 403);
     }
 }

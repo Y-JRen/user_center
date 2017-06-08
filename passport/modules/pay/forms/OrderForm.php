@@ -85,12 +85,12 @@ class OrderForm extends Order
             if (!$userBalance->save()) {
                 throw new Exception('余额扣除失败');
             }
-            $userFreeze = UserFreeze::findOne($this->uid);
-            if(empty($userFreeze)) {
-                $userFreeze = new UserFreeze();
-            }
-            $userFreeze->amount += $this->amount;
-            $userFreeze->updated_at = time();
+//            $userFreeze = UserFreeze::findOne($this->uid);
+//            if(empty($userFreeze)) {
+//                $userFreeze = new UserFreeze();
+//            }
+//            $userFreeze->amount += $this->amount;
+//            $userFreeze->updated_at = time();
             $transaction->commit();
             return true;
         } catch (Exception $e) {
