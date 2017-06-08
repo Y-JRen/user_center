@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "user_balance".
  *
  * @property integer $uid
- * @property double $amount
+ * @property string $amount
  * @property integer $updated_at
  */
 class UserBalance extends BaseModel

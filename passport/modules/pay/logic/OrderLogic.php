@@ -69,4 +69,14 @@ class OrderLogic extends Logic
         }
         return false;
     }
+
+    /**
+     * 消费
+     *
+     * @param Order $order
+     */
+    public function consume($order)
+    {
+        $userBalance = UserBalance::findOne($order->uid);
+    }
 }

@@ -35,7 +35,8 @@ class WechatPayLogic extends Logic
             'trade_type' => $tradeType
         ];
         if($tradeType == 'JSAPI') {
-            $param['openid'] = 'owQxkwda5xrc-us78YtCmg1nLRTU';
+            $remark = json_decode($order->remark, true);
+            $param['openid'] = $remark['openid'];
         }
         return $pay->unifiedOrder($param);
 
@@ -84,9 +85,7 @@ class WechatPayLogic extends Logic
             $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
             return [
                 'data' => [
-                    'order_id' => $order->order_id,
                     'qrcode' => $qrCode,
-                    'platform_order_id' => $order->platform_order_id
                 ],
                 'status' => 0
             ];
