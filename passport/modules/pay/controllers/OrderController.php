@@ -38,7 +38,6 @@ class OrderController extends BaseController
         if ($model->load($data) && $model->save()) {
             if ($model->order_type == 1) {
                 $result = PayLogic::instance()->pay($model);
-
                 $status = ArrayHelper::getValue($result, 'status', 0);
                 $data = ArrayHelper::getValue($result, 'data');
                 if ($status == 0) {
