@@ -13,6 +13,8 @@ use yii\helpers\ArrayHelper;
  */
 class Config
 {
+    public static $orderHtmlExpire = 3600;// 订单的html保存时间
+
     public static function params($domain = null)
     {
         $params = ArrayHelper::getValue(Yii::$app->params, 'projects');
@@ -21,7 +23,6 @@ class Config
         } else {
             return ArrayHelper::getValue($params, $domain);
         }
-
     }
 
     /**

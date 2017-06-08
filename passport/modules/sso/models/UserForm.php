@@ -3,7 +3,6 @@ namespace passport\modules\sso\models;
 
 
 use yii\base\Model;
-use common\models\User;
 use passport\helpers\Token;
 use passport\helpers\Config;
 use yii;
@@ -150,28 +149,28 @@ class UserForm extends Model
 	{
 		$data = Token::getToken($this->token);
 		$uid = $data['uid'];
-		$res = User::find()->select(['id as uid','user_name','phone'])->where(['id'=>$uid])->asArray()->one();
+		$res = User::find()->where(['id'=>$uid])->one();
 		return $res;
 	}
 	/**
 	 * 更改密码
 	 */
-	public function changePassword()
-	{
-		$user_count = User::find()->where(['phone'=>$this->user_name])->count();
-		if($user_count > 1){
-			return ['status'=>false,'msg'=>'此手机号存在多个用户！'];
-		}elseif($user_count < 1){
-			return ['status'=>false,'msg'=>'用户不存在！'];
-		}
-		$user = User::find()->where(['phone'=>$this->user_name])->one();
-		$user->passwd = $this->encyptPasswd($this->passwd);
-		if($user->save()){
-			return ['status'=>true];
-		}else{
-			return ['status'=>false,'msg'=>current($model->getErrors())[0]];
-		}
-	}
+    public function changePassword()
+    {
+        $user_count = User::find()->where(['phone' => $this->user_name])->count();
+        if ($user_count > 1) {
+            return ['status' => false, 'msg' => '此手机号存在多个用户！'];
+        } elseif ($user_count < 1) {
+            return ['status' => false, 'msg' => '用户不存在！'];
+        }
+        $user = User::find()->where(['phone' => $this->user_name])->one();
+        $user->passwd = $this->encyptPasswd($this->passwd);
+        if ($user->save()) {
+            return ['status' => true];
+        } else {
+            return ['status' => false, 'msg' => $user->firstErrors];
+        }
+    }
 	
 	/**
 	 * 获取来源

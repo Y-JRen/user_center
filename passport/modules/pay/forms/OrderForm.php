@@ -10,6 +10,8 @@ namespace passport\modules\pay\forms;
 
 
 use common\models\Order;
+use common\models\UserBalance;
+use common\models\UserFreeze;
 use passport\helpers\Config;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
@@ -22,6 +24,7 @@ use yii\db\Exception;
  */
 class OrderForm extends Order
 {
+
     public function behaviors()
     {
         return [
@@ -46,6 +49,10 @@ class OrderForm extends Order
         ];
     }
 
+    /**
+     * @param bool $insert
+     * @return bool
+     */
     public function beforeSave($insert)
     {
         if($this->isNewRecord){
@@ -53,5 +60,42 @@ class OrderForm extends Order
             $this->order_id = Config::createOrderId();
         }
         return parent::beforeSave($insert);
+    }
+
+    /**
+     *  消费订单
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function consumeSave()
+    {
+        $userBalance = UserBalance::findOne($this->uid);
+        if ($userBalance->amount < $this->amount) {
+            $this->addError('amount', '余额不足');
+            return false;
+        }
+        $transaction = \Yii::$app->db->beginTransaction();
+        try{
+            if (!$this->save()) {
+                throw new Exception('订单生成失败');
+            }
+            $userBalance->amount -= $this->amount;
+            $userBalance->updated_at = time();
+            if (!$userBalance->save()) {
+                throw new Exception('余额扣除失败');
+            }
+            $userFreeze = UserFreeze::findOne($this->uid);
+            if(empty($userFreeze)) {
+                $userFreeze = new UserFreeze();
+            }
+            $userFreeze->amount += $this->amount;
+            $userFreeze->updated_at = time();
+            $transaction->commit();
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 }
