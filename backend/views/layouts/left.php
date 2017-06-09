@@ -8,15 +8,22 @@
                 'items' => [
                     [
                         'label' => '用户管理',
-                        'icon' => 'share',
+                        'icon' => 'bars',
                         'url' => '#',
                         'items' => [
                             ['label' => '用户管理', 'icon' => 'file-code-o', 'url' => ['/user'],],
-                            ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
-                            ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
+                        ],
+                    ],
+                    [
+                        'label' => '支付中心',
+                        'icon' => 'cc',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => '消费记录', 'icon' => 'file-code-o', 'url' => ['/order'],],
                         ],
                     ],
                 ],
+
             ]
         ) ?>
 
