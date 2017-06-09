@@ -3,6 +3,7 @@ namespace passport\modules\sso\controllers;
 
 use passport\logic\ImgcodeLogic;
 use yii;
+use yii\helpers\Url;
 
 class ImgcodeController extends BaseController
 {	
@@ -14,8 +15,8 @@ class ImgcodeController extends BaseController
 			echo $logic->getImgCode($get['unique'], $this);
 		}else{
 			$unique = $logic->getUnqiue($get);
-			
-			$data = ['unique'=>$unique,'url'=>"/sso/imgcode/get-img?unique={$unique}"];
+			$url = Url::to(['/sso/imgcode/get-img', 'unique' => $unique], true);
+			$data = ['unique'=>$unique,'url'=> $url];
 			return $this->_return($data);
 		}
 	}
