@@ -29,6 +29,7 @@ class UserForm extends Model
 	public $channel;
 	public $is_agreement;
 	public $img_code;
+	public $img_unique;
 	
 	
 	public function rules()
@@ -42,9 +43,7 @@ class UserForm extends Model
 				],
 				[
 					[
-					    'user_name',
-                        'passwd',
-                        //'img_code'
+					    'user_name', 'passwd', 'img_code', 'img_unique'
                     ],
 					'required',
 					'on' => [self::SCENARIO_LOGIN],
@@ -70,7 +69,7 @@ class UserForm extends Model
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
 		        ['is_agreement','integer', 'message' => '必需同意协议'],
-//				['img_code','validateImgcode'],
+				['img_code','validateImgcode'],
 				['token','validateToken'],
 		];
 	}
@@ -79,7 +78,7 @@ class UserForm extends Model
 	{
 		return [
 				self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd','verify_code','channel','is_agreement'],
-				self::SCENARIO_LOGIN => ['user_name', 'passwd','img_code'],
+				self::SCENARIO_LOGIN => ['user_name', 'passwd','img_code', 'img_unique'],
 				self::SCENARIO_LOGGED => ['token'],
 				self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd','verify_code'],
 		];
@@ -113,7 +112,7 @@ class UserForm extends Model
 	public function validateImgcode($attribute, $params)
 	{
 		if (!$this->hasErrors()) {
-			$bool = ImgcodeLogic::instance()->checkImgCode($this->$attribute);
+			$bool = ImgcodeLogic::instance()->checkImgCode($this->$attribute,$this->img_unique);
 			if(!$bool){
 				$this->addError($attribute, '图形验证码错误！');
 			}

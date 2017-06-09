@@ -33,7 +33,7 @@ class Token
      */
     public static function createToken($user_id)
     {
-    	$time_out = 10*86400;
+    	$time_out = Config::$tokenExpure;
     	$plat = Config::getPlatform();//获取平台
     	$client = Config::getClientType();//获取客户端类型
     	
