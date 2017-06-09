@@ -70,12 +70,63 @@ class OrderController extends BaseController
     public function actionConsume()
     {
         $param = \Yii::$app->request->post();
+        if($param['order_type'] != 3) {
+            return $this->_error(2007);
+        }
         $data['OrderForm'] = $param;
         //初始化订单状态默认位 1
         $data['OrderForm']['status'] = 1;
         $model = new OrderForm();
         if ($model->load($data) ) {
             $model->consumeSave();
+            $data['platform_order_id'] = $model->platform_order_id;
+            $data['order_id'] = $model->order_id;
+            $data['notice_platform_param'] = $model->notice_platform_param;
+            return $data;
+        } else {
+            return $this->_error(2001, $model->errors);
+        }
+    }
+
+    /**
+     * 退款
+     */
+    public function actionRefund()
+    {
+        $param = \Yii::$app->request->post();
+        if($param['order_type'] != 3) {
+            return $this->_error(2007);
+        }
+        $data['OrderForm'] = $param;
+        //初始化订单状态默认位 1
+        $data['OrderForm']['status'] = 1;
+        $model = new OrderForm();
+        if ($model->load($data) ) {
+            $model->refundSave();
+            $data['platform_order_id'] = $model->platform_order_id;
+            $data['order_id'] = $model->order_id;
+            $data['notice_platform_param'] = $model->notice_platform_param;
+            return $data;
+        } else {
+            return $this->_error(2001, $model->errors);
+        }
+    }
+
+    /**
+     * 提现
+     */
+    public function actionCash()
+    {
+        $param = \Yii::$app->request->post();
+        if($param['order_type'] != 4) {
+            return $this->_error(2007);
+        }
+        $data['OrderForm'] = $param;
+        //初始化订单状态默认位 1
+        $data['OrderForm']['status'] = 1;
+        $model = new OrderForm();
+        if ($model->load($data) ) {
+            $model->cashSave();
             $data['platform_order_id'] = $model->platform_order_id;
             $data['order_id'] = $model->order_id;
             $data['notice_platform_param'] = $model->notice_platform_param;
