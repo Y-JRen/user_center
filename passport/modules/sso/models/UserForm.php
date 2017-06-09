@@ -123,7 +123,9 @@ class UserForm extends Model
 	{
 		//create token
 		$token = Token::createToken($user_id);
-		
+		$user = User::findOne($user_id);
+		$user->login_time = time();
+		$user->save();
 		return $token;
 	}
 	
