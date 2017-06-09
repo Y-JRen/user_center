@@ -38,7 +38,7 @@ class BaseAuth extends QueryParamAuth
         if ($userToken) {
             $data = Token::getToken($userToken);
             if (!$data) {
-                throw new HttpException(401, 'USER_TOKEN请重新登陆', 401);
+                throw new HttpException(401, 'USER_TOKEN失效', 401);
             }
             $uid = ArrayHelper::getValue($data, 'uid');
             $identity = $user->login(User::findOne($uid), get_class($this));

@@ -63,15 +63,33 @@ class Order extends \yii\db\ActiveRecord
             'amount' => '金额',
             'status' => '状态',
             'desc' => '订单描述；类似订单标题',
-            'notice_status' => '通知平台时返回的状态
-1、未通知平台
-2、通知平台失败
-3、通知平台成功',
+            'notice_status' => '通知平台时返回的状态1、未通知平台2、通知平台失败 3、通知平台成功',
             'notice_platform_param' => '通知平台时所带参数',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'remark' => '备注',
             'platform' => '平台',
+        ];
+    }
+
+    public function fields()
+    {
+        return [
+            'platform_order_id',
+            'order_id',
+            'order_type',
+            'order_subtype',
+            'amount' => function($model){
+                return Yii::$app->formatter->asCurrency($model->amount);
+            },
+            'desc',
+            'notice_platform_param',
+            'created_at' => function ($model) {
+                return Yii::$app->formatter->asDatetime($model->created_at);
+            },
+            'updated_at' => function ($model) {
+                return Yii::$app->formatter->asDatetime($model->created_at);
+            }
         ];
     }
 }

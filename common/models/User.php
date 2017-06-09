@@ -76,7 +76,7 @@ class User extends BaseModel implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-
+        return self::findOne($id);
     }
 
     /**
@@ -99,7 +99,7 @@ class User extends BaseModel implements IdentityInterface
      */
     public function getId()
     {
-
+        return $this->id;
     }
 
     /**
