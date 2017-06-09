@@ -48,6 +48,18 @@ class User extends \common\models\User
             },
             'freeze' => function ($model) {
                 return ArrayHelper::getValue($model->freeze, 'amount', 0);
+            },
+            'status' => function ($model){
+            	switch ($model->status){
+            		case 1:
+            			return '正常';
+            		case 2:
+            			return '封禁';
+            		case 3:
+            			return '永久封禁';
+            		default:
+            			return '未知';
+            	}
             }
         ];
     }
