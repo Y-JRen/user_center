@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: xiongjun
- * Date: 2017/6/8
- * Time: 17:29
+ * Date: 2017/6/9
+ * Time: 10:28
  */
 
 namespace passport\modules\pay\controllers;
@@ -15,12 +15,14 @@ use passport\helpers\Config;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 
-
 /**
- * Class ConsumeController
+ * 消费记录
+ *
+ *
+ * Class TradeController
  * @package passport\modules\pay\controllers
  */
-class ConsumeController extends AuthController
+class TradeController extends AuthController
 {
     /**
      * 列表
