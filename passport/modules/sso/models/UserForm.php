@@ -189,6 +189,15 @@ class UserForm extends Model
             return ['status' => false, 'msg' => $user->firstErrors];
         }
     }
+    /**
+     * 登出
+     */
+    public function logout()
+    {
+    	Token::delToken($this->token);
+    	return true;
+    }
+    
 	
 	/**
 	 * 获取来源

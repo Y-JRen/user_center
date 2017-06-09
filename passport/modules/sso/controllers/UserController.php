@@ -122,4 +122,22 @@ class UserController extends BaseController
 		}
 		return $this->_return('成功');
 	}
+	
+	/**
+	 * 登出
+	 */
+	public function actionLogout()
+	{
+		$post = yii::$app->request->post();
+		
+		$data['UserForm'] = $post;
+		$model = new UserForm();
+		$model->setScenario($model::SCENARIO_LOGGED);
+		$model->load($data);
+		if( !$model->validate()){
+			return $this->_error(1005,current($model -> getErrors())[0]);
+		}
+		$model->logout();
+		return $this->_return('成功');
+	}
 }

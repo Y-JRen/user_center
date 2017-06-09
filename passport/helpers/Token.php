@@ -48,14 +48,16 @@ class Token
     	
     	return $token;
     }
-    
+    /**
+     * 删除token
+     * @param string $token
+     */
     public static function delToken($token)
     {
     	$redis = yii::$app->redis;
-    	$token_info = $redis->get($token);
-    	$tmp = explode('_', $token_info);
+    	$token_info = static::getToken($token);
+    	$redis->del("LOGIN_TOKEN:{$token_info['uid']}:{$token_info['plat']}_{$token_info['client']}");
     	$redis->del($token);
-    	$redis->del("LOGIN_TOKEN:{$tmp[0]}:{$tmp[1]}_{$tmp[2]}");
     }
     
     public static function getToken($token)
