@@ -93,4 +93,50 @@ class OrderForm extends Order
             throw $e;
         }
     }
+
+    /**
+     * 退款
+     */
+    public function refundSave()
+    {
+
+    }
+
+    /**
+     * 提现
+     */
+    public function cashSave()
+    {
+        $userBalance = UserBalance::findOne($this->uid);
+        if ($userBalance->amount < $this->amount) {
+            $this->addError('amount', '余额不足');
+            return false;
+        }
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            if (!$this->save()) {
+                throw new Exception('订单生成失败');
+            }
+            $userBalance->amount -= $this->amount;
+            $userBalance->updated_at = time();
+            if (!$userBalance->save()) {
+                throw new Exception('余额扣除失败');
+            }
+            $userFreeze = UserFreeze::findOne($this->uid);
+            if(empty($userFreeze)) {
+                $userFreeze = new UserFreeze();
+                $userFreeze->uid = $this->uid;
+            }
+            $userFreeze->amount += (double)$this->amount;
+            $userFreeze->updated_at = time();
+            if (!$userFreeze->save()) {
+                throw new Exception('冻结失败');
+            }
+            $transaction->commit();
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
 }

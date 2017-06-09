@@ -85,6 +85,7 @@ class BaseController extends Controller
         2004 => '支付宝充值异常',
         2005 => '异常订单',
         2006 => 'jsapi支付openid 必填',
+        2007 => '参数异常',
         2010 => '充值参数有误',
     ];
 

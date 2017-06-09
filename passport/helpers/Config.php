@@ -14,6 +14,8 @@ use yii\helpers\ArrayHelper;
 class Config
 {
     public static $orderHtmlExpire = 3600;// 订单的html保存时间
+    
+    public static $tokenExpure = 10*86400;//user_token保存时间
 
     public static function params($domain = null)
     {

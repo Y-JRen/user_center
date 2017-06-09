@@ -4,7 +4,6 @@ namespace passport\modules\sso\models;
 
 use yii\base\Model;
 use passport\logic\SmsLogic;
-use passport\helpers\Config;
 use passport\logic\ImgcodeLogic;
 
 
@@ -13,21 +12,21 @@ class SmsForm extends Model
 	public $phone;
 	public $type;
 	public $img_code;
-
+	public $img_unique;
 
 	public function rules()
 	{
 		return [
-			[['phone','type','img_code'],'required','message'=>'{attribute}不能为空'],
+			[['phone','type','img_code','img_unique'],'required','message'=>'{attribute}不能为空'],
 			['phone','match','pattern'=>'/^1\d{10}/','message'=>'手机不正确'],
-			//['img_code','validateCode']
+			['img_code','validateCode']
 		];
 	}
 	public function validateCode($attribute, $params)
 	{
 		if (!$this->hasErrors()) {
 			
-			$bool = ImgcodeLogic::instance()->checkImgCode($this->$attribute);
+			$bool = ImgcodeLogic::instance()->checkImgCode($this->$attribute, $this->img_unique);
 			if(!$bool){
 				$this->addError($attribute, '验证码错误！');
 			}
