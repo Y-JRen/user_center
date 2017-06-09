@@ -41,7 +41,11 @@ class UserForm extends Model
 					'message' => '{attribute}不能为空'
 				],
 				[
-					['user_name', 'passwd', 'img_code'],
+					[
+					    'user_name',
+                        'passwd',
+                        //'img_code'
+                    ],
 					'required',
 					'on' => [self::SCENARIO_LOGIN],
 					'message' => '{attribute}不能为空'
@@ -66,7 +70,7 @@ class UserForm extends Model
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
 		        ['is_agreement','integer', 'message' => '必需同意协议'],
-				['img_code','validateImgcode'],
+//				['img_code','validateImgcode'],
 				['token','validateToken'],
 		];
 	}
