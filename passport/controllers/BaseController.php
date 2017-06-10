@@ -32,6 +32,7 @@ class BaseController extends Controller
             ],
         ];
     }
+
     /**
      * 验证IP、以及token是否正确
      * @throws HttpException
@@ -80,6 +81,9 @@ class BaseController extends Controller
     public static $errorStatuses = [
         //充值类错误
         2001 => '充值订单创建失败',
+        2101 => ' 消费订单创建失败',
+        2201 => ' 退款订单创建失败',
+        2301 => ' 提现订单创建失败',
         2002 => '微信支付下单失败',
         2003 => '支付宝支付下单失败',
         2004 => '支付宝充值异常',

@@ -6,12 +6,10 @@
  * Time: 09:43
  */
 
-namespace passport\modules\pay\forms;
+namespace passport\modules\pay\models;
 
 
 use common\models\Order;
-use common\models\UserBalance;
-use common\models\UserFreeze;
 use passport\helpers\Config;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
@@ -20,17 +18,11 @@ use yii\db\Exception;
  * 订单表单
  *
  * Class OrderForm
- * @package passport\modules\pay\forms
+ *
  */
 class OrderForm extends Order
 {
-
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
+    public $openid;// 微信jssdk使用
 
     /**
      * @inheritdoc
@@ -38,15 +30,34 @@ class OrderForm extends Order
     public function rules()
     {
         return [
-            [['uid', 'order_type', 'amount', 'status'], 'required'],
+            [['uid', 'order_type', 'amount'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            ['order_type', 'in', 'range' => [1, 2, 3, 4]],
-            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'line_down']],
+            ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
+            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'line_down'], 'when' => function ($model) {
+                return $model->order_type == self::TYPE_RECHARGE;
+            }],
+            ['order_subtype', 'validatorOrderSubType'],
         ];
+    }
+
+    /**
+     * 主要检测微信充值的必填参数
+     */
+    function validatorOrderSubType()
+    {
+        if ($this->order_type == self::TYPE_RECHARGE && $this->order_subtype == 'wechat_jsapi') {
+            if ($this->openid) {
+                $this->remark = json_encode(['openid' => $this->openid]);
+            } else {
+                $this->addError('order_subtype', '参数有误');
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -55,9 +66,11 @@ class OrderForm extends Order
      */
     public function beforeSave($insert)
     {
+        // 新增订单时，设置平台、订单号、初始状态
         if ($this->isNewRecord) {
             $this->platform = Config::getPlatform();
             $this->order_id = Config::createOrderId();
+            $this->status = self::STATUS_PROCESSING;
         }
         return parent::beforeSave($insert);
     }
@@ -70,24 +83,18 @@ class OrderForm extends Order
      */
     public function consumeSave()
     {
-        $userBalance = UserBalance::findOne($this->uid);
-        if ($userBalance->amount < $this->amount) {
-            $this->addError('amount', '余额不足');
-            return false;
-        }
         $transaction = \Yii::$app->db->beginTransaction();
         try {
-            if (!$this->save()) {
-                throw new Exception('订单生成失败');
-            }
-            $userBalance->amount -= $this->amount;
-            $userBalance->updated_at = time();
-            if (!$userBalance->save()) {
+            if (!$this->userBalance->less($this->amount)) {
                 throw new Exception('余额扣除失败');
             }
 
-            $transaction->commit();
-            return true;
+            if ($this->setOrderSuccess()) {
+                $transaction->commit();
+                return true;
+            } else {
+                throw new Exception('更新消费订单状态失败');
+            }
         } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
@@ -95,43 +102,20 @@ class OrderForm extends Order
     }
 
     /**
-     * 退款
-     */
-    public function refundSave()
-    {
-
-    }
-
-    /**
      * 提现
      */
     public function cashSave()
     {
-        $userBalance = UserBalance::findOne($this->uid);
-        if ($userBalance->amount < $this->amount) {
-            $this->addError('amount', '余额不足');
-            return false;
-        }
         $transaction = \Yii::$app->db->beginTransaction();
         try {
-            if (!$this->save()) {
-                throw new Exception('订单生成失败');
-            }
-            $userBalance->amount -= $this->amount;
-            $userBalance->updated_at = time();
-            if (!$userBalance->save()) {
+            if (!$this->userBalance->less($this->amount)) {
                 throw new Exception('余额扣除失败');
             }
-            $userFreeze = UserFreeze::findOne($this->uid);
-            if(empty($userFreeze)) {
-                $userFreeze = new UserFreeze();
-                $userFreeze->uid = $this->uid;
-            }
-            $userFreeze->amount += (double)$this->amount;
-            $userFreeze->updated_at = time();
-            if (!$userFreeze->save()) {
+
+            if (!$this->userFreeze->plus($this->amount)) {
                 throw new Exception('冻结失败');
             }
+
             $transaction->commit();
             return true;
         } catch (Exception $e) {
