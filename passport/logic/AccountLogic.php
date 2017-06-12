@@ -34,8 +34,33 @@ class AccountLogic extends Logic
             $account->branch_name = $data['branch_name'];
             $account->updated_at = time();
             $account->type = 3;
-            return $account->save();
+            if ($account->save()) {
+                return $account->id;
+            }
         }
         return true;
+    }
+    
+    /**
+     * 账号列表
+     *
+     * @param integer $userId
+     * @return array
+     */
+    public function accountList($userId)
+    {
+        $account = UserAccount::find()->where(['uid' => $userId])->all();
+        $data = [];
+        if(!empty($account)) {
+            foreach ($account as $v) {
+                $data[] = [
+                    'account_id' => $v->id,
+                    'account' => $v->account,
+                    'bank_name' => $v->account,
+                    'branch_name' => $v->account,
+                ];
+            }
+        }
+        return $data;
     }
 }

@@ -73,7 +73,7 @@ return [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['info'],
+                    'levels' => ['error', 'info'],
                     'logVars' => ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION']
                 ],
             ],
