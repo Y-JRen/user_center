@@ -2,9 +2,11 @@
 
 namespace backend\controllers;
 
+use common\models\LogReview;
 use Yii;
 use common\models\Order;
 use backend\models\search\OrderSearch;
+use yii\base\ErrorException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -54,8 +56,51 @@ class OrderController extends Controller
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
 
-        return $this->render('index', [
+        return $this->render('line_down', [
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * 完成财务确认动作
+     * @param $id
+     * @return string
+     * @throws ErrorException
+     */
+    public function actionViewLineDown($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->isEdit && Yii::$app->request->isPost) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $logModel = new LogReview(['order_id'=>$id]);
+                $logModel->load(Yii::$app->request->post());
+                if (!$logModel->save()) {
+                    throw new ErrorException(print_r($logModel->errors, true));
+                }
+
+                $model->status = $logModel->order_status;
+                if (!$model->save()) {
+                    throw new ErrorException('更新订单状态失败');
+                }
+
+                if ($model->isSuccessful) {
+                    if (!$model->userBalance->plus($model->amount)) {
+                        throw new ErrorException('更新用户余额失败');
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', '处理成功');
+            } catch (ErrorException $e) {
+                Yii::$app->session->setFlash('error', '处理失败');
+                $transaction->rollBack();
+                throw $e;
+            }
+        }
+
+        return $this->render('line_down_view', [
+            'model' => $model
         ]);
     }
 
@@ -103,7 +148,6 @@ class OrderController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-
 
 
     /**

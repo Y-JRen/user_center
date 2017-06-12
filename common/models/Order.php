@@ -28,6 +28,8 @@ use yii\behaviors\TimestampBehavior;
  *
  * @property UserBalance $userBalance
  * @property UserFreeze $userFreeze
+ * @property bool $isSuccessful
+ * @property bool $isEdit
  */
 class Order extends \yii\db\ActiveRecord
 {
@@ -82,17 +84,17 @@ class Order extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'uid' => 'Uid',
-            'platform_order_id' => '平台订单号（che.com）',
-            'order_id' => '订单号（用户中心）',
+            'platform_order_id' => '平台订单号',
+            'order_id' => '订单号',
             'order_type' => '订单类型',
             'order_subtype' => '支付方式',
             'amount' => '金额',
             'status' => '状态',
-            'desc' => '订单描述；类似订单标题',
+            'desc' => '订单描述',
             'notice_status' => '通知平台状态',
             'notice_platform_param' => '通知平台时所带参数',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => '创建时间',
+            'updated_at' => '最后一次更新时间',
             'remark' => '备注',
             'platform' => '平台',
             'quick_pay' => '快捷支付'
@@ -194,6 +196,24 @@ class Order extends \yii\db\ActiveRecord
     {
         $this->status = self::STATUS_FAILED;
         return $this->save();
+    }
+
+    /**
+     * 判断订单是否处理成功
+     * @return bool
+     */
+    public function getIsSuccessful()
+    {
+        return $this->status == self::STATUS_SUCCESSFUL;
+    }
+
+    /**
+     * 判断财务是否可以审核
+     * @return bool
+     */
+    public function getIsEdit()
+    {
+        return $this->status == self::STATUS_PROCESSING;
     }
 
 
