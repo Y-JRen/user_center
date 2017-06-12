@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $typeName = '充值';
                     } elseif ($model->order_type == 2){
                         $typeName = '消费';
-                    } elseif ($model->order_type == 2){
+                    } elseif ($model->order_type == 3){
                         $typeName = '退款';
                     } else{
                         $typeName = '提现';
@@ -57,7 +57,25 @@ $this->params['breadcrumbs'][] = $this->title;
                     return Yii::$app->formatter->asCurrency($model->amount);
                 }
             ],
-            'status',
+            [
+                'attribute' => 'status',
+                'value' => function($model) {
+                    $statusName = '';
+                    if ($model->status == 1) {
+                        $statusName = '处理中';
+                    } elseif ($model->status == 2){
+                        $statusName = '处理成功';
+                    } elseif ($model->status == 3){
+                        $statusName = '处理失败';
+                    }
+                    return $statusName;
+                },
+                'filter' => [
+                    1 => '处理中',
+                    2 => '处理成功',
+                    3 => '处理失败',
+                ]
+            ],
             // 'desc',
             // 'notice_status',
             // 'notice_platform_param',
