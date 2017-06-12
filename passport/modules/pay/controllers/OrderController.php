@@ -34,7 +34,7 @@ class OrderController extends BaseController
         $param = \Yii::$app->request->post();
         $data['OrderForm'] = $param;
         // 验证openid
-        if ($param['order_type'] == 1 && $param['order_subtype'] == 'wechat_jsapi') {
+        if ($param['order_type'] == OrderForm::TYPE_RECHARGE && $param['order_subtype'] == 'wechat_jsapi') {
             if (empty($param['openid'])) {
                 return $this->_error(2006);
             } else {
