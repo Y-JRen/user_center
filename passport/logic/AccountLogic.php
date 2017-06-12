@@ -56,8 +56,8 @@ class AccountLogic extends Logic
                 $data[] = [
                     'account_id' => $v->id,
                     'account' => $v->account,
-                    'bank_name' => $v->account,
-                    'branch_name' => $v->account,
+                    'bank_name' => $v->bank_name,
+                    'branch_name' => $v->branch_name,
                 ];
             }
         }
