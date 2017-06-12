@@ -11,52 +11,39 @@ class UserInfoForm extends Model
 {
 	public $real_name;
 	public $card_number;
-	public $token;
 	
 	public function rules()
 	{
 		return [
-				[['real_name', 'card_number', 'token'],'required','message' => '{attribute}不能为空'],
-		        ['token','validateToken'],
+				[['real_name', 'card_number'],'required','message' => '{attribute}不能为空']
 		];
 	}
 	
-	/**
-	 * 验证token
-	 */
-	public function validateToken($attribute, $params)
-	{
-	    if (!$this->hasErrors()) {
-	        if(!Token::checkToken($this->$attribute)){
-	            $this->addError($attribute, 'token不正确！');
-	        }
-	    }
-	}
 	
-	public function realVerify()
+	public function realVerify($user)
 	{
 	    if(!$this->_verify()){
 	        return ['status'=>false,'msg'=>'身份证不正确！'];
 	    }
-	    if(!$this->saveUserInfo()){
+	    if(!$this->saveUserInfo($user)){
 	        return ['status'=>false,'msg'=>'error！'];
 	    }
 		return ['status'=>true];
 	}
 	
-	protected function saveUserInfo()
+	protected function saveUserInfo($user)
 	{
-	    $model = UserInfo::findOne(Token::getUid($this->token));
+	    $model = UserInfo::findOne($user->id);
 	    if (empty($model)) {
 	        $model = new UserInfo();
-	        $model->uid = Token::getUid($this->token);
+	        $model->uid = $user->id;
 	    }
 	    $model->real_name = $this->real_name;
 	    $model->card_number = $this->card_number;
 	    if($model->save()){
 	        return true;
 	    }
-	    var_dump($model->firstErrors);die();
+	    //var_dump($model->firstErrors);die();
 	    return false;
 	}
 	

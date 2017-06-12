@@ -16,7 +16,8 @@ class UserVerifyController extends AuthController
 		if( !$model->validate()){
 			return $this->_error(990,current($model -> getErrors())[0]);
 		}
-		$res = $model -> realVerify();
+		$user = yii::$app->user->identity;
+		$res = $model -> realVerify($user);
 		if($res['status']){
 			return $this->_return('成功');
 		}
