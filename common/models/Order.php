@@ -24,6 +24,7 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $updated_at
  * @property string $remark
  * @property integer $platform
+ * @property integer $quick_pay
  *
  * @property UserBalance $userBalance
  * @property UserFreeze $userFreeze
@@ -65,7 +66,7 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             [['uid', 'platform_order_id', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
-            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform'], 'integer'],
+            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
@@ -94,6 +95,7 @@ class Order extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
             'remark' => '备注',
             'platform' => '平台',
+            'quick_pay' => '快捷支付'
         ];
     }
 

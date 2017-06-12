@@ -39,7 +39,7 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = Order::findOne(['order_id' => $orderId]);
+        $order = OrderForm::findOne(['order_id' => $orderId]);
         $cashFee = ArrayHelper::getValue($param, 'cash_fee');
         if (!empty($order) && $order->amount * 100 == $cashFee) {
             $db = Yii::$app->db;
@@ -61,6 +61,10 @@ class OrderLogic extends Logic
                 if (!$userBalance->save()) {
                     throw new Exception('余额更新失败', $userBalance->errors);
                 }
+                // 快捷支付， 直接消费
+                if ($order->quick_pay) {
+                    $order->addQuickPayOrder();
+                }
                 $transaction->commit();
                 return true;
             } catch (Exception $e) {
@@ -72,6 +76,14 @@ class OrderLogic extends Logic
         return false;
     }
 
+    /**
+     * 支付宝回调
+     *
+     *
+     * @param $params
+     * @return bool
+     * @throws Exception
+     */
     public function alipayNotify($params)
     {
         $orderId = ArrayHelper::getValue($params, 'out_trade_no');// 商家订单号
@@ -93,7 +105,7 @@ class OrderLogic extends Logic
                     throw new Exception('余额添加失败');
                 }
 
-                if ($order->remark == 'quick_pay') {// 快捷支付
+                if ($order->quick_pay) {// 快捷支付
                     $order->addQuickPayOrder();
                 }
 
