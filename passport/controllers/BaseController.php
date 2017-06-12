@@ -8,6 +8,7 @@
 
 namespace passport\controllers;
 
+use common\jobs\ApiLogJob;
 use passport\helpers\Config;
 use Yii;
 use yii\filters\ContentNegotiator;
@@ -71,6 +72,13 @@ class BaseController extends Controller
                 throw new HttpException(401, '参数不正确', -995);
             }
         }
+        Yii::$app->queue->push(new ApiLogJob([
+            'url' => Yii::$app->request->url,
+            'param' => json_encode(Yii::$app->request->getBodyParams()),
+            'method' => Yii::$app->request->method,
+            'ip' => Yii::$app->request->getUserIP(),
+            'created_at' => date('Y-m-d H:i:s')
+        ]));
     }
 
 

@@ -106,9 +106,7 @@ class Order extends \yii\db\ActiveRecord
             'order_id',
             'order_type',
             'order_subtype',
-            'amount' => function ($model) {
-                return Yii::$app->formatter->asCurrency($model->amount);
-            },
+            'amount',
             'desc',
             'notice_platform_param',
             'created_at' => function ($model) {
