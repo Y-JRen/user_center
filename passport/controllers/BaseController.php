@@ -40,11 +40,10 @@ class BaseController extends Controller
      */
     public function init()
     {
+        $get = Yii::$app->request->get();
+        $post = Yii::$app->request->post();
+        $params = array_merge($get, $post);
         if (!YII_ENV_DEV) {
-            $get = Yii::$app->request->get();
-            $post = Yii::$app->request->post();
-            $params = array_merge($get, $post);
-
             $domain = ArrayHelper::getValue($params, 'domain');
             if (empty($domain)) {
                 throw new HttpException(401, '参数不正确', -999);
@@ -73,8 +72,8 @@ class BaseController extends Controller
             }
         }
         Yii::$app->queue->push(new ApiLogJob([
-            'url' => Yii::$app->request->url,
-            'param' => json_encode(Yii::$app->request->getBodyParams()),
+            'url' => Yii::$app->request->pathInfo,
+            'param' => json_encode(['post' => $post , 'get' => $get]),
             'method' => Yii::$app->request->method,
             'ip' => Yii::$app->request->getUserIP(),
             'created_at' => date('Y-m-d H:i:s')
