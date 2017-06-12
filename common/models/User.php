@@ -55,16 +55,16 @@ class User extends BaseModel implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'phone' => 'Phone',
-            'user_name' => 'User Name',
-            'email' => 'Email',
+            'phone' => '手机号',
+            'user_name' => '用户名',
+            'email' => '邮箱',
             'passwd' => 'Passwd',
-            'status' => 'Status',
-            'from_platform' => 'From Platform',
-            'from_channel' => 'From Channel',
-            'reg_time' => 'Reg Time',
-            'reg_ip' => 'Reg Ip',
-            'login_time' => 'Login Time',
+            'status' => '状态',
+            'from_platform' => '平台来源',
+            'from_channel' => '渠道来源',
+            'reg_time' => '注册时间',
+            'reg_ip' => '注册IP',
+            'login_time' => '最后登陆时间',
         ];
     }
 
