@@ -9,6 +9,7 @@
 namespace passport\modules\pay\controllers;
 
 
+use Yii;
 use common\models\Order;
 use passport\controllers\AuthController;
 use passport\helpers\Config;
@@ -34,7 +35,7 @@ class TradeController extends AuthController
 
         $query = Order::find()->where([
             'platform' => Config::getPlatform(),
-            'uid' => \Yii::$app->user->getId()
+            'uid' => Yii::$app->user->getId()
         ]);
         $orderType = \Yii::$app->request->get('order_type');
         if ($orderType) {
@@ -58,5 +59,17 @@ class TradeController extends AuthController
                 'perPage' => $pagination->getPageSize(),
             ]
         ]);
+    }
+
+    /**
+     * 获取订单详情
+     *
+     * @param $order_id
+     * @return array|null|\yii\db\ActiveRecord
+     */
+    public function actionInfo($order_id)
+    {
+        $result = Order::find()->where(['order_id' => $order_id, 'uid' => Yii::$app->user->id])->one();
+        return $result;
     }
 }
