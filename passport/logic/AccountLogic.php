@@ -33,6 +33,7 @@ class AccountLogic extends Logic
             $account->account = $data['account'];
             $account->branch_name = $data['branch_name'];
             $account->updated_at = time();
+            $account->type = 3;
             return $account->save();
         }
         return true;
