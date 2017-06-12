@@ -91,7 +91,7 @@ class UserForm extends Model
 		if (!$this->hasErrors()) {
 			$bool = SmsLogic::instance()->checkCode(1,$this->$attribute, $this->user_name);
 			if(!$bool){
-			     //$this->addError($attribute, '验证码错误！');
+			     $this->addError($attribute, '验证码错误！');
 		    }
 		}
 	}
