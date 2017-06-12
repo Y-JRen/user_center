@@ -59,14 +59,7 @@ class ApiLogJob extends Object implements Job
         $logApi->ip = $this->ip;
         $logApi->created_at = $this->created_at;
         if (!$logApi->save()) {
-            //错误重新加入队列
-            \Yii::$app->queue->push(new self([
-                'url' => $this->url,
-                'param' => $this->param,
-                'method' => $this->method,
-                'ip' => $this->ip,
-                'created_at' => $this->created_at
-            ]));
+            throw new \Exception('日志添加失败');
         }
     }
 }

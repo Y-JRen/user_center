@@ -31,7 +31,7 @@ class UserAccount extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'account', 'type', 'updated_at'], 'required'],
+            [['uid', 'account', 'bank_name', 'branch_name'], 'required'],
             [['uid', 'type', 'updated_at'], 'integer'],
             [['account', 'bank_name', 'branch_name'], 'string', 'max' => 255],
         ];
