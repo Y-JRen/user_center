@@ -2,7 +2,9 @@
 
 namespace common\models;
 
+use passport\helpers\Config;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "order".
@@ -22,9 +24,32 @@ use Yii;
  * @property integer $updated_at
  * @property string $remark
  * @property integer $platform
+ *
+ * @property UserBalance $userBalance
+ * @property UserFreeze $userFreeze
  */
 class Order extends \yii\db\ActiveRecord
 {
+    /**
+     * 订单处理类型
+     */
+    const TYPE_RECHARGE = 1;// 充值
+    const TYPE_CONSUME = 2;// 消费
+    const TYPE_REFUND = 3;// 退款
+    const TYPE_CASH = 4;// 提现
+
+    /**
+     * 订单处理状态
+     */
+    const STATUS_PROCESSING = 1;// 处理中
+    const STATUS_SUCCESSFUL = 2;// 处理成功
+    const STATUS_FAILED = 3;// 处理失败
+
+    /**
+     * 消费子类型
+     */
+    const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
+
     /**
      * @inheritdoc
      */
@@ -79,7 +104,7 @@ class Order extends \yii\db\ActiveRecord
             'order_id',
             'order_type',
             'order_subtype',
-            'amount' => function($model){
+            'amount' => function ($model) {
                 return Yii::$app->formatter->asCurrency($model->amount);
             },
             'desc',
@@ -92,4 +117,84 @@ class Order extends \yii\db\ActiveRecord
             }
         ];
     }
+
+    /**
+     * 获取用户余额
+     * @return \yii\db\ActiveQuery | UserBalance
+     */
+    public function getBalance()
+    {
+        return $this->hasOne(UserBalance::className(), ['uid' => 'uid']);
+    }
+
+    /**
+     * 获取当前关联的冻结金额对象
+     * @return mixed|UserFreeze
+     */
+    public function getUserBalance()
+    {
+        $object = $this->balance;
+        if (empty($object)) {
+            $object = new UserBalance();
+            $object->uid = $this->uid;
+            $object->amount = 0;
+            $object->updated_at = time();
+        }
+        return $object;
+    }
+
+    /**
+     * 获取用户冻结余额
+     * @return \yii\db\ActiveQuery | UserFreeze
+     */
+    public function getFreeze()
+    {
+        return $this->hasOne(UserFreeze::className(), ['uid' => 'uid']);
+    }
+
+    /**
+     * 获取当前关联的冻结金额对象
+     * @return mixed|UserFreeze
+     */
+    public function getUserFreeze()
+    {
+        $object = $this->freeze;
+        if (empty($object)) {
+            $object = new UserFreeze();
+            $object->uid = $this->uid;
+            $object->amount = 0;
+            $object->updated_at = time();
+        }
+        return $object;
+    }
+
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
+    /**
+     * 设置订单状态为成功
+     * @return bool
+     */
+    public function setOrderSuccess()
+    {
+        $this->status = self::STATUS_SUCCESSFUL;
+        return $this->save();
+    }
+
+    /**
+     * 设置订单状态为失败
+     * @return bool
+     */
+    public function setOrderFail()
+    {
+        $this->status = self::STATUS_FAILED;
+        return $this->save();
+    }
+
+
 }
