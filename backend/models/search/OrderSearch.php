@@ -10,7 +10,7 @@ use common\models\Order;
 /**
  * OrderrSearch represents the model behind the search form about `common\models\Order`.
  */
-class OrderrSearch extends Order
+class OrderSearch extends Order
 {
     /**
      * @inheritdoc

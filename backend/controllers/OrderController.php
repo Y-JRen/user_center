@@ -4,7 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Order;
-use backend\models\search\OrderrSearch;
+use backend\models\search\OrderSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -35,7 +35,7 @@ class OrderController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new OrderrSearch();
+        $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -43,6 +43,68 @@ class OrderController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+
+    /**
+     * 线下充值待确认
+     * @return mixed
+     */
+    public function actionLineDown()
+    {
+        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_RECHARGE, 'order_subtype' => 'line_down', 'status' => Order::STATUS_PROCESSING];
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * 提现待确认
+     * @return mixed
+     */
+    public function actionCash()
+    {
+        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_PROCESSING];
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * 财务退款操作
+     * @return mixed
+     */
+    public function actionRefund()
+    {
+        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_REFUND];
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
+     * 贷款进账
+     * @return string
+     */
+    public function actionLoan()
+    {
+        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_REFUND];
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+
 
     /**
      * Displays a single Order model.
