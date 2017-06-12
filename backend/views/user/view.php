@@ -6,8 +6,8 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+$this->title = $model->phone;
+$this->params['breadcrumbs'][] = ['label' => '用户管理', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-view">
@@ -19,7 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'phone',
             'user_name',
             'email:email',
-            'passwd',
             'status',
             'from_platform',
             'from_channel',

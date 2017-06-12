@@ -12,6 +12,7 @@ namespace passport\modules\sso\models;
 use common\models\UserBalance;
 use common\models\UserFreeze;
 use yii\helpers\ArrayHelper;
+use common\models\UserInfo;
 
 class User extends \common\models\User
 {
@@ -32,6 +33,15 @@ class User extends \common\models\User
     {
         return $this->hasOne(UserFreeze::className(), ['uid' => 'id']);
     }
+    
+    /**
+     * 获取用户实名信息
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInfo()
+    {
+    	return $this->hasOne(UserInfo::className(), ['uid' => 'id']);
+    }
 
     public function fields()
     {
@@ -50,16 +60,10 @@ class User extends \common\models\User
                 return ArrayHelper::getValue($model->freeze, 'amount', 0);
             },
             'status' => function ($model){
-            	switch ($model->status){
-            		case 1:
-            			return '正常';
-            		case 2:
-            			return '封禁';
-            		case 3:
-            			return '永久封禁';
-            		default:
-            			return '未知';
-            	}
+            	return $model->status;
+            },
+            'is_auth'=>function($model){
+            	return ArrayHelper::getValue($model->info, 'uid', 0) ? 1 : 0;
             }
         ];
     }
