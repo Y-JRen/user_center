@@ -68,7 +68,7 @@ class UserForm extends Model
 				//['passwd', 'string', 'min' => 6,'on' => [self::SCENARIO_REG],'message'=>'密码不能低于6位'],
 				['repasswd', 'compare', 'compareAttribute' => 'passwd','message' => '两次输入的密码不一致'],
 				['verify_code','validateCode'],
-		        ['is_agreement','compare', 'compareValue' => 1, 'operator' => '=', 'message' => '必需同意协议'],
+		        ['is_agreement','compare', 'compareValue' => 1, 'operator' => '==', 'message' => '必需同意协议'],
 				['img_code','validateImgcode'],
 				['token','validateToken'],
 		];
