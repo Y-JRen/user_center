@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use passport\helpers\Token;
 use Yii;
 use yii\web\IdentityInterface;
 
@@ -80,20 +81,21 @@ class User extends BaseModel implements IdentityInterface
     }
 
     /**
-     * Finds an identity by the given token.
-     * @param mixed $token the token to be looked for
-     * @param mixed $type the type of the token. The value of this parameter depends on the implementation.
-     * For example, [[\yii\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\filters\auth\HttpBearerAuth`.
-     * @return IdentityInterface the identity object that matches the given token.
-     * Null should be returned if such an identity cannot be found
-     * or the identity is not in an active state (disabled, deleted, etc.)
+     * $token 存在redis里
+     *
+     * @param mixed $token
+     * @param null $type
+     * @return IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-
+        $id = Token::getUid($token);
+        return static::findIdentity($id);
     }
 
     /**
+     * 获取UID
+     *
      * Returns an ID that can uniquely identify a user identity.
      * @return string|int an ID that uniquely identifies a user identity.
      */
@@ -116,7 +118,7 @@ class User extends BaseModel implements IdentityInterface
      */
     public function getAuthKey()
     {
-
+        return true;
     }
 
     /**
@@ -129,6 +131,6 @@ class User extends BaseModel implements IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
-
+        return true;
     }
 }
