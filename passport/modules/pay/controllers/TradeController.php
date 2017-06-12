@@ -31,10 +31,19 @@ class TradeController extends AuthController
      */
     public function actionList()
     {
+
         $query = Order::find()->where([
             'platform' => Config::getPlatform(),
             'uid' => \Yii::$app->user->getId()
         ]);
+        $orderType = \Yii::$app->request->get('order_type');
+        if ($orderType) {
+            $query->andWhere(['order_type' => $orderType]);
+        }
+        $status = \Yii::$app->request->get('status');
+        if ($status) {
+            $query->andWhere(['status' => $status]);
+        }
         $data = new ActiveDataProvider([
             'query' => $query,
         ]);

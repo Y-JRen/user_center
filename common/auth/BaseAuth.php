@@ -20,7 +20,7 @@ class BaseAuth extends QueryParamAuth
     /**
      * @var string the parameter name for passing the access token
      */
-    public $tokenParam = 'user-token';
+    public $tokenParam = 'token';
 
     /**
      * @param \yii\web\User $user
