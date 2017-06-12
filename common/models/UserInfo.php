@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "user_info".
@@ -35,7 +36,7 @@ class UserInfo extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'birthday', 'created_at', 'updated_at'], 'required'],
+            [['uid'], 'required'],
             [['uid', 'birthday', 'sex', 'is_real', 'created_at', 'updated_at'], 'integer'],
             [['real_name'], 'string', 'max' => 20],
             [['card_number'], 'string', 'max' => 30],
@@ -60,6 +61,13 @@ class UserInfo extends BaseModel
             'county' => 'County',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+        ];
+    }
+    
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
         ];
     }
 }

@@ -16,14 +16,6 @@ class BaseController extends \passport\controllers\BaseController
      */
     public static $errorStatuses = [
         
-        997 => '发送失败',
-        998 => '发送次数超过限制',
-        999 => '手机号不正确',
-        1001 => '参数错误',
-        1002 => '注册失败',
-        1003 => '帐号密码不正确',
-        1004 => '登入失败',
-    	1005 => '验证失败',
-    	1006 => '更改密码失败'
+        
     ];
 }
