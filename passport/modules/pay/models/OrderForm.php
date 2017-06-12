@@ -123,4 +123,37 @@ class OrderForm extends Order
             throw $e;
         }
     }
+
+    /**
+     * 添加一条快捷支付的消费订单
+     *
+     * 如果消费失败，通知平台，到余额去支付
+     */
+    public function addQuickPayOrder()
+    {
+        $model = new self;
+        $model->uid = $this->uid;
+        $model->platform_order_id = $this->platform_order_id;
+        $model->order_id = Config::createOrderId();
+        $model->order_type = self::TYPE_CONSUME;
+        $model->order_subtype = self::SUB_TYPE_CONSUME_QUICK_PAY;
+        $model->amount = $this->amount;
+        $model->status = self::STATUS_PROCESSING;
+        $model->desc = '快捷支付消费订单';
+        $model->notice_status = 1;
+        $model->notice_platform_param = $this->notice_platform_param;
+        $model->remark = $this->remark;
+        $model->platform = $this->platform;
+
+        if ($model->save()) {
+            $model->consumeSave();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @todo 订单状态改变的时候，通知平台方
+     */
 }

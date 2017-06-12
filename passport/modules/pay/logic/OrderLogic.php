@@ -9,6 +9,7 @@
 namespace passport\modules\pay\logic;
 
 
+use passport\modules\pay\models\OrderForm;
 use Yii;
 use common\logic\Logic;
 use common\models\Order;
@@ -77,7 +78,7 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = Order::findOne(['order_id' => $orderId]);
+        $order = OrderForm::findOne(['order_id' => $orderId]);
         $amount = ArrayHelper::getValue($params, 'total_amount');// 订单金额
         if ($order && $order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
@@ -93,7 +94,7 @@ class OrderLogic extends Logic
                 }
 
                 if ($order->remark == 'quick_pay') {// 快捷支付
-                    // @todo 立刻添加一条消费记录
+                    $order->addQuickPayOrder();
                 }
 
                 $transaction->commit();

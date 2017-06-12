@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
@@ -43,6 +44,11 @@ class Order extends \yii\db\ActiveRecord
     const STATUS_PROCESSING = 1;// 处理中
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
+
+    /**
+     * 消费子类型
+     */
+    const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
 
     /**
      * @inheritdoc
@@ -190,7 +196,5 @@ class Order extends \yii\db\ActiveRecord
         return $this->save();
     }
 
-    /**
-     * @todo 订单状态改变的时候，通知平台方
-     */
+
 }
