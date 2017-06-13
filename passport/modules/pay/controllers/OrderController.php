@@ -132,6 +132,7 @@ class OrderController extends BaseController
         }
         $model = new OrderForm();
         if ($model->load($param, '') && $model->save()) {
+            $model->refundSave();
             $data['platform_order_id'] = $model->platform_order_id;
             $data['order_id'] = $model->order_id;
             $data['notice_platform_param'] = $model->notice_platform_param;

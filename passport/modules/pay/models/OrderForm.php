@@ -8,7 +8,7 @@
 
 namespace passport\modules\pay\models;
 
-
+use Yii;
 use common\models\Order;
 use passport\helpers\Config;
 use yii\behaviors\TimestampBehavior;
@@ -87,6 +87,33 @@ class OrderForm extends Order
         try {
             if (!$this->userBalance->less($this->amount)) {
                 throw new Exception('余额扣除失败');
+            }
+
+            if ($this->setOrderSuccess()) {
+                $transaction->commit();
+                return true;
+            } else {
+                throw new Exception('更新消费订单状态失败');
+            }
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * 退款订单
+     */
+    public function refundSave()
+    {
+        // @todo erm系统检测是否有效
+
+        // @todo 检测该订单是否已经退过款
+
+        $transaction = \Yii::$app->db->beginTransaction();
+        try {
+            if (!$this->userBalance->plus($this->amount)) {
+                throw new Exception('余额增加失败');
             }
 
             if ($this->setOrderSuccess()) {

@@ -5,6 +5,7 @@ namespace common\models;
 use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "order".
@@ -25,6 +26,9 @@ use yii\behaviors\TimestampBehavior;
  * @property string $remark
  * @property integer $platform
  * @property integer $quick_pay
+ *
+ * @property string $type
+ * @property string $orderStatus
  *
  * @property UserBalance $userBalance
  * @property UserFreeze $userFreeze
@@ -87,6 +91,7 @@ class Order extends \yii\db\ActiveRecord
             'platform_order_id' => '平台订单号',
             'order_id' => '订单号',
             'order_type' => '订单类型',
+            'type' => '订单类型',
             'order_subtype' => '支付方式',
             'amount' => '金额',
             'status' => '状态',
@@ -216,5 +221,62 @@ class Order extends \yii\db\ActiveRecord
         return $this->status == self::STATUS_PROCESSING;
     }
 
+    /**
+     * 获取订单类型
+     * 静态方法
+     *
+     * @param null $key
+     * @return array|mixed
+     */
+    public static function getTypeName($key = null)
+    {
+        $data = [
+            self::TYPE_RECHARGE => '充值',
+            self::TYPE_CONSUME => '消费',
+            self::TYPE_REFUND => '退款',
+            self::TYPE_CASH => '提现',
+        ];
 
+        return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
+    }
+
+    /**
+     * 获取订单类型名称
+     * 对象方法
+     *
+     * @return array|mixed
+     */
+    public function getType()
+    {
+        return self::getTypeName($this->order_type);
+    }
+
+    /**
+     * 获取订单状态名称
+     * 静态方法
+     *
+     * @param $key
+     * @return array|mixed
+     */
+    public static function getStatusName($key = null)
+    {
+        $data = [
+            self::STATUS_PROCESSING => '处理中',
+            self::STATUS_PROCESSING => '处理成功',
+            self::STATUS_PROCESSING => '处理不成功',
+        ];
+
+        return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
+    }
+
+    /**
+     * 获取订单状态名称
+     * 对象方法
+     *
+     * @return array|mixed
+     */
+    public function getOrderStatus()
+    {
+        return self::getStatusName($this->status);
+    }
 }

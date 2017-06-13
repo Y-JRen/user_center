@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Order;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -32,23 +33,9 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'order_type',
                 'value' => function ($model) {
-                    if ($model->order_type == 1) {
-                        $typeName = '充值';
-                    } elseif ($model->order_type == 2) {
-                        $typeName = '消费';
-                    } elseif ($model->order_type == 3){
-                        $typeName = '退款';
-                    } else {
-                        $typeName = '提现';
-                    }
-                    return $typeName;
+                    return $model->type;
                 },
-                'filter' => [
-                    1 => '充值',
-                    2 => '消费',
-                    3 => '退款',
-                    4 => '提现',
-                ]
+                'filter' => Order::getTypeName()
             ],
             'order_subtype',
             [
@@ -59,31 +46,31 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'status',
-                'value' => function($model) {
-                    $statusName = '';
-                    if ($model->status == 1) {
-                        $statusName = '处理中';
-                    } elseif ($model->status == 2){
-                        $statusName = '处理成功';
-                    } elseif ($model->status == 3){
-                        $statusName = '处理失败';
-                    }
-                    return $statusName;
+                'value' => function ($model) {
+                    return $model->orderStatus;
                 },
-                'filter' => [
-                    1 => '处理中',
-                    2 => '处理成功',
-                    3 => '处理失败',
-                ]
+                'filter' => Order::getStatusName()
             ],
-            // 'desc',
-            // 'notice_status',
-            // 'notice_platform_param',
             'created_at:datetime',
-            // 'updated_at',
-            // 'remark',
+            'updated_at:datetime',
             'platform',
-            ['class' => 'yii\grid\ActionColumn', 'template' => '{view}'],
+            [
+                'class' => 'yii\grid\ActionColumn', 'template' => '{view}',
+                'buttons' =>
+                    [
+                        'view' => function ($url, $model, $key) {
+                            $actionUrl = 'view';
+                            if ($model->isEdit) {
+                                if ($model->order_type == Order::TYPE_RECHARGE && $model->order_subtype == 'line_down') {
+                                    $actionUrl = 'view-line-down';
+                                } elseif ($model->order_type == Order::TYPE_CASH) {
+                                    $actionUrl = 'view-cash';
+                                }
+                            }
+                            return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', [$actionUrl, 'id' => $model->id]);
+                        },
+                    ],
+            ],
         ],
     ]); ?>
     <?php Pjax::end(); ?></div>

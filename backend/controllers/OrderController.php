@@ -17,21 +17,6 @@ use yii\filters\VerbFilter;
 class OrderController extends Controller
 {
     /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
-    /**
      * Lists all Order models.
      * @return mixed
      */
@@ -56,7 +41,7 @@ class OrderController extends Controller
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
 
-        return $this->render('line_down', [
+        return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -99,7 +84,7 @@ class OrderController extends Controller
             }
         }
 
-        return $this->render('line_down_view', [
+        return $this->render('view', [
             'model' => $model
         ]);
     }
@@ -120,35 +105,47 @@ class OrderController extends Controller
     }
 
     /**
-     * 财务退款操作
-     * @return mixed
-     */
-    public function actionRefund()
-    {
-        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_REFUND];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * 贷款进账
+     * 完成财务提现确认动作
+     * @param $id
      * @return string
+     * @throws ErrorException
      */
-    public function actionLoan()
+    public function actionViewCash($id)
     {
-        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_REFUND];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
+        $model = $this->findModel($id);
 
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
+        if ($model->isEdit && Yii::$app->request->isPost) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $logModel = new LogReview(['order_id'=>$id]);
+                $logModel->load(Yii::$app->request->post());
+                if (!$logModel->save()) {
+                    throw new ErrorException(print_r($logModel->errors, true));
+                }
+
+                $model->status = $logModel->order_status;
+                if (!$model->save()) {
+                    throw new ErrorException('更新订单状态失败');
+                }
+
+                if ($model->isSuccessful) {
+                    if (!$model->userFreeze->less($model->amount)) {
+                        throw new ErrorException('更新用户冻结余额失败');
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash('success', '处理成功');
+            } catch (ErrorException $e) {
+                Yii::$app->session->setFlash('error', '处理失败');
+                $transaction->rollBack();
+                throw $e;
+            }
+        }
+
+        return $this->render('view', [
+            'model' => $model
         ]);
     }
-
 
     /**
      * Displays a single Order model.
@@ -160,56 +157,6 @@ class OrderController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
-    }
-
-    /**
-     * Creates a new Order model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Order();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Order model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing Order model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**
