@@ -71,6 +71,7 @@ class OrderForm extends Order
     {
         // 新增订单时，设置平台、订单号、初始状态
         if ($this->isNewRecord) {
+            $this->uid = Yii::$app->user->id;
             $this->platform = Config::getPlatform();
             $this->order_id = Config::createOrderId();
             $this->status = self::STATUS_PROCESSING;

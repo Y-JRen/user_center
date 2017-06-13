@@ -50,6 +50,6 @@ class AccountLogic extends Logic
      */
     public function accountList($userId)
     {
-        return UserAccount::find()->where(['uid' => $userId])->orderBy(['id' => 'DESC'])->all();
+        return UserAccount::find()->where(['uid' => $userId])->all();
     }
 }

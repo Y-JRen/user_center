@@ -9,8 +9,8 @@
 namespace passport\modules\pay\controllers;
 
 
+use passport\controllers\AuthController;
 use Yii;
-use passport\controllers\BaseController;
 use passport\modules\pay\models\OrderForm;
 use passport\modules\pay\logic\PayLogic;
 use yii\helpers\ArrayHelper;
@@ -22,45 +22,17 @@ use yii\helpers\ArrayHelper;
  *
  * @package passport\modules\pay\controllers
  */
-class OrderController extends BaseController
+class OrderController extends AuthController
 {
-    /**
-     *
-     * 充值订单
-     * @return array
-     */
-    public function actionIndex()
+    public function verbs()
     {
-        $param = \Yii::$app->request->post();
-        $data['OrderForm'] = $param;
-        // 验证openid
-        if ($param['order_type'] == OrderForm::TYPE_RECHARGE && $param['order_subtype'] == 'wechat_jsapi') {
-            if (empty($param['openid'])) {
-                return $this->_error(2006);
-            } else {
-                $data['OrderForm']['remark'] = json_encode(['openid' => $param['openid']]);
-            }
-        }
-
-        $model = new OrderForm();
-        if ($model->load($data) && $model->save()) {
-            //充值
-            if ($model->order_type == 1) {
-                $result = PayLogic::instance()->pay($model);
-                $status = ArrayHelper::getValue($result, 'status', 0);
-                $data = ArrayHelper::getValue($result, 'data');
-                if ($status == 0) {
-                    $data['platform_order_id'] = $model->platform_order_id;
-                    $data['order_id'] = $model->order_id;
-                    $data['notice_platform_param'] = $model->notice_platform_param;
-                }
-                return $this->_return($data, $status);
-            } else {
-                return $this->_error(2005);
-            }
-        } else {
-            return $this->_error(2001, $model->errors);
-        }
+        return [
+            'recharge' => ['POST'],
+            'consume' => ['POST'],
+            'refund' => ['POST'],
+            'cash' => ['POST'],
+            'info' => ['GET']
+        ];
     }
 
     /**
@@ -163,5 +135,17 @@ class OrderController extends BaseController
         } else {
             return $this->_error(2301, $model->errors);
         }
+    }
+
+    /**
+     * 通过订单id获取订单信息
+     *
+     * @param $order_id
+     * @return array|null|\yii\db\ActiveRecord
+     */
+    public function actionInfo($order_id)
+    {
+        $data = OrderForm::find()->where(['order_id' => $order_id, 'uid' => Yii::$app->user->id])->one();
+        return $this->_return($data);
     }
 }
