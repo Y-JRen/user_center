@@ -51,4 +51,22 @@ class UserInfo extends \common\models\UserInfo
         $this->is_real = 1;// 设置该用户已实名成功
         return true;
     }
+
+    public function fields()
+    {
+        return [
+            'uid',
+            'is_real',
+            'real' => function ($model) {
+                return $model->is_real == 1 ? '已认证' : '未认证';
+            },
+            'real_name',
+            'card_number',
+            'birthday',
+            'sex',
+            'area',
+            'city',
+            'county'
+        ];
+    }
 }
