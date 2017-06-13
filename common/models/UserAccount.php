@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property integer $uid
+ * @property string $real_name
  * @property string $account
  * @property integer $type
  * @property string $bank_name
@@ -31,9 +32,9 @@ class UserAccount extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'account', 'bank_name', 'branch_name'], 'required'],
+            [['uid', 'real_name', 'account', 'type', 'updated_at'], 'required'],
             [['uid', 'type', 'updated_at'], 'integer'],
-            [['account', 'bank_name', 'branch_name'], 'string', 'max' => 255],
+            [['real_name', 'account', 'bank_name', 'branch_name'], 'string', 'max' => 255],
         ];
     }
 
@@ -45,11 +46,22 @@ class UserAccount extends BaseModel
         return [
             'id' => 'ID',
             'uid' => 'Uid',
+            'real_name' => 'RealName',
             'account' => 'Account',
             'type' => 'Type',
             'bank_name' => 'Bank Name',
             'branch_name' => 'Branch Name',
             'updated_at' => 'Updated At',
+        ];
+    }
+
+    public function fields()
+    {
+        return [
+            'real_name',
+            'account',
+            'bank_name',
+            'branch_name'
         ];
     }
 }

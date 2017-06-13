@@ -8,6 +8,7 @@
 
 namespace passport\modules\pay\models;
 
+use passport\logic\AccountLogic;
 use Yii;
 use common\models\Order;
 use passport\helpers\Config;
@@ -135,6 +136,9 @@ class OrderForm extends Order
      */
     public function cashSave()
     {
+        //将银行卡信息保存起来，正确错误与否不重要
+        AccountLogic::instance()->addAccount(json_decode($this->remark, true));
+
         $transaction = \Yii::$app->db->beginTransaction();
         try {
             if (!$this->userBalance->less($this->amount)) {
