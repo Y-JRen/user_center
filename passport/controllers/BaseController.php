@@ -125,7 +125,8 @@ class BaseController extends Controller
      */
     public function _return($data, $code = 0, $message = 'success')
     {
-        $message = (!$message) ? static::$errorStatuses[$code] : $message;
+        $message = empty($message) ? ArrayHelper::getValue(self::$errorStatuses, $code, '错误码未定义') : $message;
+
         return compact('data', 'message', 'code');
     }
 

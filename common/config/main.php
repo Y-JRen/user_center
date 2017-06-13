@@ -7,12 +7,12 @@ return [
         ],
         'redis' => [
             'class' => 'yii\redis\Connection',
-            'hostname' => 'REDIS',
+            'hostname' => '192.168.1.87',
             'port' => 6379,
-            'database' => 0,
+            'password' => 'redis_6379',
         ],
         'queue' => [
-            'class' => \zhuravljov\yii\queue\redis\Queue::class,
+            'class' => 'zhuravljov\yii\queue\redis\Queue',
             'redis' => 'redis', // connection ID
             'channel' => 'queue', // queue channel
         ],
