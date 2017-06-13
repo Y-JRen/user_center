@@ -25,6 +25,14 @@ use yii\data\Pagination;
  */
 class TradeController extends AuthController
 {
+    public function verbs()
+    {
+        return [
+            'list' => ['get'],
+            'info' => ['get'],
+        ];
+    }
+
     /**
      * 列表
      *
@@ -70,6 +78,6 @@ class TradeController extends AuthController
     public function actionInfo($order_id)
     {
         $result = Order::find()->where(['order_id' => $order_id, 'uid' => Yii::$app->user->id])->one();
-        return $result;
+        return $this->_return($result);
     }
 }

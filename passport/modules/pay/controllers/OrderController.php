@@ -31,7 +31,6 @@ class OrderController extends AuthController
             'consume' => ['POST'],
             'refund' => ['POST'],
             'cash' => ['POST'],
-            'info' => ['GET']
         ];
     }
 
@@ -135,17 +134,5 @@ class OrderController extends AuthController
         } else {
             return $this->_error(2301, $model->errors);
         }
-    }
-
-    /**
-     * 通过订单id获取订单信息
-     *
-     * @param $order_id
-     * @return array|null|\yii\db\ActiveRecord
-     */
-    public function actionInfo($order_id)
-    {
-        $data = OrderForm::find()->where(['order_id' => $order_id, 'uid' => Yii::$app->user->id])->one();
-        return $this->_return($data);
     }
 }
