@@ -23,6 +23,7 @@ use yii\db\Exception;
 class OrderForm extends Order
 {
     public $openid;// 微信jssdk使用
+    public $return_url; // 支付宝同步回调地址
 
     /**
      * @inheritdoc

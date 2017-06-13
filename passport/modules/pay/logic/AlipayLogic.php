@@ -12,17 +12,17 @@ namespace passport\modules\pay\logic;
 use common\lib\pay\alipay\PayCore;
 use common\lib\pay\alipay\PayPc;
 use common\lib\pay\alipay\PayWap;
-use common\models\Order;
 use passport\helpers\Config;
 use passport\helpers\Redis;
 use passport\logic\Logic;
+use passport\modules\pay\models\OrderForm;
 use yii\helpers\Url;
 
 class AlipayLogic extends Logic
 {
     /**
      * 支付宝支付入口
-     * @param $order Order
+     * @param $order OrderForm
      * @return string|array
      */
 
@@ -41,7 +41,7 @@ class AlipayLogic extends Logic
                 $pc->setTotalAmount($order->amount);
                 $pc->setOutTradeNo($order->order_id);
 
-                $html = $alipay->pagePay($pc, $alipay->getReturnUrl(), $alipay->getNotifyUrl());
+                $html = $alipay->pagePay($pc, $order->return_url, $alipay->getNotifyUrl());
                 break;
             case 'alipay_wap':
                 $alipay = new PayCore($config);
@@ -51,7 +51,7 @@ class AlipayLogic extends Logic
                 $wap->setTotalAmount($order->amount);
                 $wap->setOutTradeNo($order->order_id);
 
-                $html = $alipay->wapPay($wap, $alipay->getReturnUrl(), $alipay->getNotifyUrl());
+                $html = $alipay->wapPay($wap, $order->return_url, $alipay->getNotifyUrl());
                 break;
         }
 
