@@ -42,6 +42,7 @@ class OrderForm extends Order
                 return $model->order_type == self::TYPE_RECHARGE;
             }],
             ['order_subtype', 'validatorOrderSubType'],
+            [['openid', 'return_url'], 'string']
         ];
     }
 
