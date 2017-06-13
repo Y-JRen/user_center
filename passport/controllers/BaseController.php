@@ -42,6 +42,7 @@ class BaseController extends Controller
     {
         $get = Yii::$app->request->get();
         $post = Yii::$app->request->post();
+        $requestIp = Yii::$app->request->getUserIP();
         $params = array_merge($get, $post);
         if (!YII_ENV_DEV) {
             $domain = ArrayHelper::getValue($params, 'domain');
@@ -54,7 +55,7 @@ class BaseController extends Controller
                 throw new HttpException(401, '参数不正确', -998);
             }
 
-            $requestIp = Yii::$app->request->getUserIP();
+
             if (!in_array('*', $domainInfo['allowIps']) && !in_array($requestIp, $domainInfo['allowIps'])) {
                 throw new HttpException(401, '该IP不在允许范围内', -997);
             }
@@ -73,9 +74,9 @@ class BaseController extends Controller
         }
         Yii::$app->queue->push(new ApiLogJob([
             'url' => Yii::$app->request->pathInfo,
-            'param' => json_encode(['post' => $post , 'get' => $get]),
+            'param' => json_encode(['post' => $post, 'get' => $get]),
             'method' => Yii::$app->request->method,
-            'ip' => Yii::$app->request->getUserIP(),
+            'ip' => $requestIp,
             'created_at' => date('Y-m-d H:i:s')
         ]));
     }
@@ -90,16 +91,16 @@ class BaseController extends Controller
         990 => '参数不正确',
         991 => '认证失败',
         //发短信
-    	997 => '发送失败',
-    	998 => '发送次数超过限制',
-    	999 => '手机号不正确',
+        997 => '发送失败',
+        998 => '发送次数超过限制',
+        999 => '手机号不正确',
         //登录注册
-    	1001 => '参数错误',
-    	1002 => '注册失败',
-    	1003 => '帐号密码不正确',
-    	1004 => '登入失败',
-    	1005 => '验证失败',
-    	1006 => '更改密码失败',	
+        1001 => '参数错误',
+        1002 => '注册失败',
+        1003 => '帐号密码不正确',
+        1004 => '登入失败',
+        1005 => '验证失败',
+        1006 => '更改密码失败',
         //充值类错误
         2001 => '充值订单创建失败',
         2101 => ' 消费订单创建失败',

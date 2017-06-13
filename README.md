@@ -19,3 +19,12 @@
         ]
     ]
 ```
+
+3、队列
+```
+'queue' => [
+            'class' => \zhuravljov\yii\queue\redis\Queue::class,
+            'redis' => 'redis', // connection ID
+            'channel' => 'queue', // queue channel
+        ],
+```

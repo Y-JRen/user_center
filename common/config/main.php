@@ -11,6 +11,10 @@ return [
             'port' => 6379,
             'database' => 0,
         ],
-
+        'queue' => [
+            'class' => \zhuravljov\yii\queue\redis\Queue::class,
+            'redis' => 'redis', // connection ID
+            'channel' => 'queue', // queue channel
+        ],
     ],
 ];
