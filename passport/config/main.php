@@ -50,9 +50,11 @@ return [
                             'data' => ArrayHelper::getValue($response->data, 'data'),
                         ];
                     } else {
+                        $code = intval(Yii::$app->errorHandler->exception->getCode());
+                        $code = empty($code) ? $response->statusCode : $code;// 返回码为0时，使用状态码
                         $response->data = [
                             'message' => Yii::$app->errorHandler->exception->getMessage(),
-                            'err_code' => intval(Yii::$app->errorHandler->exception->getCode()),
+                            'err_code' => $code,
                             'data' => null,
                         ];
                     }
