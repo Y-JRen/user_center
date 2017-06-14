@@ -85,8 +85,8 @@ class PayCore extends Object
     /**
      * alipay.trade.wap.pay
      * @param $builder PayWap 业务参数，使用buildmodel中的对象生成。
-     * @param $return_url 同步跳转地址，公网可访问
-     * @param $notify_url 异步通知地址，公网可以访问
+     * @param $return_url string 同步跳转地址，公网可访问
+     * @param $notify_url string 异步通知地址，公网可以访问
      * @return $response 支付宝返回的信息
      */
     function wapPay($builder,$return_url,$notify_url) {

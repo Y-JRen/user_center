@@ -32,6 +32,8 @@ class AlipayLogic extends Logic
         $config = Config::getAlipayConfig();
         $subject = empty($order->desc) ? '支付宝充值' : $order->desc;
 
+        $notifyUrl = Url::to('/alipay/notify', true);
+
         switch ($order->order_subtype) {
             case 'alipay_pc':
                 $alipay = new PayCore($config);
@@ -41,7 +43,7 @@ class AlipayLogic extends Logic
                 $pc->setTotalAmount($order->amount);
                 $pc->setOutTradeNo($order->order_id);
 
-                $html = $alipay->pagePay($pc, $order->return_url, $alipay->getNotifyUrl());
+                $html = $alipay->pagePay($pc, $order->return_url, $notifyUrl);
                 break;
             case 'alipay_wap':
                 $alipay = new PayCore($config);
@@ -51,7 +53,7 @@ class AlipayLogic extends Logic
                 $wap->setTotalAmount($order->amount);
                 $wap->setOutTradeNo($order->order_id);
 
-                $html = $alipay->wapPay($wap, $order->return_url, $alipay->getNotifyUrl());
+                $html = $alipay->wapPay($wap, $order->return_url, $notifyUrl);
                 break;
         }
 

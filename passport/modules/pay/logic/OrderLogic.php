@@ -9,6 +9,7 @@
 namespace passport\modules\pay\logic;
 
 
+use common\jobs\OrderCallbackJob;
 use passport\modules\pay\models\OrderForm;
 use Yii;
 use common\logic\Logic;
@@ -45,6 +46,8 @@ class OrderLogic extends Logic
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
+                $status = 2;// 充值成功、快捷支付成功
+
                 //充值成功
                 $order->status = 2;
                 $order->save();
@@ -63,8 +66,19 @@ class OrderLogic extends Logic
                 }
                 // 快捷支付， 直接消费
                 if ($order->quick_pay) {
-                    $order->addQuickPayOrder();
+                    $result = $order->addQuickPayOrder();
+                    $status = $result ? 2 : 3;// 快捷支付，终止成功，消费失败
                 }
+
+                // 异步回调通知平台
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $order->notice_platform_param,
+                    'order_id' => $order->order_id,
+                    'platform_order_id' => $order->platform_order_id,
+                    'quick_pay' => $order->quick_pay,
+                    'status' => $status,
+                ]));
+
                 $transaction->commit();
                 return true;
             } catch (Exception $e) {
@@ -95,7 +109,7 @@ class OrderLogic extends Logic
         if ($order && $order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-//                $order->remark = json_encode(['trade_no' => ArrayHelper::getValue($params, 'trade_no')]);// 将支付宝交易号，写入备注中
+                $status = 2;// 充值成功、快捷支付成功
                 if (!$order->setOrderSuccess())// 更新订单状态
                 {
                     throw new Exception('订单更新失败');
@@ -106,8 +120,18 @@ class OrderLogic extends Logic
                 }
 
                 if ($order->quick_pay) {// 快捷支付
-                    $order->addQuickPayOrder();
+                    $result = $order->addQuickPayOrder();
+                    $status = $result ? 2 : 3;// 快捷支付，终止成功，消费失败
                 }
+
+                // 异步回调通知平台
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $order->notice_platform_param,
+                    'order_id' => $order->order_id,
+                    'platform_order_id' => $order->platform_order_id,
+                    'quick_pay' => $order->quick_pay,
+                    'status' => $status,
+                ]));
 
                 $transaction->commit();
                 return true;
