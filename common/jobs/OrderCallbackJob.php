@@ -55,21 +55,21 @@ class OrderCallbackJob extends Object implements Job
                 $redis->del($key);
 
                 // 通知对方平台成功
-                $order->status=3;
+                $order->notice_status = 3;
                 $order->save();
             } else {
                 // 3秒后继续通知
                 $errorNum = $redis->get($key);
                 $redis->incr($key);
-                if($errorNum < 3) {
+                if ($errorNum < 3) {
                     Yii::$app->queue_second->delay(3)->push($this);
-                }elseif($errorNum<6){
+                } elseif ($errorNum < 6) {
                     Yii::$app->queue_second->delay(5)->push($this);
-                }else{// 超过6次就不处理
+                } else {// 超过6次就不处理
                     $redis->del($key);
 
                     // 通知对方平台失败，并不再处理
-                    $order->status=2;
+                    $order->notice_status = 2;
                     $order->save();
                 }
             }
