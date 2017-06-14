@@ -19,7 +19,7 @@ return [
         'queue_second' => [
             'class' => 'zhuravljov\yii\queue\redis\Queue',
             'redis' => 'redis', // connection ID
-            'channel' => 'queue', // queue channel
+            'channel' => 'queue_second', // queue channel
         ],
     ],
 ];
