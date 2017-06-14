@@ -7,6 +7,12 @@ use passport\modules\sso\models\UserInfo;
 use yii;
 use passport\controllers\AuthController;
 
+/**
+ * 用户扩展信息接口
+ *
+ * Class UserVerifyController
+ * @package passport\modules\sso\controllers
+ */
 class UserVerifyController extends AuthController
 {
     public function verbs()

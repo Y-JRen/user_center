@@ -162,16 +162,7 @@ class UserForm extends Model
 	    }
 	    return ['status'=>true,'user_id' => $user->id];
 	}
-	/**
-	 * 获取用户信息
-	 */
-	public function getUserInfo()
-	{
-		$data = Token::getToken($this->token);
-		$uid = $data['uid'];
-		$res = User::find()->where(['id'=>$uid])->one();
-		return $res;
-	}
+
 	/**
 	 * 更改密码
 	 */

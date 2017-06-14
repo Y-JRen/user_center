@@ -61,9 +61,6 @@ class User extends \common\models\User
             },
             'status' => function ($model){
             	return $model->status;
-            },
-            'is_auth'=>function($model){
-            	return ArrayHelper::getValue($model->info, 'uid', 0) ? 1 : 0;
             }
         ];
     }

@@ -8,28 +8,11 @@ use passport\modules\sso\models\UserForm;
 
 class UserController extends BaseController
 {
-    public function actionIndex()
-    {
-        ;
-    }
-
     /**
      * 注册
      */
     public function actionReg()
     {
-        /*
-        $arr=[
-            'user_name' => '13761590659',
-            'passwd' => md5('123456'),
-            'repasswd' => md5('123456'),
-            'verify_code' => 'xxx',
-            'channel' => 'crm',
-            'is_agreement'=>'1',
-        ];
-        $data['UserForm'] = $arr;
-        */
-
         $data['UserForm'] = yii::$app->request->post();
         $model = new UserForm();
         $model->setScenario($model::SCENARIO_REG);
@@ -82,24 +65,6 @@ class UserController extends BaseController
             return $this->_error(1005, current($model->getErrors())[0]);
         }
         $this->_return('已登录');
-    }
-
-    /**
-     * 获取用户信息
-     */
-    public function actionGetInfo()
-    {
-        $post = yii::$app->request->post();
-
-        $data['UserForm'] = $post;
-        $model = new UserForm();
-        $model->setScenario($model::SCENARIO_LOGGED);
-        $model->load($data);
-        if (!$model->validate()) {
-            return $this->_error(1005, current($model->getErrors())[0]);
-        }
-        $info = $model->getUserInfo();
-        return $this->_return($info);
     }
 
     /**
