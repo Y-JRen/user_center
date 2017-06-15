@@ -3,6 +3,7 @@
 namespace passport\controllers;
 
 use common\lib\pay\alipay\PayCore;
+use common\logic\ApiLogsLogic;
 use passport\helpers\Config;
 use passport\helpers\Redis;
 use passport\modules\pay\logic\OrderLogic;
@@ -33,15 +34,18 @@ class AlipayController extends \yii\web\Controller
      */
     public function actionNotify()
     {
+        $post = Yii::$app->request->post();
+        ApiLogsLogic::instance()->addLogs('alipay', json_encode($post));
+
         $alipay = new PayCore(Config::getAlipayConfig());
-        $result = $alipay->check(Yii::$app->request->post());
+        $result = $alipay->check($post);
 
         // 校验返回的参数是合法的
         if ($result) {
             $trade_status = Yii::$app->request->post('trade_status');//交易状态
 
             if (in_array($trade_status, ['TRADE_FINISHED', 'TRADE_SUCCESS'])) {// 交易结束，不可退款
-                $result = OrderLogic::instance()->alipayNotify(Yii::$app->request->post());
+                $result = OrderLogic::instance()->alipayNotify($post);
                 if ($result) {
                     echo "success";
                     Yii::$app->end();
