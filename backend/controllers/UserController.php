@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\User;
 use backend\models\search\UserSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -12,7 +13,7 @@ use yii\filters\VerbFilter;
 /**
  * UserController implements the CRUD actions for User model.
  */
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * @inheritdoc
@@ -20,6 +21,15 @@ class UserController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ]
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

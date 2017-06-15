@@ -7,6 +7,7 @@ use Yii;
 use common\models\Order;
 use backend\models\search\OrderSearch;
 use yii\base\ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -14,8 +15,27 @@ use yii\filters\VerbFilter;
 /**
  * OrderController implements the CRUD actions for Order model.
  */
-class OrderController extends Controller
+class OrderController extends BaseController
 {
+    
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ]
+            ],
+        ];
+    }
+    
     /**
      * Lists all Order models.
      * @return mixed

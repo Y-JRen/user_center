@@ -16,6 +16,12 @@ use yii\helpers\Html;
         </a>
 
         <div class="navbar-custom-menu">
+            <?= Html::a(
+                '<i class="fa fa-fw fa-power-off"></i> <span class="font-sm">退出</span>',
+                ['/site/logout'],
+                ['data-method' => 'post', 'class' => 'btn btn-default btn-flat']
+            )
+            ?>
         </div>
     </nav>
 </header>
