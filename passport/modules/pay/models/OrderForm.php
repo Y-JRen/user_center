@@ -72,6 +72,7 @@ class OrderForm extends Order
     {
         // 新增订单时，设置平台、订单号、初始状态
         if ($this->isNewRecord) {
+            $this->quick_pay = (empty($this->quick_pay) ? 0 : $this->quick_pay);
             // 生成快捷消费订单时不需要设置一下两个信息
             if (!($this->quick_pay && $this->order_type == self::TYPE_CONSUME)) {
                 $this->uid = Yii::$app->user->id;
