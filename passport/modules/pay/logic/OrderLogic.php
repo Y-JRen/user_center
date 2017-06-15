@@ -109,7 +109,6 @@ class OrderLogic extends Logic
         if ($order && $order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                $status = 1;// 充值成功、快捷支付成功
                 if (!$order->setOrderSuccess())// 更新订单状态
                 {
                     throw new Exception('订单更新失败');
@@ -120,18 +119,18 @@ class OrderLogic extends Logic
                 }
 
                 if ($order->quick_pay) {// 快捷支付
-                    $result = $order->addQuickPayOrder();
-                    $status = $result ? 1 : 3;// 快捷支付，终止成功，消费失败
+                    $order->addQuickPayOrder();
+                } else {
+                    // 异步回调通知平台 快捷支付的时候不需要异步回调
+                    Yii::$app->queue_second->push(new OrderCallbackJob([
+                        'notice_platform_param' => $order->notice_platform_param,
+                        'order_id' => $order->order_id,
+                        'platform_order_id' => $order->platform_order_id,
+                        'quick_pay' => $order->quick_pay,
+                        'status' => 1,
+                    ]));
                 }
 
-                // 异步回调通知平台
-                Yii::$app->queue_second->push(new OrderCallbackJob([
-                    'notice_platform_param' => $order->notice_platform_param,
-                    'order_id' => $order->order_id,
-                    'platform_order_id' => $order->platform_order_id,
-                    'quick_pay' => $order->quick_pay,
-                    'status' => $status,
-                ]));
 
                 $transaction->commit();
                 return true;

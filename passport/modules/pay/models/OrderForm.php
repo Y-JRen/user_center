@@ -88,7 +88,7 @@ class OrderForm extends Order
      */
     public function consumeSave()
     {
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             if (!$this->userBalance->less($this->amount)) {
                 throw new Exception('余额扣除失败');
@@ -116,7 +116,7 @@ class OrderForm extends Order
                 'order_id' => $this->order_id,
                 'platform_order_id' => $this->platform_order_id,
                 'quick_pay' => $this->quick_pay,
-                'status' => 2,
+                'status' => $this->quick_pay ? 3 : 2,
             ]));
 
             $transaction->rollBack();
@@ -133,7 +133,7 @@ class OrderForm extends Order
 
         // @todo 检测该订单是否已经退过款
 
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             if (!$this->userBalance->plus($this->amount)) {
                 throw new Exception('余额增加失败');
@@ -159,7 +159,7 @@ class OrderForm extends Order
         //将银行卡信息保存起来，正确错误与否不重要
         AccountLogic::instance()->addAccount(json_decode($this->remark, true));
 
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             if (!$this->userBalance->less($this->amount)) {
                 throw new Exception('余额扣除失败');
@@ -197,6 +197,7 @@ class OrderForm extends Order
         $model->notice_platform_param = $this->notice_platform_param;
         $model->remark = $this->remark;
         $model->platform = $this->platform;
+        $model->quick_pay = $this->quick_pay;
 
         if ($model->save()) {
             $model->consumeSave();
