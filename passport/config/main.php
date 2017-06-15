@@ -28,7 +28,10 @@ return [
         ],
         'pay' => [
             'class' => 'passport\modules\pay\Module'
-        ]
+        ],
+        'inside' => [
+            'class' => 'passport\modules\inside\Module',
+        ],
     ],
     'components' => [
         'formatter' => [
