@@ -8,6 +8,7 @@
 
 namespace passport\modules\pay\models;
 
+use common\jobs\OrderCallbackJob;
 use passport\logic\AccountLogic;
 use Yii;
 use common\models\Order;
@@ -93,13 +94,31 @@ class OrderForm extends Order
                 throw new Exception('余额扣除失败');
             }
 
-            if ($this->setOrderSuccess()) {
-                $transaction->commit();
-                return true;
-            } else {
+            if (!$this->setOrderSuccess()) {
                 throw new Exception('更新消费订单状态失败');
             }
+
+            // 异步回调通知平台
+            Yii::$app->queue_second->push(new OrderCallbackJob([
+                'notice_platform_param' => $this->notice_platform_param,
+                'order_id' => $this->order_id,
+                'platform_order_id' => $this->platform_order_id,
+                'quick_pay' => $this->quick_pay,
+                'status' => 1,
+            ]));
+
+            $transaction->commit();
+            return true;
         } catch (Exception $e) {
+            // 异步回调通知平台
+            Yii::$app->queue_second->push(new OrderCallbackJob([
+                'notice_platform_param' => $this->notice_platform_param,
+                'order_id' => $this->order_id,
+                'platform_order_id' => $this->platform_order_id,
+                'quick_pay' => $this->quick_pay,
+                'status' => 2,
+            ]));
+
             $transaction->rollBack();
             throw $e;
         }
