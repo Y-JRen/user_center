@@ -121,7 +121,7 @@ class OrderLogic extends Logic
 
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
-                    $status = ($res ? 3 : 1);
+                    $status = ($res ? 1 : 3);
                 }
 
                 // 异步回调通知平台

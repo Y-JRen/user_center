@@ -102,7 +102,7 @@ class OrderForm extends Order
             }
 
             // 异步回调通知平台, 快捷消费订单不在此处回调
-            if($this->quick_pay) {
+            if(!$this->quick_pay) {
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $this->notice_platform_param,
                     'order_id' => $this->order_id,
@@ -116,7 +116,7 @@ class OrderForm extends Order
             return true;
         } catch (Exception $e) {
             // 异步回调通知平台, 快捷消费订单不在此处回调
-            if($this->quick_pay) {
+            if(!$this->quick_pay) {
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $this->notice_platform_param,
                     'order_id' => $this->order_id,
