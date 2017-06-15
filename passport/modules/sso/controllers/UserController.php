@@ -30,23 +30,31 @@ class UserController extends BaseController
     }
 
     /**
-     * 登入
+     * 账号密码登入
      */
     public function actionLogin()
     {
-        $data['UserForm'] = yii::$app->request->post();
+        /* @var $model UserForm */
         $model = new UserForm();
-        $model->setScenario($model::SCENARIO_LOGIN);
-        $model->load($data);
+        $model->scenario = UserForm::SCENARIO_LOGIN;
+        $model->load(Yii::$app->request->post(), '');
+
         if (!$model->validate()) {
-            return $this->_error(1001, current($model->getFirstErrors()));
+            $model->setLoginError();
+            $data = ['info' => current($model->getFirstErrors()), 'imgCode' => $model->getLoginError() > 3];
+            return $this->_error(1001, $data);
         }
+
         //判断帐号密码
         $res = $model->checkLogin();
         if (!$res['status']) {
-            return $this->_error(1003, $res['msg']);
+            $model->setLoginError();
+            $data = ['info' => $res['msg'], 'imgCode' => $model->getLoginError() > 3];
+            return $this->_error(1003, $data);
         }
+
         $token = $model->login($res['user_id']);
+        $model->delLoginError();
         return $this->_return(['token' => $token, 'uid' => $res['user_id']]);
     }
 
