@@ -46,7 +46,7 @@ class OrderLogic extends Logic
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
-                $status = 2;// 充值成功、快捷支付成功
+                $status = 1;// 充值成功、快捷支付成功
 
                 //充值成功
                 $order->status = 2;
@@ -67,7 +67,7 @@ class OrderLogic extends Logic
                 // 快捷支付， 直接消费
                 if ($order->quick_pay) {
                     $result = $order->addQuickPayOrder();
-                    $status = $result ? 2 : 3;// 快捷支付，终止成功，消费失败
+                    $status = $result ? 1 : 3;// 快捷支付，终止成功，消费失败
                 }
 
                 // 异步回调通知平台
