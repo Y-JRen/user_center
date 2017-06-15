@@ -72,7 +72,8 @@ class OrderForm extends Order
     {
         // 新增订单时，设置平台、订单号、初始状态
         if ($this->isNewRecord) {
-            if (empty($this->quick_pay)) {// 生成快捷订单时不需要设置一下两个信息
+            // 生成快捷消费订单时不需要设置一下两个信息
+            if (!($this->quick_pay && $this->order_type == self::TYPE_CONSUME)) {
                 $this->uid = Yii::$app->user->id;
                 $this->platform = Config::getPlatform();
             }
@@ -100,26 +101,30 @@ class OrderForm extends Order
                 throw new Exception('更新消费订单状态失败');
             }
 
-            // 异步回调通知平台
-            Yii::$app->queue_second->push(new OrderCallbackJob([
-                'notice_platform_param' => $this->notice_platform_param,
-                'order_id' => $this->order_id,
-                'platform_order_id' => $this->platform_order_id,
-                'quick_pay' => $this->quick_pay,
-                'status' => 1,
-            ]));
+            // 异步回调通知平台, 快捷消费订单不在此处回调
+            if($this->quick_pay) {
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $this->notice_platform_param,
+                    'order_id' => $this->order_id,
+                    'platform_order_id' => $this->platform_order_id,
+                    'quick_pay' => $this->quick_pay,
+                    'status' => 1,
+                ]));
+            }
 
             $transaction->commit();
             return true;
         } catch (Exception $e) {
-            // 异步回调通知平台
-            Yii::$app->queue_second->push(new OrderCallbackJob([
-                'notice_platform_param' => $this->notice_platform_param,
-                'order_id' => $this->order_id,
-                'platform_order_id' => $this->platform_order_id,
-                'quick_pay' => $this->quick_pay,
-                'status' => $this->quick_pay ? 3 : 2,
-            ]));
+            // 异步回调通知平台, 快捷消费订单不在此处回调
+            if($this->quick_pay) {
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $this->notice_platform_param,
+                    'order_id' => $this->order_id,
+                    'platform_order_id' => $this->platform_order_id,
+                    'quick_pay' => $this->quick_pay,
+                    'status' => 2,
+                ]));
+            }
 
             $transaction->rollBack();
             throw $e;
@@ -208,8 +213,4 @@ class OrderForm extends Order
             return false;
         }
     }
-
-    /**
-     * @todo 订单状态改变的时候，通知平台方
-     */
 }
