@@ -23,9 +23,15 @@ use yii\helpers\ArrayHelper;
  */
 class ThirdLogic extends Logic
 {
-    public $baseUrl = 'http://test.qx-api.checheng.net/api/';
+    public $baseUrl;
     
-    public $_token = 'b0b58ff0f00b4a4457dcbb5c2e6f3d84';
+    public $_token;
+    
+    public function init()
+    {
+        $this->baseUrl = \Yii::$app->params['power']['apiUrl'];
+        $this->_token = \Yii::$app->params['power']['token'];
+    }
     
     /**
      * 获取用户
