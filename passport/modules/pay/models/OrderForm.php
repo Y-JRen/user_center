@@ -33,7 +33,7 @@ class OrderForm extends Order
     {
         return [
             [['uid', 'order_type', 'amount'], 'required'],
-            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at'], 'integer'],
+            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
