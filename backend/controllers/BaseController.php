@@ -25,7 +25,7 @@ class BaseController extends Controller
      */
     public function beforeAction($action)
     {
-        if(Yii::$app->session->get('ROLE_ID')) {
+        if(!Yii::$app->session->get('ROLE_ID')) {
             header("location:".Url::to(['site/login'], true));
             die;
         }

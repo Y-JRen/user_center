@@ -54,7 +54,8 @@ class MenuLogic extends Logic
             }
             $items[$k] = [
                 'label' => $menu['name'],
-                'url' => $menu['url'],
+                'url' => [$menu['url']],
+                //'active' => true,
             ];
             if($menu['children']) {
                 $child = $this->getMenuList($menu['children']);

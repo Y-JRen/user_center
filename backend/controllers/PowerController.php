@@ -55,4 +55,33 @@ class PowerController extends Controller
             return [];
         }
     }
+    
+    /**
+     * @return array
+     */
+    public function actionNotify()
+    {
+        $strType = \Yii::$app->request->get('api');//测试可以手动拉取
+        if(empty($strType))
+        {
+            $strType = \Yii::$app->request->post('api');//请求接口的时候告知变动类型是什么
+        }
+        
+        $power = ThirdLogic::instance();
+        switch($strType)
+        {
+            case 'projects/users':
+                $power->getAdminUser();
+                break;
+            case 'projects/roles'://项目角色
+                $power->getRoles();
+                break;
+            case 'projects/permission-tree'://项目菜单权限树形结构
+                $power->getPermissionTree();//项目菜单
+                break;
+            //菜单信息变动
+        }
+        
+        return ['message' => '更新成功'];
+    }
 }
