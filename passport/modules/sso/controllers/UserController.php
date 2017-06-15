@@ -41,7 +41,7 @@ class UserController extends BaseController
 
         if (!$model->validate()) {
             $model->setLoginError();
-            $data = ['info' => current($model->getFirstErrors()), 'imgCode' => $model->getLoginError() > 3];
+            $data = ['info' => current($model->getFirstErrors()), 'img_code' => $model->getLoginError() > 3];
             return $this->_error(1001, $data);
         }
 
@@ -49,7 +49,7 @@ class UserController extends BaseController
         $res = $model->checkLogin();
         if (!$res['status']) {
             $model->setLoginError();
-            $data = ['info' => $res['msg'], 'imgCode' => $model->getLoginError() > 3];
+            $data = ['info' => $res['msg'], 'img_code' => $model->getLoginError() > 3];
             return $this->_error(1003, $data);
         }
 
