@@ -30,6 +30,7 @@ class Token
     /**
      * 创建token
      * @param int $user_id
+     * @return string
      */
     public static function createToken($user_id)
     {
