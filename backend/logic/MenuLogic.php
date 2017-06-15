@@ -12,7 +12,6 @@ namespace backend\logic;
 use common\fixtures\User;
 use common\logic\Logic;
 use common\models\AdminRole;
-use passport\modules\sso\logic\ThirdLogic;
 use yii\helpers\ArrayHelper;
 
 class MenuLogic extends Logic

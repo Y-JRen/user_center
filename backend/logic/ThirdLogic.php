@@ -6,7 +6,7 @@
  * Time: 10:31
  */
 
-namespace passport\modules\sso\logic;
+namespace backend\logic;
 
 
 use common\logic\HttpLogic;

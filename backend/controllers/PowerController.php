@@ -6,10 +6,10 @@
  * Time: 10:24
  */
 
-namespace passport\modules\sso\controllers;
+namespace backend\controllers;
 
 
-use passport\modules\sso\logic\ThirdLogic;
+use backend\logic\ThirdLogic;
 use yii\rest\Controller;
 
 /**
