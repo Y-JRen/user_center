@@ -49,21 +49,14 @@ class OrderLogic extends Logic
                 $status = 1;// 充值成功、快捷支付成功
 
                 //充值成功
-                $order->status = 2;
-                $order->save();
-                if (!$order) {
+                if (!$order->setOrderSuccess()) {
                     throw new Exception('订单更新失败');
                 }
-                $userBalance = UserBalance::findOne($order->uid);
-                if (!$userBalance) {
-                    $userBalance = new UserBalance();
-                    $userBalance->uid = $order->uid;
+
+                if (!$order->userBalance->plus($order->amount)) {
+                    throw new Exception('余额更新失败');
                 }
-                $userBalance->amount += $cashFee / 100;
-                $userBalance->updated_at = time();
-                if (!$userBalance->save()) {
-                    throw new Exception('余额更新失败', $userBalance->errors);
-                }
+
                 // 快捷支付， 直接消费
                 if ($order->quick_pay) {
                     $result = $order->addQuickPayOrder();

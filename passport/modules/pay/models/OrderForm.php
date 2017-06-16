@@ -86,50 +86,13 @@ class OrderForm extends Order
 
     /**
      *  消费订单
-     *
-     * @return bool
-     * @throws Exception
+     *  1、消费时需要冻结金额
+     *  2、冻结完之后再解冻
      */
     public function consumeSave()
     {
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            if (!$this->userBalance->less($this->amount)) {
-                throw new Exception('余额扣除失败');
-            }
-
-            if (!$this->setOrderSuccess()) {
-                throw new Exception('更新消费订单状态失败');
-            }
-
-            // 异步回调通知平台, 快捷消费订单不在此处回调
-            if(!$this->quick_pay) {
-                Yii::$app->queue_second->push(new OrderCallbackJob([
-                    'notice_platform_param' => $this->notice_platform_param,
-                    'order_id' => $this->order_id,
-                    'platform_order_id' => $this->platform_order_id,
-                    'quick_pay' => $this->quick_pay,
-                    'status' => 1,
-                ]));
-            }
-
-            $transaction->commit();
-            return true;
-        } catch (Exception $e) {
-            // 异步回调通知平台, 快捷消费订单不在此处回调
-            if(!$this->quick_pay) {
-                Yii::$app->queue_second->push(new OrderCallbackJob([
-                    'notice_platform_param' => $this->notice_platform_param,
-                    'order_id' => $this->order_id,
-                    'platform_order_id' => $this->platform_order_id,
-                    'quick_pay' => $this->quick_pay,
-                    'status' => 2,
-                ]));
-            }
-
-            $transaction->rollBack();
-            throw $e;
-        }
+        $this->consumeFreeze();
+        return $this->consumeUnfreeze();
     }
 
     /**
@@ -137,24 +100,30 @@ class OrderForm extends Order
      */
     public function refundSave()
     {
-        // @todo erm系统检测是否有效
-
-        // @todo 检测该订单是否已经退过款
-
         $transaction = Yii::$app->db->beginTransaction();
         try {
+
+            if (!$this->checkRefundStatus()) {
+                throw new Exception('该笔订单，不允许退款');
+            }
+
+            if (!$this->refundCheck()) {
+                throw new Exception('该笔订单，已有退款记录');
+            }
+
             if (!$this->userBalance->plus($this->amount)) {
                 throw new Exception('余额增加失败');
             }
 
-            if ($this->setOrderSuccess()) {
-                $transaction->commit();
-                return true;
-            } else {
+            if (!$this->setOrderSuccess()) {
                 throw new Exception('更新消费订单状态失败');
             }
+
+            $transaction->commit();
+            return true;
         } catch (Exception $e) {
             $transaction->rollBack();
+            $this->setOrderFail();
             throw $e;
         }
     }
@@ -175,6 +144,10 @@ class OrderForm extends Order
 
             if (!$this->userFreeze->plus($this->amount)) {
                 throw new Exception('冻结失败');
+            }
+
+            if (!$this->setOrderProcessing()) {
+                throw new Exception('更新订单状态失败');
             }
 
             $transaction->commit();
@@ -212,6 +185,101 @@ class OrderForm extends Order
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * 检测erp是否允许退款
+     *
+     * @todo erm系统检测是否有效
+     * @return bool
+     */
+    public function checkRefundStatus()
+    {
+        return true;
+    }
+
+    /**
+     * 查看该电商订单号是否有过退款操作
+     * @return bool
+     */
+    public function refundCheck()
+    {
+        return Order::find()->where([
+                'platform_order_id' => $this->platform_order_id,
+                'status' => self::STATUS_SUCCESSFUL,
+            ]
+        )->exists();
+    }
+
+    /**
+     * 消费冻结
+     */
+    protected function consumeFreeze()
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (!$this->userBalance->less($this->amount)) {
+                throw new Exception('余额扣除失败');
+            }
+
+            if (!$this->userFreeze->plus($this->amount)) {
+                throw new Exception('资金冻结失败');
+            }
+
+            if (!$this->setOrderProcessing()) {
+                throw new Exception('更新消费订单状态失败');
+            }
+            $transaction->commit();
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * 消费解冻
+     */
+    protected function consumeUnfreeze()
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (!$this->userBalance->less($this->amount)) {
+                throw new Exception('资金解冻失败');
+            }
+
+            if (!$this->setOrderSuccess()) {
+                throw new Exception('更新消费订单状态失败');
+            }
+
+            $transaction->commit();
+
+            // 异步回调通知平台, 快捷消费订单不在此处回调
+            if (!$this->quick_pay) {
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $this->notice_platform_param,
+                    'order_id' => $this->order_id,
+                    'platform_order_id' => $this->platform_order_id,
+                    'quick_pay' => $this->quick_pay,
+                    'status' => 1,
+                ]));
+            }
+            return true;
+        } catch (Exception $e) {
+            $transaction->rollBack();
+
+            // 异步回调通知平台, 快捷消费订单不在此处回调
+            if (!$this->quick_pay) {
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $this->notice_platform_param,
+                    'order_id' => $this->order_id,
+                    'platform_order_id' => $this->platform_order_id,
+                    'quick_pay' => $this->quick_pay,
+                    'status' => 2,
+                ]));
+            }
+            throw $e;
         }
     }
 }
