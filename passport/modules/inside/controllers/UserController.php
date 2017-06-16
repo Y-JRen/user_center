@@ -43,7 +43,7 @@ class UserController extends BaseController
             $model->reg_ip = Yii::$app->request->getUserIp();
             $model->login_time = 0;
             $model->status = 1;
-            if ($model->validate()) {
+            if ($model->save()) {
                 return $this->_return(['uid' => $model->id]);
             } else {
                 return $this->_error(1002, current($model->getFirstErrors()));
