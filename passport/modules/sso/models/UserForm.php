@@ -28,7 +28,7 @@ class UserForm extends Model
     const SCENARIO_LOGGED = 'logged';
     /**更改密码场景*/
     const SCENARIO_REPASSWD = 'repasswd';
-    
+
     const QUICK_LOGIN = 'quick_login';
 
     public $token;
@@ -41,7 +41,7 @@ class UserForm extends Model
     public $img_code;
     public $img_unique;
     public $uuid;
-    
+
 
     public function rules()
     {
@@ -61,7 +61,8 @@ class UserForm extends Model
             ['verify_code', 'validateCode'],
             ['is_agreement', 'compare', 'compareValue' => 1, 'operator' => '==', 'message' => '必需同意协议'],
             ['token', 'validateToken'],
-            [['user_name', 'verify_code', 'channel'], 'required', 'on' => [self::QUICK_LOGIN]]
+            [['user_name', 'verify_code'], 'required', 'on' => [self::QUICK_LOGIN]],
+            ['channel', 'string', 'on' => [self::QUICK_LOGIN]]
         ];
     }
 
@@ -93,7 +94,7 @@ class UserForm extends Model
 
     /**
      * 验证token
-     *  @param $attribute
+     * @param $attribute
      */
     public function validateToken($attribute)
     {
@@ -300,7 +301,7 @@ class UserForm extends Model
             'verify_code' => '短信验证码',
         ];
     }
-    
+
     /**
      * 快捷登陆
      *
@@ -309,7 +310,7 @@ class UserForm extends Model
     public function quickLogin()
     {
         //有用户直接登陆，没有注册登陆
-        if($user = User::findOne(['phone' => $this->user_name])) {
+        if ($user = User::findOne(['phone' => $this->user_name])) {
             $token = $this->login($user->id);
             return [
                 'token' => $token,
