@@ -3,7 +3,7 @@ return [
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [
-            'class' => 'yii\redis\cache',
+            'class' => 'yii\redis\Cache',
         ],
         'redis' => [
             'class' => 'yii\redis\Connection',
