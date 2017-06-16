@@ -29,12 +29,15 @@ class SmsLogic extends Logic
     
     protected $sms_tpl = [
         '1' => '【车城用户中心】您好，您的验证码是%s。退订回T',//注册短信
+        '2' => '【车城用户中心】您好，您的验证码是%s。退订回T',//注册短信
     ];
     /**
      * 发送短信
      * @param int $tpl_index 短信模版id
      * @param string $phone 手机号
      * @param string $code 验证码
+     *
+     * @return boolean
      */
     public function send($tpl_index,$phone,$code = null)
     {
@@ -50,6 +53,8 @@ class SmsLogic extends Logic
      * @param int $tpl_index 短信模版id
      * @param string $code 验证码
      * @param string $phone 手机号
+     *
+     * @return boolean
      */
     public function checkCode($tpl_index,$code,$phone)
     {
