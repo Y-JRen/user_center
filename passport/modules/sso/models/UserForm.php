@@ -219,7 +219,7 @@ class UserForm extends Model
      */
     protected function getFrom()
     {
-        return $this->channel;
+        return empty($this->channel) ? '' : $this->channel;
     }
 
     /**
