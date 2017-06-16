@@ -325,15 +325,13 @@ class UserForm extends Model
             $model->reg_time = time();
             $model->reg_ip = $this->getIp();
             $model->login_time = 0;
-            if (!$model->save(false)) {
-                return ['status' => false, 'msg' => current($model->getErrors())[0]];
-            } else {
+            if ($model->save(false)) {
                 $token = $this->login($model->id);
+                return ['token' => $token, 'uid' => $model->id];
+            } else {
+                return ['status' => false, 'msg' => current($model->getFirstErrors())];
             }
         }
-        return [
-            'token' => $token,
-            'uid' => $user->id
-        ];
+
     }
 }
