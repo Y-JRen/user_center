@@ -54,7 +54,7 @@ class OrderController extends BaseController
                 }
 
                 $transaction->commit();
-                return $this->_return('贷款入账成功');
+                return $this->_return(['order_id' => $consumeModel->order_id], 0, '贷款入账成功');
             } catch (Exception $e) {
                 $transaction->rollBack();
                 $model->setOrderFail();// 将订单设置为失败
@@ -64,4 +64,48 @@ class OrderController extends BaseController
             return $this->_error(2401);
         }
     }
+
+    /**
+     * 贷款解冻
+     * @return array
+     * @throws Exception
+     */
+    public function actionUnfreeze()
+    {
+        $order_id = Yii::$app->request->post('order_id');
+        $uid = Yii::$app->request->post('uid');
+        $amount = Yii::$app->request->post('amount');
+
+        /* @var $order Order */
+        $order = Order::find()->where(['order_id' => $order_id])->one();
+        if (!$order) {
+            return $this->_error(2005, '订单不存在');
+        }
+
+        if ($order->status != Order::STATUS_PROCESSING) {
+            return $this->_error(2005, '订单状态异常');
+        }
+
+        if ($order->uid != $uid || $order->amount != $amount) {
+            return $this->_error(2005, '订单用户、订单金额不匹配');
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            if (!$order->userFreeze->less($amount)) {
+                throw new Exception('用户冻结余额解冻失败');
+            }
+
+            if (!$order->setOrderSuccess()) {
+                throw new Exception('更新订单状态失败');
+            }
+
+            $transaction->commit();
+            return $this->_return('冻结金额解冻成功');
+        } catch (Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
+
 }

@@ -84,7 +84,6 @@ class OrderLogic extends Logic
             } catch (Exception $e) {
                 $transaction->rollBack();
                 throw $e;
-
             }
         }
         return false;
