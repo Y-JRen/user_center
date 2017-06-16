@@ -245,7 +245,7 @@ class OrderForm extends Order
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$this->userBalance->less($this->amount)) {
+            if (!$this->userFreeze->less($this->amount)) {
                 throw new Exception('资金解冻失败');
             }
 
