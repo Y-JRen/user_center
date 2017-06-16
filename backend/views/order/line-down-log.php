@@ -14,18 +14,19 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-index">
 
-    <?php Pjax::begin(['enablePushState' => false]); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => isset($searchModel) ? $searchModel : null,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
+    
             [
                 'attribute' => 'uid',
                 'label' => '用户',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    return \common\models\User::findOne($model->uid)->phone;
+                    $phone = \common\models\User::findOne($model->uid)->phone;
+                    return Html::a($phone, ['/order/user-detail', 'uid' => $model->uid]);
                 }
             ],
             'platform_order_id',
@@ -55,22 +56,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'updated_at:datetime',
             'platform',
             [
-                'class' => 'yii\grid\ActionColumn', 'template' => '{view}',
-                'buttons' =>
-                    [
-                        'view' => function ($url, $model, $key) {
-                            $actionUrl = 'view';
-                            if ($model->isEdit) {
-                                if ($model->order_type == Order::TYPE_RECHARGE && $model->order_subtype == 'line_down') {
-                                    $actionUrl = 'view-line-down';
-                                } elseif ($model->order_type == Order::TYPE_CASH) {
-                                    $actionUrl = 'view-cash';
-                                }
-                            }
-                            return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', [$actionUrl, 'id' => $model->id]);
-                        },
-                    ],
+                'label' => '操作',
+                'format' => 'raw',
+                'value' => function($data) {
+                    return Html::a('查看', ['/order/view-line-down', 'id' => $data->id]);
+                }
             ],
         ],
     ]); ?>
-    <?php Pjax::end(); ?></div>
+</div>

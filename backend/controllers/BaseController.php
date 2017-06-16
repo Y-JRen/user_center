@@ -8,13 +8,22 @@
 
 namespace backend\controllers;
 
+
 use Yii;
 use common\models\AdminRole;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\HttpException;
+use backend\logic\ThirdLogic;
 
+
+/**
+ * 基础控制器
+ *
+ * Class BaseController
+ * @package backend\controllers
+ */
 class BaseController extends Controller
 {
     /**
@@ -32,15 +41,17 @@ class BaseController extends Controller
         $adminRole = AdminRole::findOne(Yii::$app->session->get('ROLE_ID'));
         $permissions = json_decode($adminRole->permissions, true);
         $urlArr = ArrayHelper::getColumn($permissions, 'url');
+        $allMenu = ArrayHelper::getColumn(ThirdLogic::instance()->getPermission(),'url');
+        
         $url = '/'.$action->controller->id.'/'.$action->id;
         if($action->id == 'index') {
             $url_one = '/'.$action->controller->id;
             
-            if(!in_array($url, $urlArr) && !in_array($url_one, $urlArr)) {
+            if(!in_array($url, $urlArr) && !in_array($url_one, $urlArr) && in_array($url, $allMenu)) {
                 throw new HttpException(403);
             }
         } else {
-            if(!in_array($url, $urlArr)) {
+            if(!in_array($url, $urlArr) && in_array($url, $allMenu)) {
                 throw new HttpException(403);
             }
         }

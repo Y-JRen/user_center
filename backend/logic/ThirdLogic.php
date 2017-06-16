@@ -99,6 +99,12 @@ class ThirdLogic extends Logic
         return [];
     }
     
+    /**
+     * 获取 角色权限
+     *
+     * @return array|bool
+     * @throws Exception
+     */
     public function getRoles()
     {
         $url = 'projects/roles';
@@ -132,6 +138,26 @@ class ThirdLogic extends Logic
                     throw $e;
                 }
             }
+        }
+        return [];
+    }
+    
+    /**
+     * 获取菜单树形结构
+     *
+     * @return mixed
+     */
+    public function getPermission()
+    {
+        $url = 'projects/permissions';
+        $arrPost = [
+            '_token' => $this->_token,
+            'per_page' => 100000,
+        ];
+        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl.$url, 'POST', $arrPost), true);
+        if( $returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
+            &&!empty($returnData['data'])) {
+            return $returnData['data']['data'];
         }
         return [];
     }

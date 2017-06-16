@@ -133,4 +133,22 @@ class User extends BaseModel implements IdentityInterface
     {
         return true;
     }
+    
+    /**
+     * 获取用户余额
+     * @return \yii\db\ActiveQuery | UserBalance
+     */
+    public function getBalance()
+    {
+        return $this->hasOne(UserBalance::className(), ['uid' => 'id']);
+    }
+    
+    /**
+     * 获取用户冻结余额
+     * @return \yii\db\ActiveQuery | UserFreeze
+     */
+    public function getFreeze()
+    {
+        return $this->hasOne(UserFreeze::className(), ['uid' => 'id']);
+    }
 }

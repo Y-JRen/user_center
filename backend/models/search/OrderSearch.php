@@ -18,8 +18,8 @@ class OrderSearch extends Order
     public function rules()
     {
         return [
-            [['id', 'uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform'], 'integer'],
-            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'notice_platform_param', 'remark'], 'safe'],
+            [['id', 'uid', 'order_type', 'notice_status', 'created_at', 'updated_at', 'platform'], 'integer'],
+            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'notice_platform_param', 'remark', 'status'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -64,20 +64,23 @@ class OrderSearch extends Order
             'uid' => $this->uid,
             'order_type' => $this->order_type,
             'amount' => $this->amount,
-            'status' => $this->status,
             'notice_status' => $this->notice_status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'platform' => $this->platform,
+            'order_subtype' => $this->order_subtype
         ]);
-
+        if (is_array($this->status)) {
+            $query->andWhere(['in', 'status', $this->status]);
+        } else {
+            $query->andWhere(['status' => $this->status]);
+        }
         $query->andFilterWhere(['like', 'platform_order_id', $this->platform_order_id])
             ->andFilterWhere(['like', 'order_id', $this->order_id])
-            ->andFilterWhere(['like', 'order_subtype', $this->order_subtype])
+            //->andFilterWhere(['like', 'order_subtype', $this->order_subtype])
             ->andFilterWhere(['like', 'desc', $this->desc])
             ->andFilterWhere(['like', 'notice_platform_param', $this->notice_platform_param])
             ->andFilterWhere(['like', 'remark', $this->remark]);
-
         return $dataProvider;
     }
 }
