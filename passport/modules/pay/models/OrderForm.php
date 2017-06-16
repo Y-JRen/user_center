@@ -79,7 +79,7 @@ class OrderForm extends Order
                 $this->platform = Config::getPlatform();
             }
             $this->order_id = Config::createOrderId();
-            $this->status = self::STATUS_PROCESSING;
+            $this->status = self::STATUS_PENDING;
         }
         return parent::beforeSave($insert);
     }

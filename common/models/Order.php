@@ -48,14 +48,16 @@ class Order extends \yii\db\ActiveRecord
     /**
      * 订单处理状态
      */
-    const STATUS_PROCESSING = 1;// 处理中
+    const STATUS_PROCESSING = 1;// 带处理
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
+    const STATUS_PENDING = 4;// 待处理
 
     /**
      * 消费子类型
      */
     const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
+    const SUB_TYPE_LOAN_RECORD = 'loan_record';// 贷款入账 充值、消费时都使用
 
     /**
      * @inheritdoc
@@ -181,6 +183,16 @@ class Order extends \yii\db\ActiveRecord
         return [
             TimestampBehavior::className(),
         ];
+    }
+
+    /**
+     * 设置订单状态为处理中
+     * @return bool
+     */
+    public function setOrderProcessing()
+    {
+        $this->status = self::STATUS_PROCESSING;
+        return $this->save();
     }
 
     /**

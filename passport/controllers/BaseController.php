@@ -8,6 +8,7 @@
 
 namespace passport\controllers;
 
+use common\jobs\ApiLogJob;
 use passport\helpers\Config;
 use Yii;
 use yii\filters\ContentNegotiator;
@@ -102,9 +103,10 @@ class BaseController extends Controller
         1006 => '更改密码失败',
         //充值类错误
         2001 => '充值订单创建失败',
-        2101 => ' 消费订单创建失败',
-        2201 => ' 退款订单创建失败',
-        2301 => ' 提现订单创建失败',
+        2101 => '消费订单创建失败',
+        2201 => '退款订单创建失败',
+        2301 => '提现订单创建失败',
+        2401 => '创建贷款入账订单失败',
         2002 => '微信支付下单失败',
         2003 => '支付宝支付下单失败',
         2004 => '支付宝充值异常',
