@@ -8,6 +8,15 @@ use passport\modules\sso\models\UserForm;
 
 class UserController extends BaseController
 {
+    public function verbs()
+    {
+        return [
+            'quick-login' => ['post'],
+            'reg' => ['post'],
+            'login' => ['post']
+        ];
+    }
+    
     /**
      * 注册
      */
@@ -111,5 +120,27 @@ class UserController extends BaseController
         }
         $model->logout();
         return $this->_return('成功');
+    }
+    
+    /**
+     * 快捷登陆
+     *
+     * @return array
+     */
+    public function actionQuickLogin()
+    {
+        $post = yii::$app->request->post();
+        $data['UserForm'] = $post;
+        $model = new UserForm();
+        $model->setScenario($model::QUICK_LOGIN);
+        $model->load($data);
+        if (!$model->validate()) {
+            return $this->_error(1005, current($model->getErrors())[0]);
+        }
+        $res = $model->quickLogin();
+        if (isset($res['status']) && $res['status'] === false) {
+            return $this->_error(1002, $res['msg']);
+        }
+        return $this->_return($res);
     }
 }

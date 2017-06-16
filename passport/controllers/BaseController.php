@@ -23,14 +23,14 @@ class BaseController extends Controller
      */
     public function behaviors()
     {
-        return [
+        return ArrayHelper::merge(parent::behaviors(),[
             'contentNegotiator' => [
                 'class' => ContentNegotiator::className(),
                 'formats' => [
                     'application/json' => Response::FORMAT_JSON
                 ],
             ],
-        ];
+        ]);
     }
 
     /**

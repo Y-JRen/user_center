@@ -9,11 +9,16 @@
 namespace backend\logic;
 
 
-use common\fixtures\User;
 use common\logic\Logic;
 use common\models\AdminRole;
 use yii\helpers\ArrayHelper;
 
+/**
+ * 后台菜单
+ *
+ * Class MenuLogic
+ * @package backend\logic
+ */
 class MenuLogic extends Logic
 {
     /**
@@ -22,6 +27,8 @@ class MenuLogic extends Logic
     public $roleId;
     
     /**
+     * 获取所有菜单
+     *
      * @return array
      */
     public function getTree()
@@ -30,6 +37,11 @@ class MenuLogic extends Logic
         return $this->getMenuList($allMenu);
     }
     
+    /**
+     * 获取用户菜单
+     *
+     * @return array|bool
+     */
     private function getUserMenu()
     {
         $adminRole = AdminRole::findOne($this->roleId);
@@ -41,7 +53,8 @@ class MenuLogic extends Logic
     }
     
     /**
-     * 菜单
+     * 菜单（左侧菜单）
+     *
      * @param $allMenu
      * @param array $items
      * @return array

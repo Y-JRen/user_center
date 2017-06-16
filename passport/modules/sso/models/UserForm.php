@@ -3,6 +3,7 @@
 namespace passport\modules\sso\models;
 
 
+use common\models\User;
 use yii\base\Model;
 use passport\helpers\Token;
 use passport\helpers\Config;
@@ -27,6 +28,8 @@ class UserForm extends Model
     const SCENARIO_LOGGED = 'logged';
     /**更改密码场景*/
     const SCENARIO_REPASSWD = 'repasswd';
+    
+    const QUICK_LOGIN = 'quick_login';
 
     public $token;
     public $user_name;
@@ -38,7 +41,7 @@ class UserForm extends Model
     public $img_code;
     public $img_unique;
     public $uuid;
-
+    
 
     public function rules()
     {
@@ -58,6 +61,7 @@ class UserForm extends Model
             ['verify_code', 'validateCode'],
             ['is_agreement', 'compare', 'compareValue' => 1, 'operator' => '==', 'message' => '必需同意协议'],
             ['token', 'validateToken'],
+            [['user_name', 'verify_code', 'channel'], 'required', 'on' => [self::QUICK_LOGIN]]
         ];
     }
 
@@ -68,16 +72,19 @@ class UserForm extends Model
             self::SCENARIO_LOGIN => ['user_name', 'passwd', 'uuid', 'img_code', 'img_unique'],
             self::SCENARIO_LOGGED => ['token'],
             self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd', 'verify_code'],
+            self::QUICK_LOGIN => ['user_name', 'verify_code', 'channel']
         ];
     }
 
     /**
      * 验证码验证
+     * @param $attribute
      */
-    public function validateCode($attribute, $params)
+    public function validateCode($attribute)
     {
+        $type = ($this->scenario == self::QUICK_LOGIN) ? 2 : 1;
         if (!$this->hasErrors()) {
-            $bool = SmsLogic::instance()->checkCode(1, $this->$attribute, $this->user_name);
+            $bool = SmsLogic::instance()->checkCode($type, $this->$attribute, $this->user_name);
             if (!$bool) {
                 $this->addError($attribute, '验证码错误！');
             }
@@ -86,8 +93,9 @@ class UserForm extends Model
 
     /**
      * 验证token
+     *  @param $attribute
      */
-    public function validateToken($attribute, $params)
+    public function validateToken($attribute)
     {
         if (!$this->hasErrors()) {
             if (!Token::checkToken($this->$attribute)) {
@@ -290,6 +298,41 @@ class UserForm extends Model
             'img_unique' => '图形验证码',
             'repasswd' => '确认密码',
             'verify_code' => '短信验证码',
+        ];
+    }
+    
+    /**
+     * 快捷登陆
+     *
+     * @return array
+     */
+    public function quickLogin()
+    {
+        //有用户直接登陆，没有注册登陆
+        if($user = User::findOne(['phone' => $this->user_name])) {
+            $token = $this->login($user->id);
+            return [
+                'token' => $token,
+                'uid' => $user->id
+            ];
+        } else {
+            $model = new User();
+            $model->phone = $this->user_name;
+            $model->user_name = $this->user_name;
+            $model->from_platform = Config::getPlatform();
+            $model->from_channel = $this->getFrom();
+            $model->reg_time = time();
+            $model->reg_ip = $this->getIp();
+            $model->login_time = 0;
+            if (!$model->save(false)) {
+                return ['status' => false, 'msg' => current($model->getErrors())[0]];
+            } else {
+                $token = $this->login($model->id);
+            }
+        }
+        return [
+            'token' => $token,
+            'uid' => $user->id
         ];
     }
 }
