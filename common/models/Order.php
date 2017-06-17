@@ -58,6 +58,7 @@ class Order extends \yii\db\ActiveRecord
      */
     const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
     const SUB_TYPE_LOAN_RECORD = 'loan_record';// 贷款入账 充值、消费时都使用
+    const SUB_TYPE_LOAN_REFUND = 'loan_refund';// 贷款退款
 
     /**
      * @inheritdoc
