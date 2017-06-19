@@ -62,8 +62,10 @@ class AlipayController extends \yii\web\Controller
      */
     public function actionMobile()
     {
-        $alipay = new \AlipayNotify(Config::getAlipayMobileConfig());
         $post = Yii::$app->request->post();
+        ApiLogsLogic::instance()->addLogs('alipay', json_encode($post));
+
+        $alipay = new \AlipayNotify(Config::getAlipayMobileConfig());
         $result = $alipay->verifyNotify();
 
         // 校验返回的参数是合法的
@@ -71,7 +73,7 @@ class AlipayController extends \yii\web\Controller
             $trade_status = Yii::$app->request->post('trade_status');//交易状态
 
             if (in_array($trade_status, ['TRADE_FINISHED', 'TRADE_SUCCESS'])) {// 交易结束，不可退款
-                $result = OrderLogic::instance()->alipayNotify($post);
+                $result = OrderLogic::instance()->alipayMobile($post);
                 if ($result) {
                     echo "success";
                     Yii::$app->end();
