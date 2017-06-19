@@ -118,6 +118,10 @@ class Order extends \yii\db\ActiveRecord
             'order_subtype',
             'amount',
             'desc',
+            'status',
+            'statusName' => function ($model) {
+                return $this->orderStatus;
+            },
             'notice_platform_param',
             'created_at' => function ($model) {
                 return Yii::$app->formatter->asDatetime($model->created_at);
@@ -277,6 +281,7 @@ class Order extends \yii\db\ActiveRecord
             self::STATUS_PROCESSING => '处理中',
             self::STATUS_PROCESSING => '处理成功',
             self::STATUS_PROCESSING => '处理不成功',
+            self::STATUS_PENDING => '待处理',
         ];
 
         return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
