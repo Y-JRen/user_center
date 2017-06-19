@@ -74,7 +74,7 @@ class Order extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uid', 'platform_order_id', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
+            [['uid', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],

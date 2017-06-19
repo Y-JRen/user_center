@@ -1,12 +1,13 @@
 <?php
 
 use common\models\Order;
+use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\search\OrderrSearch */
+/* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = '消费记录';
@@ -26,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model) {
                     $phone = \common\models\User::findOne($model->uid)->phone;
-                    return Html::a($phone, ['/order/user-detail', 'uid' => $model->uid]);
+                    return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
                 }
             ],
             'platform_order_id',
@@ -54,7 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'created_at:datetime',
             'updated_at:datetime',
-            'platform',
+            [
+                'attribute' => 'platform',
+                'value' => function ($model) {
+                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                },
+            ],
             [
                 'label' => '操作',
                 'format' => 'raw',

@@ -9,6 +9,7 @@
 namespace backend\models;
 
 
+use common\models\User;
 use yii\helpers\ArrayHelper;
 
 class Order extends \common\models\Order
@@ -42,6 +43,14 @@ class Order extends \common\models\Order
         } else {
             return ArrayHelper::getValue($data, $key);
         }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'uid']);
     }
 
 }

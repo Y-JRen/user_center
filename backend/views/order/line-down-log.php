@@ -1,6 +1,7 @@
 <?php
 
 use common\models\Order;
+use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -54,7 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'created_at:datetime',
             'updated_at:datetime',
-            'platform',
+            [
+                'attribute' => 'platform',
+                'value' => function ($model) {
+                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                },
+            ],
             [
                 'label' => '操作',
                 'format' => 'raw',

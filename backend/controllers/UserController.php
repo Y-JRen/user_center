@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\Order;
+use backend\models\search\OrderSearch;
 use Yii;
 use common\models\User;
 use backend\models\search\UserSearch;
@@ -15,30 +17,6 @@ use yii\filters\VerbFilter;
  */
 class UserController extends BaseController
 {
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ]
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
     /**
      * Lists all User models.
      * @return mixed
@@ -67,35 +45,23 @@ class UserController extends BaseController
     }
 
     /**
-     * Updates an existing User model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
+     * 用户订单交易明细
+     * @param $uid
+     * @return string
      */
-    public function actionUpdate($id)
+    public function actionOrder($uid)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        $user = User::findOne($uid);
+        $queryParams['OrderSearch'] = [
+            'status' => Order::STATUS_SUCCESSFUL,
+            'uid' => $uid
+        ];
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+        return $this->render('order', [
+            'dataProvider' => $dataProvider,
+            'userModel' => $user
+        ]);
     }
 
     /**

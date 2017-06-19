@@ -28,3 +28,10 @@
             'channel' => 'queue', // queue channel
         ],
 ```
+
+
+4、支付宝移动支付配置
+
+> 支付宝旧版移动支付需要私钥的路径
+
+common\config_file\key

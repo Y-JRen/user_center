@@ -81,6 +81,7 @@ class OrderSearch extends Order
             ->andFilterWhere(['like', 'desc', $this->desc])
             ->andFilterWhere(['like', 'notice_platform_param', $this->notice_platform_param])
             ->andFilterWhere(['like', 'remark', $this->remark]);
+
         return $dataProvider;
     }
 }
