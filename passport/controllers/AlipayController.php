@@ -2,6 +2,7 @@
 
 namespace passport\controllers;
 
+use common\lib\pay\alipay\mobile\lib\AlipayNotify;
 use common\lib\pay\alipay\PayCore;
 use common\logic\ApiLogsLogic;
 use passport\helpers\Config;
@@ -61,7 +62,7 @@ class AlipayController extends \yii\web\Controller
     public function actionMobile()
     {
 
-        $alipay = new \AlipayNotify(Config::getAlipayMobileConfig());
+        $alipay = new AlipayNotify(Config::getAlipayMobileConfig());
         $post = Yii::$app->request->post();
         $result = $alipay->verifyNotify();
 
