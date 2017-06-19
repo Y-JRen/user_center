@@ -42,6 +42,6 @@ class PayMobile extends Object
         $para_sort['sign'] = $mysign;
         $para_sort['sign_type'] = strtoupper(trim($this->alipay_config['sign_type']));
 
-        return createLinkstring($para_sort);
+        return createLinkstringUrlencode($para_sort);
     }
 }
