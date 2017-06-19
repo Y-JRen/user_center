@@ -11,6 +11,7 @@ namespace passport\modules\pay\logic;
 
 use common\lib\pay\alipay\PayApp;
 use common\lib\pay\alipay\PayCore;
+use common\lib\pay\alipay\PayMobile;
 use common\lib\pay\alipay\PayPc;
 use common\lib\pay\alipay\PayWap;
 use passport\helpers\Config;
@@ -92,6 +93,44 @@ class AlipayLogic extends Logic
         $app->setOutTradeNo($order->order_id);
         $html = $alipay->appPay($app, Url::to('/alipay/notify', true));
 
+        if ($html) {
+            $result['data']['html'] = $html;
+        } else {
+            $result['status'] = 2004;
+        }
+
+        return $result;
+    }
+
+    /**
+     *
+     * 支付宝旧版移动支付接口
+     *
+     * @param $order OrderForm
+     * @return array
+     */
+    public function mobile($order)
+    {
+        $result = ['status' => 0, 'data' => ''];
+        $subject = empty($order->desc) ? '支付宝充值' : $order->desc;
+        $alipay_config = Config::getAlipayMobileConfig();
+
+        $parameter = [
+            "service" => $alipay_config['service'],
+            "partner" => $alipay_config['partner'],
+            "_input_charset" => $alipay_config['input_charset'],
+            'sign_type' => $alipay_config['sign_type'],
+            'notify_url' => Url::to('/alipay/mobile', true),
+            'out_trade_no' => $order->order_id,
+            'subject' => $subject,
+            'payment_type' => 1,
+            'seller_id' => $alipay_config['partner'],
+            'total_fee' => $order->amount,
+            'body' => $subject,
+        ];
+
+        $pay = new PayMobile(['alipay_config' => $alipay_config]);
+        $html = $pay->execute($parameter);
         if ($html) {
             $result['data']['html'] = $html;
         } else {
