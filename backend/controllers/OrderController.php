@@ -231,21 +231,6 @@ _HTML;
     }
 
     /**
-     * 提现待确认
-     * @return mixed
-     */
-    public function actionCash()
-    {
-        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_PROCESSING];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-
-        return $this->render('cash', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * 完成财务提现确认动作
      * @param $id
      * @return string

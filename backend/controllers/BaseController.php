@@ -12,6 +12,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\AdminRole;
 use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -42,7 +43,16 @@ class BaseController extends Controller
                     ],
                 ]
             ],
+            'verbFilter' => [
+                'class' => VerbFilter::className(),
+                'actions' => $this->verbs(),
+            ],
         ];
+    }
+
+    public function verbs()
+    {
+        return [];
     }
 
     /**

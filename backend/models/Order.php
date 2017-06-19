@@ -35,7 +35,7 @@ class Order extends \common\models\Order
             self::STATUS_PROCESSING => '处理中',
             self::STATUS_SUCCESSFUL => '处理通过',
             self::STATUS_FAILED => '处理不通过',
-            self::STATUS_FAILED => '待处理',
+            self::STATUS_PENDING => '待处理',
         ];
 
         if (is_null($key)) {
@@ -51,6 +51,16 @@ class Order extends \common\models\Order
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'uid']);
+    }
+
+
+    /**
+     * 判断财务是否可以确认提现
+     * @return bool
+     */
+    public function getFinanceConfirmCash()
+    {
+        return ($this->order_type == self::TYPE_CASH && $this->status == self::STATUS_PROCESSING);
     }
 
 }
