@@ -54,4 +54,29 @@ class AlipayController extends \yii\web\Controller
         }
         echo 'fail';
     }
+
+    /**
+     * 支付宝移动支付异步回调返回地址接口
+     */
+    public function actionMobile()
+    {
+
+        $alipay = new \AlipayNotify(Config::getAlipayMobileConfig());
+        $post = Yii::$app->request->post();
+        $result = $alipay->verifyNotify();
+
+        // 校验返回的参数是合法的
+        if ($result) {
+            $trade_status = Yii::$app->request->post('trade_status');//交易状态
+
+            if (in_array($trade_status, ['TRADE_FINISHED', 'TRADE_SUCCESS'])) {// 交易结束，不可退款
+                $result = OrderLogic::instance()->alipayNotify($post);
+                if ($result) {
+                    echo "success";
+                    Yii::$app->end();
+                }
+            }
+        }
+        echo 'fail';
+    }
 }
