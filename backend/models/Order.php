@@ -31,9 +31,10 @@ class Order extends \common\models\Order
     public static function getStatus($key = null)
     {
         $data = [
-            self::STATUS_PROCESSING => '待处理',
+            self::STATUS_PROCESSING => '处理中',
             self::STATUS_SUCCESSFUL => '处理通过',
             self::STATUS_FAILED => '处理不通过',
+            self::STATUS_FAILED => '待处理',
         ];
 
         if (is_null($key)) {

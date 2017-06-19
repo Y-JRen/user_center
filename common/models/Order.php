@@ -279,8 +279,8 @@ class Order extends \yii\db\ActiveRecord
     {
         $data = [
             self::STATUS_PROCESSING => '处理中',
-            self::STATUS_PROCESSING => '处理成功',
-            self::STATUS_PROCESSING => '处理不成功',
+            self::STATUS_SUCCESSFUL=> '处理成功',
+            self::STATUS_FAILED => '处理不成功',
             self::STATUS_PENDING => '待处理',
         ];
 
