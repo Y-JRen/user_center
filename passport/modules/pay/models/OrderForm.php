@@ -9,6 +9,7 @@
 namespace passport\modules\pay\models;
 
 use common\jobs\OrderCallbackJob;
+use common\logic\RefundLogin;
 use passport\logic\AccountLogic;
 use Yii;
 use common\models\Order;
@@ -26,6 +27,7 @@ class OrderForm extends Order
 {
     public $openid;// 微信jssdk使用
     public $return_url; // 支付宝同步回调地址
+    public $finance_id;// 退款记录ID必填 退款专用
 
     /**
      * @inheritdoc
@@ -44,7 +46,8 @@ class OrderForm extends Order
                 return $model->order_type == self::TYPE_RECHARGE;
             }],
             ['order_subtype', 'validatorOrderSubType'],
-            [['openid', 'return_url'], 'string']
+            [['openid', 'return_url'], 'string'],
+            ['finance_id', 'integer']
         ];
     }
 
@@ -104,7 +107,7 @@ class OrderForm extends Order
         try {
 
             if (!$this->checkRefundStatus()) {
-                throw new Exception('该笔订单，不允许退款');
+                throw new Exception('该笔订单，erp不允许退款');
             }
 
             if (!$this->refundCheck()) {
@@ -191,12 +194,16 @@ class OrderForm extends Order
     /**
      * 检测erp是否允许退款
      *
-     * @todo erm系统检测是否有效
      * @return bool
      */
     public function checkRefundStatus()
     {
-        return true;
+        $data = [
+            'amount' => $this->amount,
+            'financeId' => intval($this->finance_id),
+            'onlineSaleNo' => $this->platform_order_id
+        ];
+        return RefundLogin::instance()->orderConfirm($data);
     }
 
     /**
@@ -243,7 +250,7 @@ class OrderForm extends Order
      */
     protected function consumeUnfreeze()
     {
-        $model = self::find()->where(['id'=>$this->id])->one();// 对象缓存，导致解冻失败
+        $model = self::find()->where(['id' => $this->id])->one();// 对象缓存，导致解冻失败
         $transaction = Yii::$app->db->beginTransaction();
         try {
             if (!$model->userFreeze->less($this->amount)) {

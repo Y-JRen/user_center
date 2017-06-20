@@ -8,6 +8,7 @@
 
 namespace passport\modules\pay\controllers;
 
+use common\logic\RefundLogin;
 use passport\modules\pay\models\OrderForm;
 use Yii;
 use passport\controllers\AuthController;
@@ -71,6 +72,12 @@ class FreezeController extends AuthController
         $uid = Yii::$app->user->id;
         $amount = Yii::$app->request->post('amount');
         $refundAmount = Yii::$app->request->post('refund_amount');
+
+        $data = ['amount' => $refundAmount, 'onlineSaleNo' => $platform_order_id];
+        $result = RefundLogin::instance()->amountConfirm($data);
+        if (!$result) {
+            return $this->_error(2005, '解冻退款失败，退款金额有误');
+        }
 
         /* @var $order OrderForm */
         $order = OrderForm::find()->where(['order_id' => $order_id])->one();
