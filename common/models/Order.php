@@ -52,6 +52,7 @@ class Order extends \yii\db\ActiveRecord
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理
+    const STATUS_TRANSFER = 5;// 出纳已转账
 
     /**
      * 消费子类型
