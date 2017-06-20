@@ -124,6 +124,9 @@ class Order extends \yii\db\ActiveRecord
                 return $this->orderStatus;
             },
             'notice_platform_param',
+            'platform' => function ($model) {
+                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+            },
             'created_at' => function ($model) {
                 return Yii::$app->formatter->asDatetime($model->created_at);
             },
