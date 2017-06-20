@@ -140,9 +140,9 @@ class SmsLogic extends Logic
 
         // 平台有发送短信的配额，并且次数小于配额
         if ($confTime > 0 && ($number < $confTime)) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
