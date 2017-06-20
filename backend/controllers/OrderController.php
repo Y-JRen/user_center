@@ -2,12 +2,11 @@
 
 namespace backend\controllers;
 
+use backend\models\Order;
 use common\models\CompanyAccount;
 use common\models\LogReview;
 use common\models\RechargeConfirm;
-use common\models\User;
 use Yii;
-use common\models\Order;
 use backend\models\search\OrderSearch;
 use yii\base\ErrorException;
 use yii\db\Exception;
@@ -132,10 +131,8 @@ _HTML;
         $post = Yii::$app->request->post();
         $model = $this->findModel($post['id']);
         if ($model->status !== $model::STATUS_PENDING) {
-            return json_encode([
-                'code' => -1,
-                'message' => '错误请求'
-            ]);
+            Yii::$app->session->setFlash('error', '错误请求');
+            return $this->refresh();
         }
         $db = Yii::$app->db->beginTransaction();
         try {
