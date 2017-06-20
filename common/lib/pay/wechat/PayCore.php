@@ -68,6 +68,7 @@ class PayCore extends Logic
         $data['appid'] = $this->weChatConfig['appid'];
         $data['mch_id'] = $this->weChatConfig['mch_id'];
         $data['device_info'] = 'web';
+        $data['limit_pay'] = 'no_credit';
         $data['nonce_str'] = $this->nonceStr();
         $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);

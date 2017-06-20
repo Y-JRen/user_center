@@ -37,6 +37,9 @@ class PayPc
 
     private $bizContent = NULL;
 
+    // 可用渠道设置
+    private $enable_pay_channels;
+
     public function getBizContent()
     {
         if(!empty($this->bizContentarr)){
@@ -108,6 +111,18 @@ class PayPc
     public function getTotalAmount()
     {
         return $this->totalAmount;
+    }
+
+    public function setEnablePayChannels()
+    {
+        $enable_pay_channels = "balance,moneyFund,coupon,pcredit,pcreditpayInstallment,debitCardExpress,mcard,pcard,bankPay";
+        $this->enable_pay_channels = $enable_pay_channels;
+        $this->bizContentarr['enable_pay_channels'] = $enable_pay_channels;
+    }
+
+    public function getEnablePayChannels()
+    {
+        return $this->enable_pay_channels;
     }
 
 }
