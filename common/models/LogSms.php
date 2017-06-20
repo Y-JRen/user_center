@@ -30,7 +30,7 @@ class LogSms extends BaseModel
     public function rules()
     {
         return [
-            [['id', 'phone', 'platform', 'info', 'status', 'created_at'], 'required'],
+            [['phone', 'platform', 'info', 'status', 'created_at','resmsg'], 'required'],
             [['id', 'platform', 'status', 'created_at'], 'integer'],
             [['phone'], 'string', 'max' => 12],
             [['info'], 'string', 'max' => 255],

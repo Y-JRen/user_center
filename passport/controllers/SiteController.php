@@ -31,4 +31,5 @@ class SiteController extends Controller
     {
 
     }
+
 }

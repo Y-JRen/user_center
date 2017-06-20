@@ -18,15 +18,26 @@ $params = array_merge(
 
 return [
     'id' => 'passport',
+    'language' => 'zh-CN',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'passport\controllers',
     'bootstrap' => ['log'],
     'modules' => [
         'sso' => [
             'class' => 'passport\modules\sso\Module'
-        ]
+        ],
+        'pay' => [
+            'class' => 'passport\modules\pay\Module'
+        ],
+        'inside' => [
+            'class' => 'passport\modules\inside\Module',
+        ],
     ],
     'components' => [
+        'formatter' => [
+            'datetimeFormat' => 'php:Y-m-d H:i',
+            'currencyCode' => 'CNY',
+        ],
         'request' => [
             'csrfParam' => '_csrf-passport',
         ],
@@ -37,16 +48,16 @@ return [
                 if ($response->data !== null) {
                     if ($response->isSuccessful) {
                         $response->data = [
-                            'success' => $response->isSuccessful,
                             'message' => ArrayHelper::getValue($response->data, 'message', ''),
-                            'err_code' => ArrayHelper::getValue($response->data, 'code', 0),
+                            'err_code' => intval(ArrayHelper::getValue($response->data, 'code', 0)),
                             'data' => ArrayHelper::getValue($response->data, 'data'),
                         ];
                     } else {
+                        $code = intval(Yii::$app->errorHandler->exception->getCode());
+                        $code = empty($code) ? $response->statusCode : $code;// 返回码为0时，使用状态码
                         $response->data = [
-                            'success' => $response->isSuccessful,
                             'message' => Yii::$app->errorHandler->exception->getMessage(),
-                            'err_code' => Yii::$app->errorHandler->exception->getCode(),
+                            'err_code' => $code,
                             'data' => null,
                         ];
                     }
@@ -67,7 +78,7 @@ return [
             'targets' => [
                 [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error'],
+                    'levels' => ['error', 'info'],
                     'logVars' => ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION']
                 ],
             ],
@@ -75,12 +86,12 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*'urlManager' => [
+        'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
-        ],*/
+        ],
     ],
     'params' => $params,
 ];

@@ -2,7 +2,9 @@
 
 namespace common\models;
 
+use passport\helpers\Token;
 use Yii;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
@@ -19,7 +21,7 @@ use Yii;
  * @property string $reg_ip
  * @property integer $login_time
  */
-class User extends BaseModel
+class User extends BaseModel implements IdentityInterface
 {
     /**
      * @inheritdoc
@@ -35,7 +37,7 @@ class User extends BaseModel
     public function rules()
     {
         return [
-            [['user_name', 'email', 'passwd', 'from_channel', 'reg_time', 'reg_ip', 'login_time'], 'required'],
+            [['user_name', 'from_platform', 'reg_time', 'reg_ip', 'login_time'], 'required'],
             [['status', 'from_platform', 'reg_time', 'login_time'], 'integer'],
             [['phone'], 'string', 'max' => 12],
             [['user_name'], 'string', 'max' => 30],
@@ -53,16 +55,100 @@ class User extends BaseModel
     {
         return [
             'id' => 'ID',
-            'phone' => 'Phone',
-            'user_name' => 'User Name',
-            'email' => 'Email',
+            'phone' => '手机号',
+            'user_name' => '用户名',
+            'email' => '邮箱',
             'passwd' => 'Passwd',
-            'status' => 'Status',
-            'from_platform' => 'From Platform',
-            'from_channel' => 'From Channel',
-            'reg_time' => 'Reg Time',
-            'reg_ip' => 'Reg Ip',
-            'login_time' => 'Login Time',
+            'status' => '状态',
+            'from_platform' => '平台来源',
+            'from_channel' => '渠道来源',
+            'reg_time' => '注册时间',
+            'reg_ip' => '注册IP',
+            'login_time' => '最后登陆时间',
         ];
+    }
+
+    /**
+     * Finds an identity by the given ID.
+     * @param string|int $id the ID to be looked for
+     * @return IdentityInterface the identity object that matches the given ID.
+     * Null should be returned if such an identity cannot be found
+     * or the identity is not in an active state (disabled, deleted, etc.)
+     */
+    public static function findIdentity($id)
+    {
+        return self::findOne($id);
+    }
+
+    /**
+     * $token 存在redis里
+     *
+     * @param mixed $token
+     * @param null $type
+     * @return IdentityInterface
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        $id = Token::getUid($token);
+        return static::findIdentity($id);
+    }
+
+    /**
+     * 获取UID
+     *
+     * Returns an ID that can uniquely identify a user identity.
+     * @return string|int an ID that uniquely identifies a user identity.
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Returns a key that can be used to check the validity of a given identity ID.
+     *
+     * The key should be unique for each individual user, and should be persistent
+     * so that it can be used to check the validity of the user identity.
+     *
+     * The space of such keys should be big enough to defeat potential identity attacks.
+     *
+     * This is required if [[User::enableAutoLogin]] is enabled.
+     * @return string a key that is used to check the validity of a given identity ID.
+     * @see validateAuthKey()
+     */
+    public function getAuthKey()
+    {
+        return true;
+    }
+
+    /**
+     * Validates the given auth key.
+     *
+     * This is required if [[User::enableAutoLogin]] is enabled.
+     * @param string $authKey the given auth key
+     * @return bool whether the given auth key is valid.
+     * @see getAuthKey()
+     */
+    public function validateAuthKey($authKey)
+    {
+        return true;
+    }
+    
+    /**
+     * 获取用户余额
+     * @return \yii\db\ActiveQuery | UserBalance
+     */
+    public function getBalance()
+    {
+        return $this->hasOne(UserBalance::className(), ['uid' => 'id']);
+    }
+    
+    /**
+     * 获取用户冻结余额
+     * @return \yii\db\ActiveQuery | UserFreeze
+     */
+    public function getFreeze()
+    {
+        return $this->hasOne(UserFreeze::className(), ['uid' => 'id']);
     }
 }

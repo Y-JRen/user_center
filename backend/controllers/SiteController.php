@@ -1,11 +1,15 @@
 <?php
 namespace backend\controllers;
 
+use common\models\AdminUser;
+use Jasny\SSO\Broker;
+use Jasny\SSO\Exception;
+use Jasny\SSO\NotAttachedException;
+use backend\logic\ThirdLogic;
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\models\LoginForm;
 
 /**
  * Site controller
@@ -70,17 +74,44 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        $power = Yii::$app->params['power'];
+        $serverUrl = $power['serverUrl'];
+        $brokerId = $power['appid'];
+        $brokerSecret = $power['appsecret'];
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(Yii::$app->homeUrl);
         }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
+        $broker = new Broker($serverUrl, $brokerId, $brokerSecret);
+        $broker->attach(true);
+    
+        try {
+            $user = $broker->getUserInfo();
+        
+            if(!$user && empty($user))
+            {
+                $broker->clearToken();
+                return $this->redirect($power['loginUrl']);
+                //跳转到单点登录页面http://ssourl/login.php?return_url=xxxxx
+                //return_url 可选，带上该参数后登陆成功后默认跳转到return_url
+            }
+            $session = Yii::$app->session;
+            $userAdmin = AdminUser::findOne($user['id']);
+            $intRoleId = intval(Yii::$app->request->get('role_id'));
+            $arrRoleIds = explode(',', $userAdmin->role_ids);
+    
+            if ($intRoleId && in_array($intRoleId, $arrRoleIds)) {
+                $session->set('ROLE_ID', $intRoleId);
+            } else {
+                $session->set('ROLE_ID', $arrRoleIds[0]);
+            }
+            Yii::$app->user->login($userAdmin, 3600*12);
+            return $this->redirect(Yii::$app->homeUrl);
+        } catch (NotAttachedException $e) {
+            header('Location: ' . $_SERVER['REQUEST_URI']);
+            exit;
+        } catch (Exception $e) {
+            $errmsg = $e->getMessage();
+            //跳转到单点登录页面http://ssourl/login.php?sso_error=$errormsg
         }
     }
 
@@ -92,7 +123,7 @@ class SiteController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
-        return $this->goHome();
+        Yii::$app->session->destroy();
+        return $this->redirect(Yii::$app->params['power']['loginUrl'].'/logout.php');
     }
 }
