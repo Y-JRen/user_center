@@ -24,10 +24,9 @@ class TradeController extends BaseController
      */
     public function actionList($uid)
     {
-
         $query = Order::find()->where([
             'uid' => $uid
-        ]);
+        ])->orderBy('id desc');
 
         $orderType = Yii::$app->request->get('order_type');
         if ($orderType) {
