@@ -243,9 +243,10 @@ class OrderForm extends Order
      */
     protected function consumeUnfreeze()
     {
+        $model = self::find()->where(['id'=>$this->id])->one();// 对象缓存，导致解冻失败
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$this->userFreeze->less($this->amount)) {
+            if (!$model->userFreeze->less($this->amount)) {
                 throw new Exception('资金解冻失败');
             }
 
