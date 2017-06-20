@@ -20,14 +20,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => isset($searchModel) ? $searchModel : null,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-    
+
             [
                 'attribute' => 'uid',
                 'label' => '用户',
                 'format' => 'raw',
                 'value' => function ($model) {
                     $phone = \common\models\User::findOne($model->uid)->phone;
-                    return Html::a($phone, ['/order/user-detail', 'uid' => $model->uid]);
+                    return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
                 }
             ],
             'platform_order_id',
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => '操作',
                 'format' => 'raw',
-                'value' => function($data) {
+                'value' => function ($data) {
                     return Html::a('查看', ['/order/view-line-down', 'id' => $data->id]);
                 }
             ],
