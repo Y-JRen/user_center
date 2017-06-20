@@ -157,7 +157,7 @@ class CashController extends BaseController
     {
         $queryParams['OrderSearch'] = [
             'order_type' => Order::TYPE_CASH,
-            'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_FAILED]
+            'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_FAILED, Order::STATUS_TRANSFER]
         ];
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);

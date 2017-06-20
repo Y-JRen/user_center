@@ -59,13 +59,13 @@ class OrderController extends BaseController
         $phone = \common\models\User::findOne($model->uid)->phone;
         $remark = json_decode($model->remark, true);
         $info = '';
-        if (is_array($remark)) {
+        /*if (is_array($remark)) {
             foreach ($remark as $key => $value) {
                 $info .= "<p>$key : $value</p>";
             }
         } else {
             $info = '<p>银行账号信息不健全</p>';
-        }
+        }*/
         $dropList = '';
         foreach (CompanyAccount::dropList(3) as $k => $v) {
             $dropList .= '<option value=' . $k . '>' . $v . '</option>';

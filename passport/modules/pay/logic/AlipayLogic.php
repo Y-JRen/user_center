@@ -34,6 +34,7 @@ class AlipayLogic extends Logic
 
         $alipay = new PayCore(Config::getAlipayConfig());
         $pc = new PayPc();
+        $pc->setEnablePayChannels();
         $pc->setSubject($subject);
         $pc->setTotalAmount($order->amount);
         $pc->setOutTradeNo($order->order_id);
@@ -61,6 +62,7 @@ class AlipayLogic extends Logic
 
         $alipay = new PayCore(Config::getAlipayConfig());
         $wap = new PayWap();
+        $wap->setEnablePayChannels();
         $wap->setSubject($subject);
         $wap->setTotalAmount($order->amount);
         $wap->setOutTradeNo($order->order_id);
@@ -88,6 +90,7 @@ class AlipayLogic extends Logic
 
         $alipay = new PayCore(Config::getAlipayConfig());
         $app = new PayApp();
+        $app->setEnablePayChannels();
         $app->setSubject($subject);
         $app->setTotalAmount($order->amount);
         $app->setOutTradeNo($order->order_id);
