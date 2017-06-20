@@ -16,6 +16,21 @@ class Order extends \common\models\Order
 {
     const SCENARIO_FINANCE_CONFIRM = 'finance_confirm';// 财务确认 线下充值确认、提现确认
 
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['uid', 'order_id', 'order_type', 'amount', 'status'], 'required'],
+            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
+            [['amount'], 'number'],
+            [['platform_order_id', 'order_id'], 'string', 'max' => 30],
+            [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
+            [['order_id'], 'unique'],
+        ];
+    }
+
     public function scenarios()
     {
         return [
@@ -36,6 +51,7 @@ class Order extends \common\models\Order
             self::STATUS_SUCCESSFUL => '处理通过',
             self::STATUS_FAILED => '处理不通过',
             self::STATUS_PENDING => '待处理',
+            self::STATUS_TRANSFER => '已转账',
         ];
 
         if (is_null($key)) {
@@ -63,4 +79,13 @@ class Order extends \common\models\Order
         return ($this->order_type == self::TYPE_CASH && $this->status == self::STATUS_PROCESSING);
     }
 
+    /**
+     * 设置订单状态为已打款
+     * @return bool
+     */
+    public function setOrderTransfer()
+    {
+        $this->status = self::STATUS_TRANSFER;
+        return $this->save();
+    }
 }
