@@ -9,6 +9,8 @@ use passport\helpers\Redis;
 use passport\modules\pay\logic\OrderLogic;
 use Yii;
 
+require_once(Yii::getAlias("@common/lib/pay/alipay/mobile/lib/alipay_notify.class.php"));
+
 class AlipayController extends \yii\web\Controller
 {
     public $enableCsrfValidation = false;
@@ -46,6 +48,32 @@ class AlipayController extends \yii\web\Controller
 
             if (in_array($trade_status, ['TRADE_FINISHED', 'TRADE_SUCCESS'])) {// 交易结束，不可退款
                 $result = OrderLogic::instance()->alipayNotify($post);
+                if ($result) {
+                    echo "success";
+                    Yii::$app->end();
+                }
+            }
+        }
+        echo 'fail';
+    }
+
+    /**
+     * 支付宝移动支付异步回调返回地址接口
+     */
+    public function actionMobile()
+    {
+        $post = Yii::$app->request->post();
+        ApiLogsLogic::instance()->addLogs('alipay', json_encode($post));
+
+        $alipay = new \AlipayNotify(Config::getAlipayMobileConfig());
+        $result = $alipay->verifyNotify();
+
+        // 校验返回的参数是合法的
+        if ($result) {
+            $trade_status = Yii::$app->request->post('trade_status');//交易状态
+
+            if (in_array($trade_status, ['TRADE_FINISHED', 'TRADE_SUCCESS'])) {// 交易结束，不可退款
+                $result = OrderLogic::instance()->alipayMobile($post);
                 if ($result) {
                     echo "success";
                     Yii::$app->end();

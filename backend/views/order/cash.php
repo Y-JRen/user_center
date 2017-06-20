@@ -1,20 +1,20 @@
 <?php
 
 use common\models\Order;
-use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\search\OrderSearch */
+/* @var $searchModel backend\models\search\OrderrSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '消费记录';
+$this->title = '申请提现记录';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-index">
-    
+
+    <?php Pjax::begin(['enablePushState' => false]); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => isset($searchModel) ? $searchModel : null,
@@ -24,10 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'uid',
                 'label' => '用户',
-                'format' => 'raw',
                 'value' => function ($model) {
-                    $phone = \common\models\User::findOne($model->uid)->phone;
-                    return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
+                    return \common\models\User::findOne($model->uid)->phone;
                 }
             ],
             'platform_order_id',
@@ -55,46 +53,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'created_at:datetime',
             'updated_at:datetime',
+            'platform',
             [
-                'attribute' => 'platform',
-                'value' => function ($model) {
-                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-                },
+                'class' => 'yii\grid\ActionColumn', 'template' => '{view}',
+                'buttons' =>
+                    [
+                        'view' => function ($url, $model, $key) {
+                            return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['cash-list', 'id' => $model->id]);
+                        },
+                    ],
             ],
-            [
-                'label' => '操作',
-                'format' => 'raw',
-                'value' => function($data) {
-                    return Html::button('确认充值', [
-                        'data-toggle'=>"modal",
-                        'data-target' => "#modal",
-                        'class' => 'modalClass',
-                        'url' => \yii\helpers\Url::to(['/order/line-down-form', 'id' =>$data->id ])
-                    ]);
-                }
-            ]
         ],
     ]); ?>
-  </div>
-
-
-<div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-
-<?php
-
-$js = <<<_SCRIPT
-    $('.modalClass').click(function () {
-        $.get($(this).attr('url'),function (html) {
-            $('.modal-content').html(html);
-            $('#modal-default').modal('show')
-        });
-    });
-_SCRIPT;
-$this->registerJs($js);
+    <?php Pjax::end(); ?></div>

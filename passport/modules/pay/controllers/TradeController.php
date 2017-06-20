@@ -40,11 +40,11 @@ class TradeController extends AuthController
      */
     public function actionList()
     {
-
         $query = Order::find()->where([
             'platform' => Config::getPlatform(),
             'uid' => Yii::$app->user->getId()
-        ])->orderBy(['id' => 'desc']);
+        ])->orderBy('id desc');
+
         $orderType = \Yii::$app->request->get('order_type');
         if ($orderType) {
             $query->andWhere(['order_type' => $orderType]);

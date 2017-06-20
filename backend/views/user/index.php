@@ -20,7 +20,13 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             //'id',
-            'phone',
+            [
+                'attribute' => 'phone',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->phone, ['/user/order', 'uid' => $model->id]);
+                }
+            ],
             'user_name',
             'email:email',
             //'passwd',
@@ -33,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{update}{view}'
+                'template' => '{view}'
             ],
         ],
     ]); ?>

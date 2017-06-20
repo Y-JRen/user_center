@@ -52,12 +52,14 @@ class Order extends \yii\db\ActiveRecord
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理
+    const STATUS_TRANSFER = 5;// 出纳已转账
 
     /**
      * 消费子类型
      */
     const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
     const SUB_TYPE_LOAN_RECORD = 'loan_record';// 贷款入账 充值、消费时都使用
+    const SUB_TYPE_LOAN_REFUND = 'loan_refund';// 贷款退款
 
     /**
      * @inheritdoc
@@ -117,7 +119,14 @@ class Order extends \yii\db\ActiveRecord
             'order_subtype',
             'amount',
             'desc',
+            'status',
+            'statusName' => function ($model) {
+                return $this->orderStatus;
+            },
             'notice_platform_param',
+            'platform' => function ($model) {
+                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+            },
             'created_at' => function ($model) {
                 return Yii::$app->formatter->asDatetime($model->created_at);
             },
@@ -274,8 +283,9 @@ class Order extends \yii\db\ActiveRecord
     {
         $data = [
             self::STATUS_PROCESSING => '处理中',
-            self::STATUS_PROCESSING => '处理成功',
-            self::STATUS_PROCESSING => '处理不成功',
+            self::STATUS_SUCCESSFUL=> '处理成功',
+            self::STATUS_FAILED => '处理不成功',
+            self::STATUS_PENDING => '待处理',
         ];
 
         return is_null($key) ? $data : ArrayHelper::getValue($data, $key);

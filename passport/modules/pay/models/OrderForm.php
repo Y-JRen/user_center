@@ -40,7 +40,7 @@ class OrderForm extends Order
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
             ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
-            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'line_down'], 'when' => function ($model) {
+            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'alipay_app', 'alipay_mobile', 'line_down'], 'when' => function ($model) {
                 return $model->order_type == self::TYPE_RECHARGE;
             }],
             ['order_subtype', 'validatorOrderSubType'],
@@ -243,9 +243,10 @@ class OrderForm extends Order
      */
     protected function consumeUnfreeze()
     {
+        $model = self::find()->where(['id'=>$this->id])->one();// 对象缓存，导致解冻失败
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$this->userBalance->less($this->amount)) {
+            if (!$model->userFreeze->less($this->amount)) {
                 throw new Exception('资金解冻失败');
             }
 

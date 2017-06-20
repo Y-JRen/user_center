@@ -1,18 +1,17 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: huawei
  * Date: 2017/6/7
- * Time: 18:25
+ * Time: 18:26
  *
- * 支付宝PC网站支付
+ * 支付宝wap支付模块
  */
 
 namespace common\lib\pay\alipay;
 
 
-class PayPc
+class PayApp
 {
 
     // 订单描述，可以对交易或商品进行一个详细地描述，比如填写"购买商品2件共15.00元"
@@ -24,11 +23,14 @@ class PayPc
     // 商户订单号.
     private $outTradeNo;
 
-    // (推荐使用，相对时间) 该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m
+    // (推荐使用，相对时间) 支付超时时间，5m 5分钟
     private $timeExpress;
 
     // 订单总金额，整形，此处单位为元，精确到小数点后2位，不能超过1亿元
     private $totalAmount;
+
+    // 如果该字段为空，则默认为与支付宝签约的商户的PID，也就是appid对应的PID
+    private $sellerId;
 
     // 产品标示码，固定值：QUICK_WAP_PAY
     private $productCode;
@@ -50,7 +52,7 @@ class PayPc
 
     public function __construct()
     {
-        $this->bizContentarr['product_code'] = "FAST_INSTANT_TRADE_PAY";
+        $this->bizContentarr['productCode'] = "QUICK_MSECURITY_PAY";
     }
 
     public function AlipayTradeWapPayContentBuilder()
@@ -113,6 +115,17 @@ class PayPc
         return $this->totalAmount;
     }
 
+    public function setSellerId($sellerId)
+    {
+        $this->sellerId = $sellerId;
+        $this->bizContentarr['seller_id'] = $sellerId;
+    }
+
+    public function getSellerId()
+    {
+        return $this->sellerId;
+    }
+
     public function setEnablePayChannels()
     {
         $enable_pay_channels = "balance,moneyFund,coupon,pcredit,pcreditpayInstallment,debitCardExpress,mcard,pcard,bankPay";
@@ -124,5 +137,4 @@ class PayPc
     {
         return $this->enable_pay_channels;
     }
-
 }

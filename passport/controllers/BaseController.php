@@ -72,13 +72,13 @@ class BaseController extends Controller
                 throw new HttpException(401, '参数不正确', -995);
             }
         }
-        /*Yii::$app->queue->push(new ApiLogJob([
+        Yii::$app->queue->push(new ApiLogJob([
             'url' => Yii::$app->request->pathInfo,
             'param' => json_encode(['post' => $post, 'get' => $get]),
             'method' => Yii::$app->request->method,
             'ip' => $requestIp,
             'created_at' => date('Y-m-d H:i:s')
-        ]));*/
+        ]));
     }
 
 
@@ -91,7 +91,7 @@ class BaseController extends Controller
         990 => '参数不正确',
         991 => '认证失败',
         //发短信
-        997 => '发送失败',
+        997 => '短信发送失败',
         998 => '发送次数超过限制',
         999 => '手机号不正确',
         //登录注册

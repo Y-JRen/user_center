@@ -108,6 +108,25 @@ class PayCore extends Object
     }
 
     /**
+     * alipay.trade.app.pay
+     * @param $builder
+     * @param $notify_url
+     * @return bool|mixed|\SimpleXMLElement|string|\提交表单HTML文本
+     */
+    function appPay($builder, $notify_url)
+    {
+        $biz_content = $builder->getBizContent();
+
+        $request = new \AlipayTradeAppPayRequest();
+
+        $request->setNotifyUrl($notify_url);
+        $request->setBizContent($biz_content);
+
+        $response = $this->aopAppRequestExecute($request, true);
+        return $response;
+    }
+
+    /**
      * sdkClient
      * @param $request \AlipayTradePagePayRequest| \AlipayTradeWapPayRequest 接口请求参数对象。
      * @param $ispage bool 是否是页面接口，电脑网站支付是页面表单接口。
@@ -135,6 +154,28 @@ class PayCore extends Object
         }
 
         return $result;
+    }
+
+    /**
+     * sdk 调用
+     * @param $request
+     * @return string
+     */
+    public function aopAppRequestExecute($request)
+    {
+
+        $aop = new \AopClient ();
+        $aop->gatewayUrl = $this->gateway_url;
+        $aop->appId = $this->appid;
+        $aop->rsaPrivateKey = $this->private_key;
+        $aop->alipayrsaPublicKey = $this->alipay_public_key;
+        $aop->apiVersion = "1.0";
+        $aop->postCharset = $this->charset;
+        $aop->format = $this->format;
+        $aop->signType = $this->signtype;
+
+        $response = $aop->sdkExecute($request);
+        return htmlspecialchars($response);
     }
 
     public function getNotifyUrl()

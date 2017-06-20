@@ -45,6 +45,8 @@ class OrderCallbackJob extends Object implements Job
             $callbackUrl = Config::getOrderCallbackUrl($order->platform);
             $jsonRes = HttpLogic::instance()->http($callbackUrl, 'POST', $arrPost);
 
+            echo json_encode($arrPost).$jsonRes;
+
             $arrRes = json_decode($jsonRes, true);
 
             /* @var $redis yii\redis\Connection */

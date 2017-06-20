@@ -127,4 +127,19 @@ class Config
             'alipay_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr9o8EDBwQmm1/T+FnQhUY3JblhVJWvWaBaRyItr/QyFn+BxgDCJ5nRcfpHYDqgPE3YppcHGORRsEBBt2cKTcV1EaUGIAETnmClfp2Kqg51fVxH5K23M6gGr2TouoUNlNWLlz0phUK/WZ1zaB/mBXjsfQbOohyexVPpGTForWzO9ebRlKhaYKVRZGeJ5q8xwozbAKKCOgozn/Or83ABpslo8wMmfHmy7NUJugieJMhV6l5uAHiP18x3tBC6HD/g+9zR6sn2XfzBdVe1uwVBf06gd/61tzUbsAvhJKxNQ9s42yo4iSDAfk+kLDiYauJ0cVxIhmvk3LDDaVnglPjrqtNwIDAQAB'
         ];
     }
+
+    public static function getAlipayMobileConfig()
+    {
+        return [
+            'partner' => '2088421701899812',
+            'private_key_path' => Yii::getAlias('@common/config_file/key/rsa_private_key.pem'),
+            'ali_public_key_path' => Yii::getAlias('@common/config_file/key/alipay_public_key.pem'),
+
+            'service' => 'mobile.securitypay.pay',
+            'sign_type' => strtoupper('RSA'),
+            'input_charset' => strtolower('utf-8'),
+            'cacert' => '',
+            'transport' => 'http',
+        ];
+    }
 }

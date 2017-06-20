@@ -4,17 +4,16 @@ use common\models\Order;
 use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '消费记录';
+$this->title = '提现审核记录';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-index">
-    
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => isset($searchModel) ? $searchModel : null,
@@ -49,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'status',
                 'value' => function ($model) {
-                    return \backend\models\Order::getStatus($model->status);
+                    return $model->orderStatus;
                 },
                 'filter' => Order::getStatusName()
             ],
@@ -62,39 +61,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
             ],
             [
-                'label' => '操作',
-                'format' => 'raw',
-                'value' => function($data) {
-                    return Html::button('确认充值', [
-                        'data-toggle'=>"modal",
-                        'data-target' => "#modal",
-                        'class' => 'modalClass',
-                        'url' => \yii\helpers\Url::to(['/order/line-down-form', 'id' =>$data->id ])
-                    ]);
-                }
-            ]
+                'class' => 'yii\grid\ActionColumn', 'template' => '{view}',
+                'buttons' => [
+                    'view' => function ($url, $model, $key) {
+                        return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['/cash/confirm', 'id'=>$model->id]);
+                    }
+                ]
+            ],
         ],
     ]); ?>
-  </div>
-
-
-<div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
 </div>
-
-<?php
-
-$js = <<<_SCRIPT
-    $('.modalClass').click(function () {
-        $.get($(this).attr('url'),function (html) {
-            $('.modal-content').html(html);
-            $('#modal-default').modal('show')
-        });
-    });
-_SCRIPT;
-$this->registerJs($js);

@@ -2,16 +2,14 @@
 
 namespace backend\controllers;
 
+use backend\models\Order;
 use common\models\CompanyAccount;
 use common\models\LogReview;
 use common\models\RechargeConfirm;
-use common\models\User;
 use Yii;
-use common\models\Order;
 use backend\models\search\OrderSearch;
 use yii\base\ErrorException;
 use yii\db\Exception;
-use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -19,25 +17,6 @@ use yii\web\NotFoundHttpException;
  */
 class OrderController extends BaseController
 {
-    
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ]
-            ],
-        ];
-    }
-    
     /**
      * Lists all Order models.
      * @return mixed
@@ -46,13 +25,13 @@ class OrderController extends BaseController
     {
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     /**
      * 线下充值待确认
      * @return mixed
@@ -62,16 +41,15 @@ class OrderController extends BaseController
         $queryParams['OrderSearch'] = [
             'order_type' => Order::TYPE_RECHARGE,
             'order_subtype' => 'line_down',
-            'status' => Order::STATUS_PROCESSING
+            'status' => Order::STATUS_PENDING
         ];
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
-        
         return $this->render('line-down', [
             'dataProvider' => $dataProvider,
         ]);
     }
-    
+
     public function actionLineDownForm($id)
     {
         /**
@@ -81,13 +59,13 @@ class OrderController extends BaseController
         $phone = \common\models\User::findOne($model->uid)->phone;
         $remark = json_decode($model->remark, true);
         $info = '';
-        if (is_array($remark)) {
+        /*if (is_array($remark)) {
             foreach ($remark as $key => $value) {
                 $info .= "<p>$key : $value</p>";
             }
         } else {
             $info = '<p>银行账号信息不健全</p>';
-        }
+        }*/
         $dropList = '';
         foreach (CompanyAccount::dropList(3) as $k => $v) {
             $dropList .= '<option value=' . $k . '>' . $v . '</option>';
@@ -145,18 +123,16 @@ class OrderController extends BaseController
 </form>
 _HTML;
         return $html;
-        
+
     }
-    
+
     public function actionLineDownSave()
     {
         $post = Yii::$app->request->post();
         $model = $this->findModel($post['id']);
-        if ($model->status !== $model::STATUS_PROCESSING) {
-            return json_encode([
-                'code' => -1,
-                'message' => '错误请求'
-            ]);
+        if ($model->status !== $model::STATUS_PENDING) {
+            Yii::$app->session->setFlash('error', '错误请求');
+            return $this->refresh();
         }
         $db = Yii::$app->db->beginTransaction();
         try {
@@ -168,23 +144,29 @@ _HTML;
             $recharge->back_order = $post['back_order'];
             $recharge->created_at = time();
             if (!$recharge->save()) {
-                throw new Exception('确认失败', $recharge->errors);
+                throw new Exception('确认失败，保存充值信息失败');
             }
-    
-            $model->userBalance->plus($model->amount);
-            $model->setOrderSuccess();
+
+            if (!$model->userBalance->plus($model->amount)) {
+                throw new Exception('增加用户余额失败');
+            }
+
+            if (!$model->setOrderSuccess()) {
+                throw new Exception('更新订单状态失败');
+            }
+
             $db->commit();
             Yii::$app->session->setFlash('success', '确认成功');
         } catch (Exception $e) {
             $db->rollBack();
-            Yii::$app->session->setFlash('error', '确认失败');
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
-        
+
         return $this->redirect(['line-down']);
     }
-    
+
     /**
-     * 线下充值待确认
+     * 线下充值确认历史
      * @return mixed
      */
     public function actionLineDownLog()
@@ -196,27 +178,12 @@ _HTML;
         ];
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
-        
+
         return $this->render('line-down-log', [
             'dataProvider' => $dataProvider,
         ]);
     }
-    
-    public function actionUserDetail($uid)
-    {
-        $user = User::findOne($uid);
-        $queryParams['OrderSearch'] = [
-            'status' => Order::STATUS_SUCCESSFUL,
-            'uid' => $uid
-        ];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-        return $this->render('user-detail', [
-            'dataProvider' => $dataProvider,
-            'userModel' => $user
-        ]);
-    }
-    
+
     /**
      * 完成财务确认动作
      * @param $id
@@ -226,7 +193,7 @@ _HTML;
     public function actionViewLineDown($id)
     {
         $model = $this->findModel($id);
-        
+
         if ($model->isEdit && Yii::$app->request->isPost) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -235,12 +202,12 @@ _HTML;
                 if (!$logModel->save()) {
                     throw new ErrorException(print_r($logModel->errors, true));
                 }
-                
+
                 $model->status = $logModel->order_status;
                 if (!$model->save()) {
                     throw new ErrorException('更新订单状态失败');
                 }
-                
+
                 if ($model->isSuccessful) {
                     if (!$model->userBalance->plus($model->amount)) {
                         throw new ErrorException('更新用户余额失败');
@@ -254,27 +221,12 @@ _HTML;
                 throw $e;
             }
         }
-        
+
         return $this->render('view', [
             'model' => $model
         ]);
     }
-    
-    /**
-     * 提现待确认
-     * @return mixed
-     */
-    public function actionCash()
-    {
-        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_PROCESSING];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-        
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-    
+
     /**
      * 完成财务提现确认动作
      * @param $id
@@ -284,7 +236,7 @@ _HTML;
     public function actionViewCash($id)
     {
         $model = $this->findModel($id);
-        
+
         if ($model->isEdit && Yii::$app->request->isPost) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -293,12 +245,12 @@ _HTML;
                 if (!$logModel->save()) {
                     throw new ErrorException(print_r($logModel->errors, true));
                 }
-                
+
                 $model->status = $logModel->order_status;
                 if (!$model->save()) {
                     throw new ErrorException('更新订单状态失败');
                 }
-                
+
                 if ($model->isSuccessful) {
                     if (!$model->userFreeze->less($model->amount)) {
                         throw new ErrorException('更新用户冻结余额失败');
@@ -312,12 +264,12 @@ _HTML;
                 throw $e;
             }
         }
-        
+
         return $this->render('view', [
             'model' => $model
         ]);
     }
-    
+
     /**
      * Displays a single Order model.
      * @param integer $id
@@ -329,7 +281,7 @@ _HTML;
             'model' => $this->findModel($id),
         ]);
     }
-    
+
     /**
      * Finds the Order model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

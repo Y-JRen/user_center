@@ -1,6 +1,7 @@
 <?php
 
 use common\models\Order;
+use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -19,14 +20,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => isset($searchModel) ? $searchModel : null,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-    
+
             [
                 'attribute' => 'uid',
                 'label' => '用户',
                 'format' => 'raw',
                 'value' => function ($model) {
                     $phone = \common\models\User::findOne($model->uid)->phone;
-                    return Html::a($phone, ['/order/user-detail', 'uid' => $model->uid]);
+                    return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
                 }
             ],
             'platform_order_id',
@@ -54,11 +55,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'created_at:datetime',
             'updated_at:datetime',
-            'platform',
+            [
+                'attribute' => 'platform',
+                'value' => function ($model) {
+                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                },
+            ],
             [
                 'label' => '操作',
                 'format' => 'raw',
-                'value' => function($data) {
+                'value' => function ($data) {
                     return Html::a('查看', ['/order/view-line-down', 'id' => $data->id]);
                 }
             ],
