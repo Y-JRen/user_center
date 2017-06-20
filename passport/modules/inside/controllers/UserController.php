@@ -12,6 +12,7 @@ namespace passport\modules\inside\controllers;
 use Yii;
 use passport\modules\inside\models\User;
 use passport\helpers\Config;
+use yii\helpers\ArrayHelper;
 
 class UserController extends BaseController
 {
@@ -58,7 +59,8 @@ class UserController extends BaseController
      */
     public function actionCheck($uid)
     {
-        $data = User::find()->where(['id' => $uid])->asArray()->exists();
+        $result = User::find()->select('phone')->where(['id' => $uid])->asArray()->one();
+        $data = ['status' => !empty($result), 'phone' => ArrayHelper::getValue($result, 'phone')];
         return $this->_return($data);
     }
 }
