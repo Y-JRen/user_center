@@ -28,7 +28,8 @@ class RefundLogin extends Logic
         $data['sign'] = '123';
         $path = '/api/sale/refundCheck';
         $url = $this->getUrl($path);
-        $result = HttpLogic::instance()->http($url, 'POST', $data);
+        $resultInfo = HttpLogic::instance()->http($url, 'POST', $data);
+        $result = json_decode($resultInfo,true);
         return ArrayHelper::getValue($result, 'statusCode', false);
     }
 
@@ -40,7 +41,8 @@ class RefundLogin extends Logic
         $data['sign'] = '123';
         $path = '/api/sale/loanRefundCheck';
         $url = $this->getUrl($path);
-        $result = HttpLogic::instance()->http($url, 'POST', $data);
+        $resultInfo = HttpLogic::instance()->http($url, 'POST', $data);
+        $result = json_decode($resultInfo,true);
         return ArrayHelper::getValue($result, 'statusCode', false);
     }
 
