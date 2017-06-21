@@ -38,6 +38,7 @@ class OrderCallbackJob extends Object implements Job
             'quick_pay' => $this->quick_pay,
             'status' => $this->status,
         ];
+        echo 'job1__'.json_encode($arrPost);
 
         /* @var $order Order */
         $order = Order::find()->where(['order_id' => $this->order_id])->one();
@@ -45,7 +46,7 @@ class OrderCallbackJob extends Object implements Job
             $callbackUrl = Config::getOrderCallbackUrl($order->platform);
             $jsonRes = HttpLogic::instance()->http($callbackUrl, 'POST', $arrPost);
 
-            echo json_encode($arrPost).$jsonRes;
+            echo 'job2__'.$jsonRes;
 
             $arrRes = json_decode($jsonRes, true);
 
@@ -76,7 +77,7 @@ class OrderCallbackJob extends Object implements Job
                 }
             }
         } else {
-            Yii::error('异常的队列数据:' . json_encode($arrPost), 'Queue');
+            echo 'job3__'.'异常的队列数据:' . json_encode($arrPost);
         }
     }
 }

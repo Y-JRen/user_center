@@ -301,4 +301,18 @@ class Order extends \yii\db\ActiveRecord
     {
         return self::getStatusName($this->status);
     }
+
+    /**
+     * 异常订单处理
+     */
+    public function exceptionHandle()
+    {
+        Yii::$app->params['orderErr'] = [
+            'order_id' => $this->order_id,
+            'platform_order_id' => $this->platform_order_id,
+            'notice_platform_param' => $this->notice_platform_param
+        ];
+
+//        Yii::error(json_encode($this->errors));
+    }
 }
