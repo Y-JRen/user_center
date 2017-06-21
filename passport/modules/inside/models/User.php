@@ -33,6 +33,7 @@ class User extends \yii\db\ActiveRecord
     {
         return [
             ['phone', 'required'],
+            ['user_name', 'string'],
             ['phone', 'match', 'pattern' => '/^1\d{10}/', 'message' => '手机号格式不正确'],
         ];
     }

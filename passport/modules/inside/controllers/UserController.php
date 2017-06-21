@@ -38,6 +38,7 @@ class UserController extends BaseController
             /* @var $model User */
             $model = new User();
             $model->phone = $phone;
+            $model->user_name = (empty($model->user_name) ? $phone : $model->user_name);
             $model->from_platform = Config::getPlatform();
             $model->from_channel = Yii::$app->request->post('channel', '');
             $model->reg_time = time();
