@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "user_freeze".
@@ -74,7 +75,9 @@ class UserFreeze extends BaseModel
      */
     public function less($amount)
     {
-        $this->amount -= $amount;
+        $result = self::find()->where(['uid' => $this->uid])->asArray()->one();
+        $userAmount = ArrayHelper::getValue($result, 'amount', 0);
+        $this->amount = $userAmount - $amount;
         $this->updated_at = time();
         return $this->save();
     }
