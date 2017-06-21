@@ -11,6 +11,7 @@ namespace backend\controllers;
 
 use backend\models\Order;
 use backend\models\search\OrderSearch;
+use common\logic\FinanceLogic;
 use common\models\CompanyAccount;
 use common\models\LogReview;
 use common\models\TransferConfirm;
@@ -82,11 +83,17 @@ class TransferController extends BaseController
         try {
             $recharge = new TransferConfirm();
             $recharge->order_id = $model->id;
+            $recharge->org_id = $post['org_id'];
+            $recharge->org = $post['org'];
             $recharge->account_id = $post['account_id'];
-            $companyAccount = CompanyAccount::findOne($post['account_id']);
-            $recharge->account = $companyAccount->bank_name . '-' . $companyAccount->card_bumber;
+            $recharge->account = $post['account'];
+            $recharge->type_id = $post['type_id'];
+            $recharge->type = $post['type'];
             $recharge->back_order = $post['back_order'];
+            $recharge->transaction_time = strtotime($post['transaction_time']);
+            $recharge->remark = $post['remark'];
             $recharge->created_at = time();
+
             if (!$recharge->save()) {
                 throw new ErrorException('确认失败，保存打款信息失败');
             }
@@ -96,6 +103,16 @@ class TransferController extends BaseController
             }
 
             $db->commit();
+
+            $data = [
+                'organization_id' => $post['org_id'],
+                'account_id' => $post['account_id'],
+                'tag_id' => $post['type_id'],
+                'money' => $model->amount,
+                'time' => $post['transaction_time'],
+            ];
+            FinanceLogic::instance()->payment($data);
+
             Yii::$app->session->setFlash('success', '确认成功');
         } catch (ErrorException $e) {
             $db->rollBack();
