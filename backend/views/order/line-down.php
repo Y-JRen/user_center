@@ -4,6 +4,7 @@ use common\models\Order;
 use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -12,6 +13,10 @@ use yii\widgets\Pjax;
 
 $this->title = '消费记录';
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJsFile('/js/web.js', ['depends' => 'yii\web\JqueryAsset']);
+$this->registerCssFile('/datetimepicker/css/bootstrap-datetimepicker.min.css', ['depends' => 'yii\bootstrap\BootstrapAsset']);
+$this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['depends' => 'yii\bootstrap\BootstrapAsset']);
 ?>
 <div class="order-index">
     
@@ -64,13 +69,18 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => '操作',
                 'format' => 'raw',
-                'value' => function($data) {
+                'value' => function ($data) {
                     return Html::button('确认充值', [
-                        'data-toggle'=>"modal",
-                        'data-target' => "#modal",
-                        'class' => 'modalClass',
-                        'url' => \yii\helpers\Url::to(['/order/line-down-form', 'id' =>$data->id ])
-                    ]);
+                            'data-toggle' => "modal",
+                            'data-target' => "#modal",
+                            'class' => 'btn btn-success modalClass btn-xs',
+                            'url' => \yii\helpers\Url::to(['/order/line-down-form', 'id' => $data->id])
+                        ])
+                        .'&nbsp;&nbsp;'.
+                        Html::a('充值失败',
+                            ['/order/confirm-fail', 'id' => $data->id],
+                            ['class'=>'btn btn-primary btn-xs', 'data-confirm'=>'确定要设置为充值失败吗？', 'data-method'=>'post']
+                        );
                 }
             ]
         ],
@@ -86,7 +96,10 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <!-- /.modal-dialog -->
 </div>
-
+    <script>
+        var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
+        var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';
+    </script>
 <?php
 
 $js = <<<_SCRIPT

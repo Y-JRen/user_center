@@ -47,6 +47,6 @@ class BaseAuth extends QueryParamAuth
             }
 
         }
-        throw new HttpException(403, '参数异常', 403);
+        throw new HttpException(501, '参数异常', 501);
     }
 }
