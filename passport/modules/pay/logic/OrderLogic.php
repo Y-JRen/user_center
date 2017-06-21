@@ -10,6 +10,8 @@ namespace passport\modules\pay\logic;
 
 
 use common\jobs\OrderCallbackJob;
+use common\jobs\RechargePushJob;
+use common\models\RechargeConfirm;
 use passport\modules\pay\models\OrderForm;
 use Yii;
 use common\logic\Logic;
@@ -63,6 +65,8 @@ class OrderLogic extends Logic
                     $status = $result ? 1 : 3;// 快捷支付，终止成功，消费失败
                 }
 
+                $transaction->commit();
+
                 // 异步回调通知平台
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $order->notice_platform_param,
@@ -72,7 +76,14 @@ class OrderLogic extends Logic
                     'status' => $status,
                 ]));
 
-                $transaction->commit();
+                // 添加充值到账的记录,并推送到财务系统
+                Yii::$app->queue_second->push(new RechargePushJob([
+                    'back_order' => ArrayHelper::getValue($param, 'transaction_id'),
+                    'order_id' => $order->order_id,
+                    'amount' => $order->amount,
+                    'transaction_time' => ArrayHelper::getValue($param, 'time_end'),
+                    'method' => 2,
+                ]));
                 return true;
             } catch (Exception $e) {
                 $transaction->rollBack();
@@ -116,6 +127,8 @@ class OrderLogic extends Logic
                     $status = ($res ? 1 : 3);
                 }
 
+                $transaction->commit();
+
                 // 异步回调通知平台
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $order->notice_platform_param,
@@ -125,7 +138,14 @@ class OrderLogic extends Logic
                     'status' => $status,
                 ]));
 
-                $transaction->commit();
+                // 添加充值到账的记录,并推送到财务系统
+                Yii::$app->queue_second->push(new RechargePushJob([
+                    'back_order' => ArrayHelper::getValue($params, 'trade_no'),
+                    'order_id' => $order->order_id,
+                    'amount' => $order->amount,
+                    'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
+                    'method' => 1,
+                ]));
                 return true;
             } catch (Exception $e) {
                 $transaction->rollBack();
@@ -169,6 +189,8 @@ class OrderLogic extends Logic
                     $status = ($res ? 1 : 3);
                 }
 
+                $transaction->commit();
+
                 // 异步回调通知平台
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $order->notice_platform_param,
@@ -178,7 +200,14 @@ class OrderLogic extends Logic
                     'status' => $status,
                 ]));
 
-                $transaction->commit();
+                // 添加充值到账的记录,并推送到财务系统
+                Yii::$app->queue_second->push(new RechargePushJob([
+                    'back_order' => ArrayHelper::getValue($params, 'trade_no'),
+                    'order_id' => $order->order_id,
+                    'amount' => $order->amount,
+                    'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
+                    'method' => 1,
+                ]));
                 return true;
             } catch (Exception $e) {
                 $transaction->rollBack();

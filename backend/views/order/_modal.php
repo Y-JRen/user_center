@@ -8,7 +8,7 @@ $organizations = FinanceLogic::instance()->getOrganization();
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">打款确认</h4>
+    <h4 class="modal-title">线下充值确认</h4>
 </div>
 <div class="modal-body">
     <table class="table table-bordered">
@@ -32,7 +32,7 @@ $organizations = FinanceLogic::instance()->getOrganization();
         <?= $info ?>
     </div>
 </div>
-<form class="form-horizontal" action="<?= \yii\helpers\Url::to(['/transfer/confirm-success']) ?>" method="post">
+<form class="form-horizontal" action="<?= \yii\helpers\Url::to(['/order/line-down-save']) ?>" method="post" id="mark_form">
     <div class="box-body">
         <input type="hidden" class="form-control" value="<?= $model->id ?>" name='id'>
         <div class="form-group">
@@ -101,7 +101,7 @@ $organizations = FinanceLogic::instance()->getOrganization();
 
         <div class="modal-footer">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
-            <button type="submit" id="line-down-save" class="btn btn-primary">确认打款</button>
+            <button type="submit" id="line-down-save" class="btn btn-primary">确认到账</button>
         </div>
 </form>
 <?php
@@ -118,7 +118,7 @@ function prefix($num)
 
 <script type="text/javascript">
     createAccounts();
-    createFinType(1,1);
+    createFinType(2,1);
     $('#transaction_time').datetimepicker({
         format: 'yyyy-mm-dd',
         autoclose:true,//自动关闭

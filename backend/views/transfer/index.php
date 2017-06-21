@@ -4,6 +4,7 @@ use common\models\Order;
 use passport\helpers\Config;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\OrderSearch */
@@ -13,6 +14,8 @@ $this->title = '银行待转账记录';
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJsFile('/js/web.js', ['depends' => 'yii\web\JqueryAsset']);
+$this->registerCssFile('/datetimepicker/css/bootstrap-datetimepicker.min.css', ['depends' => 'yii\bootstrap\BootstrapAsset']);
+$this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['depends' => 'yii\bootstrap\BootstrapAsset']);
 ?>
     <div class="order-index">
 
@@ -69,7 +72,7 @@ $this->registerJsFile('/js/web.js', ['depends' => 'yii\web\JqueryAsset']);
                         return Html::button('确认打款', [
                             'data-toggle' => "modal",
                             'data-target' => "#modal",
-                            'class' => 'modalClass',
+                            'class' => 'btn btn-success modalClass btn-xs',
                             'url' => \yii\helpers\Url::to(['/transfer/confirm', 'id' => $data->id])
                         ]);
                     }
@@ -87,7 +90,10 @@ $this->registerJsFile('/js/web.js', ['depends' => 'yii\web\JqueryAsset']);
         </div>
         <!-- /.modal-dialog -->
     </div>
-
+    <script>
+        var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
+        var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';
+    </script>
 <?php
 
 $js = <<<_SCRIPT
