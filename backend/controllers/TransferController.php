@@ -92,6 +92,7 @@ class TransferController extends BaseController
             $recharge->back_order = $post['back_order'];
             $recharge->transaction_time = strtotime($post['transaction_time']);
             $recharge->remark = $post['remark'];
+            $recharge->amount = $model->amount;
             $recharge->created_at = time();
 
             if (!$recharge->save()) {
@@ -103,16 +104,6 @@ class TransferController extends BaseController
             }
 
             $db->commit();
-
-            $data = [
-                'organization_id' => $post['org_id'],
-                'account_id' => $post['account_id'],
-                'tag_id' => $post['type_id'],
-                'money' => $model->amount,
-                'time' => $post['transaction_time'],
-            ];
-            FinanceLogic::instance()->payment($data);
-
             Yii::$app->session->setFlash('success', '确认成功');
         } catch (ErrorException $e) {
             $db->rollBack();

@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\logic\FinanceLogic;
 use Yii;
 
 /**
@@ -18,6 +19,8 @@ use Yii;
  * @property string $type
  * @property integer $transaction_time
  * @property string $remark
+ * @property string $amount
+ * @property string $att_ids
  * @property integer $created_at
  */
 class TransferConfirm extends BaseModel
@@ -39,29 +42,23 @@ class TransferConfirm extends BaseModel
             [['order_id', 'account_id', 'account', 'back_order', 'org', 'org_id', 'type_id', 'type', 'transaction_time', 'created_at'], 'required'],
             [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'created_at'], 'integer'],
             [['remark'], 'string'],
+            [['amount'], 'number'],
             ['order_id', 'unique'],
-            [['account', 'back_order', 'org', 'type'], 'string', 'max' => 255],
+            [['account', 'back_order', 'org', 'type', 'att_ids'], 'string', 'max' => 255],
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
+    public function afterSave($insert, $changedAttributes)
     {
-        return [
-            'id' => 'ID',
-            'order_id' => 'Order ID',
-            'account_id' => 'Account ID',
-            'account' => 'Account',
-            'back_order' => 'Back Order',
-            'org' => 'Org',
-            'org_id' => 'Org ID',
-            'type_id' => 'Type ID',
-            'type' => 'Type',
-            'transaction_time' => 'Transaction Time',
-            'remark' => 'Remark',
-            'created_at' => 'Created At',
-        ];
+        if ($this->isNewRecord) {
+            $data = [
+                'organization_id' => $this->org_id,
+                'account_id' => $this->account_id,
+                'tag_id' => $this->type_id,
+                'money' => $this->amount,
+                'time' => $this->transaction_time,
+            ];
+            FinanceLogic::instance()->payment($data);
+        }
     }
 }

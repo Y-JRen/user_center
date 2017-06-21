@@ -72,7 +72,7 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
                         return Html::button('确认打款', [
                             'data-toggle' => "modal",
                             'data-target' => "#modal",
-                            'class' => 'modalClass',
+                            'class' => 'btn btn-success modalClass btn-xs',
                             'url' => \yii\helpers\Url::to(['/transfer/confirm', 'id' => $data->id])
                         ]);
                     }

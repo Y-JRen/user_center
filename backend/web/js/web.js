@@ -101,4 +101,13 @@ $(function () {
     $("body").on("change", "#account_id", function () {
         $("#account").val($('#account_id option:selected').attr('data-number'));
     });
+
+    $("body").on("submit", "#mark_form", function () {
+        if (validFinType()) {
+            return true;
+        } else {
+            alert('请选择收入类型');
+            return false;
+        }
+    });
 });

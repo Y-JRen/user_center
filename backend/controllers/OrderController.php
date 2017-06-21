@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Order;
+use common\logic\FinanceLogic;
 use common\models\CompanyAccount;
 use common\models\LogReview;
 use common\models\RechargeConfirm;
@@ -59,70 +60,19 @@ class OrderController extends BaseController
         $phone = \common\models\User::findOne($model->uid)->phone;
         $remark = json_decode($model->remark, true);
         $info = '';
-        /*if (is_array($remark)) {
+        if (is_array($remark)) {
             foreach ($remark as $key => $value) {
                 $info .= "<p>$key : $value</p>";
             }
         } else {
             $info = '<p>银行账号信息不健全</p>';
-        }*/
+        }
         $dropList = '';
         foreach (CompanyAccount::dropList(3) as $k => $v) {
             $dropList .= '<option value=' . $k . '>' . $v . '</option>';
         }
-        $html = <<<_HTML
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">充值确认</h4>
-</div>
-<div class="modal-body">
-    <table class="table table-bordered">
-        <tbody>
-        <tr>
-          <td>充值单号</td>
-          <td>{$model->order_id}</td>
-          <td>用户</td>
-          <td>{$phone}</td>
-        </tr>
-        <tr>
-          <td>充值金额</td>
-          <td>{$model->amount}</td>
-          <td>充值方式</td>
-          <td>线下支付</td>
-        </tr>
-      </tbody>
-    </table>
-        <div class="callout callout-info lead">
-            <h4>银行账号信息</h4>
-            {$info}
-        </div>
-</div>
-<form class="form-horizontal" action="/order/line-down-save?id={$model->id}" method="post">
-    <div class="box-body">
-    <input type="hidden" class="form-control" value="{$model->id}" name='id'>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">账号</label>
-      <div class="col-sm-10">
-        <select name='account_id' class="form-control" id="inputEmail3">
-        {$dropList}
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">流水号</label>
 
-      <div class="col-sm-10">
-        <input type="text" class="form-control" name='back_order'>
-      </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
-        <button type="submit" id="line-down-save" class="btn btn-primary">确认到账</button>
-    </div>
-</form>
-_HTML;
-        return $html;
+        return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone, 'info' => $info, 'dropList' => $dropList]);
 
     }
 
@@ -138,10 +88,16 @@ _HTML;
         try {
             $recharge = new RechargeConfirm();
             $recharge->order_id = $model->id;
+            $recharge->org_id = $post['org_id'];
+            $recharge->org = $post['org'];
             $recharge->account_id = $post['account_id'];
-            $companyAccount = CompanyAccount::findOne($post['account_id']);
-            $recharge->account = $companyAccount->bank_name . '-' . $companyAccount->card_bumber;
+            $recharge->account = $post['account'];
+            $recharge->type_id = $post['type_id'];
+            $recharge->type = $post['type'];
             $recharge->back_order = $post['back_order'];
+            $recharge->transaction_time = strtotime($post['transaction_time']);
+            $recharge->remark = $post['remark'];
+            $recharge->amount = $model->amount;
             $recharge->created_at = time();
             if (!$recharge->save()) {
                 throw new Exception('确认失败，保存充值信息失败');
@@ -156,10 +112,29 @@ _HTML;
             }
 
             $db->commit();
+
             Yii::$app->session->setFlash('success', '确认成功');
         } catch (Exception $e) {
             $db->rollBack();
             Yii::$app->session->setFlash('error', $e->getMessage());
+        }
+
+        return $this->redirect(['line-down']);
+    }
+
+    public function actionConfirmFail()
+    {
+        $id = Yii::$app->request->get('id');
+        $model = $this->findModel($id);
+        if ($model->status !== $model::STATUS_PENDING) {
+            Yii::$app->session->setFlash('error', '错误请求');
+            return $this->redirect(['line-down']);
+        }
+
+        if ($model->setOrderFail()) {
+            Yii::$app->session->setFlash('success', '操作成功');
+        }else{
+            Yii::$app->session->setFlash('success', '操作失败'.json_encode($model->errors));
         }
 
         return $this->redirect(['line-down']);

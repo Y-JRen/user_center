@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\logic\FinanceLogic;
 use Yii;
 
 /**
@@ -12,9 +13,17 @@ use Yii;
  * @property integer $account_id
  * @property string $account
  * @property string $back_order
+ * @property string $org
+ * @property integer $org_id
+ * @property integer $type_id
+ * @property string $type
+ * @property integer $transaction_time
+ * @property string $remark
+ * @property string $amount
+ * @property string $att_ids
  * @property integer $created_at
  */
-class RechargeConfirm extends \yii\db\ActiveRecord
+class RechargeConfirm extends BaseModel
 {
     /**
      * @inheritdoc
@@ -30,25 +39,26 @@ class RechargeConfirm extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_id', 'account_id', 'account', 'back_order', 'created_at'], 'required'],
-            [['order_id', 'account_id', 'created_at'], 'integer'],
+            [['order_id', 'account_id', 'account', 'back_order', 'org', 'org_id', 'type_id', 'type', 'transaction_time', 'created_at'], 'required'],
+            [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'created_at'], 'integer'],
+            [['remark'], 'string'],
+            [['amount'], 'number'],
             ['order_id', 'unique'],
-            [['account', 'back_order'], 'string', 'max' => 255],
+            [['account', 'back_order', 'org', 'type', 'att_ids'], 'string', 'max' => 255],
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
+    public function afterSave($insert, $changedAttributes)
     {
-        return [
-            'id' => 'ID',
-            'order_id' => '充值订单表的主键id',
-            'account_id' => '收款账号id',
-            'account' => '收款账户',
-            'back_order' => '银行流水号',
-            'created_at' => 'Created At',
-        ];
+        if ($this->isNewRecord) {
+            $data = [
+                'organization_id' => $this->org_id,
+                'account_id' => $this->account_id,
+                'tag_id' => $this->type_id,
+                'money' => $this->amount,
+                'time' => $this->transaction_time,
+            ];
+            FinanceLogic::instance()->payment($data);
+        }
     }
 }
