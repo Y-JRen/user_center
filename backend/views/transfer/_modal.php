@@ -32,7 +32,7 @@ $organizations = FinanceLogic::instance()->getOrganization();
         <?= $info ?>
     </div>
 </div>
-<form class="form-horizontal" action="/transfer/confirm-success" method="post">
+<form class="form-horizontal" action="<?= \yii\helpers\Url::to(['/transfer/confirm-success']) ?>" method="post">
     <div class="box-body">
         <input type="hidden" class="form-control" value="<?= $model->id ?>" name='id'>
         <div class="form-group">
