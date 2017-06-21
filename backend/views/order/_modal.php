@@ -118,7 +118,7 @@ function prefix($num)
 
 <script type="text/javascript">
     createAccounts();
-    createFinType(2,1);
+    createFinType(1,1);
     $('#transaction_time').datetimepicker({
         format: 'yyyy-mm-dd',
         autoclose:true,//自动关闭
