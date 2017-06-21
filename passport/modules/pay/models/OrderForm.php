@@ -56,7 +56,7 @@ class OrderForm extends Order
      */
     function validatorOrderSubType()
     {
-        if ($this->order_type == self::TYPE_RECHARGE && $this->order_subtype == 'wechat_jsapi') {
+        if ($this->order_type == self::TYPE_RECHARGE && $this->order_subtype == 'wechat_jsapi' && $this->isNewRecord) {
             if ($this->openid) {
                 $this->remark = json_encode(['openid' => $this->openid]);
             } else {
@@ -125,6 +125,7 @@ class OrderForm extends Order
             $transaction->commit();
             return true;
         } catch (Exception $e) {
+            $this->exceptionHandle();
             $transaction->rollBack();
             $this->setOrderFail();
             throw $e;
@@ -156,6 +157,7 @@ class OrderForm extends Order
             $transaction->commit();
             return true;
         } catch (Exception $e) {
+            $this->exceptionHandle();
             $transaction->rollBack();
             throw $e;
         }
@@ -240,6 +242,7 @@ class OrderForm extends Order
             $transaction->commit();
             return true;
         } catch (Exception $e) {
+            $this->exceptionHandle();
             $transaction->rollBack();
             throw $e;
         }
@@ -275,6 +278,7 @@ class OrderForm extends Order
             }
             return true;
         } catch (Exception $e) {
+            $this->exceptionHandle();
             $transaction->rollBack();
 
             // 异步回调通知平台, 快捷消费订单不在此处回调

@@ -58,7 +58,7 @@ return [
                         $response->data = [
                             'message' => Yii::$app->errorHandler->exception->getMessage(),
                             'err_code' => $code,
-                            'data' => null,
+                            'data' => Yii::$app->params['orderErr'],
                         ];
                     }
                     $response->statusCode = 200;
