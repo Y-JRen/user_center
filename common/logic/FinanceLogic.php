@@ -116,7 +116,8 @@ class FinanceLogic extends Logic
      */
     public function payment($data)
     {
-        $url = $this->getUrl('payment');
+        $url = Yii::$app->params['finance']['domain'] . 'payment';
+        $data['_token'] = Yii::$app->params['finance']['token'];
         $resultInfo = HttpLogic::instance()->http($url, 'POST', $data);
         $result = json_decode($resultInfo, true);
         if (empty($result['success'])) {
