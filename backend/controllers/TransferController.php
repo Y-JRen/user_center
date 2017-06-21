@@ -57,7 +57,9 @@ class TransferController extends BaseController
         $info = '';
         if (is_array($remark)) {
             foreach ($remark as $key => $value) {
-                $info .= "<p>$key : $value</p>";
+                if (!is_array($value)) {
+                    $info .= "<p>$key : $value</p>";
+                }
             }
         } else {
             $info = '<p>银行账号信息不健全</p>';
