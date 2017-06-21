@@ -38,7 +38,7 @@ class RechargePushJob extends Object implements Job
         $model = new RechargeConfirm();
         $model->order_id = $this->order_id;
         $model->method = $this->method;
-        $model->transaction_time = $this->transaction_time;
+        $model->transaction_time = strtotime($this->transaction_time);
         $model->amount = $this->amount;
         $model->back_order = $this->back_order;
         $model->org_id = $config['org_id'];
