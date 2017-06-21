@@ -50,16 +50,14 @@ class TransferConfirm extends BaseModel
 
     public function afterSave($insert, $changedAttributes)
     {
-        if ($this->isNewRecord) {
-            $data = [
-                'organization_id' => $this->org_id,
-                'account_id' => $this->account_id,
-                'tag_id' => $this->type_id,
-                'money' => $this->amount,
-                'time' => $this->transaction_time,
-                'trade_number'=>$this->back_order,
-            ];
-            FinanceLogic::instance()->payment($data);
-        }
+        $data = [
+            'organization_id' => $this->org_id,
+            'account_id' => $this->account_id,
+            'tag_id' => $this->type_id,
+            'money' => $this->amount,
+            'time' => date('Y-m-d', $this->transaction_time),
+            'trade_number' => $this->back_order,
+        ];
+        FinanceLogic::instance()->payment($data);
     }
 }
