@@ -73,16 +73,6 @@ return [
         'session' => [
             'name' => 'advanced-passport',
         ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'info'],
-                    'logVars' => ['_GET', '_POST', '_FILES', '_COOKIE', '_SESSION']
-                ],
-            ],
-        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
