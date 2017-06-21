@@ -146,7 +146,7 @@ class FinanceLogic extends Logic
 
     public function getUrl($path, $data = [])
     {
-        $data['_token'] = 'debf6cc22a8baf00904acc5f42535575';
-        return 'http://test.pocket.checheng.net/api/' . $path . '?' . http_build_query($data);
+        $data['_token'] = Yii::$app->params['finance']['token'];
+        return Yii::$app->params['finance']['domain'] . $path . '?' . http_build_query($data);
     }
 }
