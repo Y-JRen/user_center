@@ -102,7 +102,7 @@ class Config
      */
     public static function getWeChatConfig()
     {
-        return Yii::$app->params['wechat']['che.com'];
+        return Yii::$app->params['pay']['wechat'];
     }
 
     /**
@@ -121,25 +121,11 @@ class Config
      */
     public static function getAlipayConfig()
     {
-        return [
-            'appid' => '2016090501850905',
-            'private_key' => 'MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCrirPg3gjxKkxG6OvtRhkUVmyvCkKEeMfUxfMwuY91eOPVgoxgxaSGuC1G+Mg5pRjne42g2R5XYvx0NWu/t/eQbXDBV87fCbz46WU6+XJXaHGuyElJkU/PIynvsOt/bhEaTivQ/kB34IMjgOKPS1Pl8HOIWd3v9qJDuF0mRlA8uwUJv5LSoH5A8+Rw9OsYOtduVktj4Ut3fF7JT0FzOjRUe2S+POEkmidCY71qTP4eFa/EIg8GuR8i7UKLJfUDWE8VlOe2SReUg7/AvlKxuvY36rZTJvq+CQ+ygeoFZHKEmVAl4pZcAJ0Z0uUE4cVf+GX84pdVn7iEfE8+gvCOwjj1AgMBAAECggEAAVe/mrYCOekL2c4+8oeG8LrQdPpOlPzhC5BVG/+H2PKOTgCMmsFRTWCpshGGd7UMIdu8uxKYAzUaJsq4QjLtdCr3I/xM+T/5Q7WH/lMvivGdWjHlKPdDOarbzC2FWmUBK0SLYUJsPMP8Is4Cd/6t9HHSZbHWY+d5U7BgwkjwndkRnNs5S1LLmNTaZx5rQJ0Pcr9wFOXFFMBY3/qKSMWvUBn+f9IS/IGD6Q5mEEIVGaTfsjGF9voHGIkEdmBow5bcVetUG3nTxeqhzLt2aaIIajsfQ6PPSs1zV7icW4m0zUAYN4ZrR4ROIeVZM9v3lFjIVz4DdomVxSGudOiJ17is4QKBgQDvEdT2GinjgrtewsBD+BcxkZ7ZkjqVCkXqdAvmHqeQk/to5HrMNImrp10ShyQdhj8Hbfqi+s4OMR64E2rrS1bPWj5/Rc3PXMQM7z52Cm4fTNkPwtijOL2Q7EL2N91eNjLwjyrCar/0BxJlKXDnkPP7JxEgnet1AfnJv8iOZh0H7QKBgQC3sKMtKjJHF9Ia5y76clKGhPHqam1V2sja+Dy8+8MArWI90H1QCEQseW/m8Q8/i2A4BbORuRVyePxz0J8FujBx3m/YUZMcbnB+vOiVvogzGzTVl0Fmr1dmPInEUjyOFw9PT4oD4X23cdNpy+Lsn23eGQKD6pSr8pCzHGwpI+VEKQKBgQDG6Q9HtH0lzqAXN/LAmqqxk3eXjxMu7l09tVAxJ1BD+twzaebCAPSK3bWStN5Xslq+08K11/eZ10S343ASVZzk6TEWs/2JiqWUHXrau9LkOAxiELwvEganjewo8FI/ENlRTc1F9YvAfiHQCarnALP/Q4H8oWhG8l3ifq9fy5ZcAQKBgQCfi9m/UeZHn6YLXf+M4p1RX8mrfPMoXhaVMoW288mlHfO1kxA04mksY/HRGlHPNKTHJBSbHrJFMla71Vk6JUUMslJdBkWLrVUij7xIzCwKj7ftSSoyIVv9XdmfXnpgRCE1FvXedw21tzUUsFWShstr3Dc2Exs82jvahnZfqWDqOQKBgHJQgVSU60IefcWJdtamytagEYlncJoF7Fv2vcjoSUdiI0WItvDBNCPqcUBpUzOqpvZwWEF4vtOBLXc4bWu9e59X+QRGpCPuc+DO1ALjXSVtfS009SPf20bLvpWo/Q79Zq3chw1dx9WsRC4owiqkdP5e0JIEmMwERwF/oQemu76o',
-            'alipay_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr9o8EDBwQmm1/T+FnQhUY3JblhVJWvWaBaRyItr/QyFn+BxgDCJ5nRcfpHYDqgPE3YppcHGORRsEBBt2cKTcV1EaUGIAETnmClfp2Kqg51fVxH5K23M6gGr2TouoUNlNWLlz0phUK/WZ1zaB/mBXjsfQbOohyexVPpGTForWzO9ebRlKhaYKVRZGeJ5q8xwozbAKKCOgozn/Or83ABpslo8wMmfHmy7NUJugieJMhV6l5uAHiP18x3tBC6HD/g+9zR6sn2XfzBdVe1uwVBf06gd/61tzUbsAvhJKxNQ9s42yo4iSDAfk+kLDiYauJ0cVxIhmvk3LDDaVnglPjrqtNwIDAQAB'
-        ];
+        return Yii::$app->params['pay']['alipay_new'];
     }
 
     public static function getAlipayMobileConfig()
     {
-        return [
-            'partner' => '2088421701899812',
-            'private_key_path' => Yii::getAlias('@common/config_file/key/rsa_private_key.pem'),
-            'ali_public_key_path' => Yii::getAlias('@common/config_file/key/alipay_public_key.pem'),
-
-            'service' => 'mobile.securitypay.pay',
-            'sign_type' => strtoupper('RSA'),
-            'input_charset' => strtolower('utf-8'),
-            'cacert' => '',
-            'transport' => 'http',
-        ];
+        return Yii::$app->params['pay']['alipay_old'];
     }
 }
