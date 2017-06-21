@@ -21,6 +21,7 @@ use Yii;
  * @property string $remark
  * @property string $amount
  * @property string $att_ids
+ * @property string $method
  * @property integer $created_at
  */
 class RechargeConfirm extends BaseModel
@@ -40,7 +41,7 @@ class RechargeConfirm extends BaseModel
     {
         return [
             [['order_id', 'account_id', 'account', 'back_order', 'org', 'org_id', 'type_id', 'type', 'transaction_time', 'created_at'], 'required'],
-            [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'created_at'], 'integer'],
+            [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'method', 'created_at'], 'integer'],
             [['remark'], 'string'],
             [['amount'], 'number'],
             ['order_id', 'unique'],
@@ -57,6 +58,7 @@ class RechargeConfirm extends BaseModel
                 'tag_id' => $this->type_id,
                 'money' => $this->amount,
                 'time' => $this->transaction_time,
+                'trade_number'=>$this->back_order,
             ];
             FinanceLogic::instance()->payment($data);
         }

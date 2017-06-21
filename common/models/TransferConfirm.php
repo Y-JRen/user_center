@@ -57,6 +57,7 @@ class TransferConfirm extends BaseModel
                 'tag_id' => $this->type_id,
                 'money' => $this->amount,
                 'time' => $this->transaction_time,
+                'trade_number'=>$this->back_order,
             ];
             FinanceLogic::instance()->payment($data);
         }
