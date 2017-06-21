@@ -238,8 +238,9 @@ class UserForm extends Model
      */
     protected function encryptPassword($password)
     {
-        $salt = '$*I_$%@#Abc^!';
-        return md5($password . $salt . substr($password, -6));
+        return $password;
+        /*$salt = '$*I_$%@#Abc^!';
+        return md5($password . $salt . substr($password, -6));*/
     }
 
     /**
