@@ -9,7 +9,9 @@
 namespace passport\modules\pay\controllers;
 
 
+use common\helpers\JsonHelper;
 use passport\controllers\AuthController;
+use passport\modules\sso\models\UserInfo;
 use Yii;
 use passport\modules\pay\models\OrderForm;
 use passport\modules\pay\logic\PayLogic;
@@ -123,6 +125,16 @@ class OrderController extends AuthController
         if ($param['order_type'] != OrderForm::TYPE_CASH) {
             return $this->_error(2007);
         }
+
+        // 检测是否有资格提现，实名认证，提现到本人银行卡
+        $remark = ArrayHelper::getValue($param, 'remark', '');
+        $data = JsonHelper::BankHelper($remark);
+        $username = ArrayHelper::getValue($data, 'accountName');
+        $verify = $this->cashVerify(Yii::$app->user->id, $username);
+        if (!$verify['status']) {
+            return $this->_error(2301, $verify['info']);
+        }
+
         $model = new OrderForm();
         if ($model->load($param, '') && $model->save()) {
             $model->cashSave();
@@ -134,5 +146,25 @@ class OrderController extends AuthController
         } else {
             return $this->_error(2301, $model->errors);
         }
+    }
+
+    /**
+     * 提现确认
+     */
+    public function cashVerify($uid, $username)
+    {
+        $result = ['status' => true, 'info' => ''];
+        $info = UserInfo::getInfo($uid);
+        if ($info->verifyReal()) {
+            if ($info->real_name == $username) {
+                $result['status'] = false;
+                $result['info'] = '只能提现到本人银行卡';
+            }
+        } else {
+            $result['status'] = false;
+            $result['info'] = '提现前请先实名认证';
+        }
+
+        return $result;
     }
 }

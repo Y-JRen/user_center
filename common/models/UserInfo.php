@@ -63,11 +63,34 @@ class UserInfo extends BaseModel
             'updated_at' => 'Updated At',
         ];
     }
-    
+
     public function behaviors()
     {
         return [
             TimestampBehavior::className(),
         ];
+    }
+
+    /**
+     * 获取用户扩展信息
+     *
+     * @param $uid
+     * @return array|UserInfo|null|\yii\db\ActiveRecord
+     */
+    public static function getInfo($uid)
+    {
+        $model = self::find()->where(['uid' => $uid])->one();
+        if (empty($model)) {
+            $model = new UserInfo(['uid' => $uid]);
+        }
+        return $model;
+    }
+
+    /**
+     * 判断用户是否实名认证
+     */
+    public function verifyReal()
+    {
+        return ($this->is_real == 1);
     }
 }
