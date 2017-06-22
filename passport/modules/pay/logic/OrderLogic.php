@@ -83,6 +83,7 @@ class OrderLogic extends Logic
                     'amount' => $order->amount,
                     'transaction_time' => ArrayHelper::getValue($param, 'time_end'),
                     'method' => 2,
+                    'uid' => $order->uid
                 ]));
                 return true;
             } catch (Exception $e) {
@@ -145,6 +146,7 @@ class OrderLogic extends Logic
                     'amount' => $order->amount,
                     'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
                     'method' => 1,
+                    'uid' => $order->uid
                 ]));
                 return true;
             } catch (Exception $e) {
@@ -207,6 +209,7 @@ class OrderLogic extends Logic
                     'amount' => $order->amount,
                     'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
                     'method' => 1,
+                    'uid' => $order->uid
                 ]));
                 return true;
             } catch (Exception $e) {
