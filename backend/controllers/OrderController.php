@@ -58,23 +58,8 @@ class OrderController extends BaseController
          */
         $model = $this->findModel($id);
         $phone = \common\models\User::findOne($model->uid)->phone;
-        $remark = json_decode($model->remark, true);
-        $info = '';
-        if (is_array($remark)) {
-            foreach ($remark as $key => $value) {
-                if(!is_array($value)){
-                    $info .= "<p>$key : $value</p>";
-                }
-            }
-        } else {
-            $info = '<p>银行账号信息不健全</p>';
-        }
-        $dropList = '';
-        foreach (CompanyAccount::dropList(3) as $k => $v) {
-            $dropList .= '<option value=' . $k . '>' . $v . '</option>';
-        }
 
-        return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone, 'info' => $info, 'dropList' => $dropList]);
+        return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone]);
 
     }
 

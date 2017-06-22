@@ -1,7 +1,8 @@
 <?php
 
-use common\models\Order;
+use backend\models\Order;
 use passport\helpers\Config;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
@@ -43,7 +44,12 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
                     },
                     'filter' => Order::getTypeName()
                 ],
-                'order_subtype',
+                [
+                    'attribute' => 'order_subtype',
+                    'value' => function ($model) {
+                        return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                    },
+                ],
                 [
                     'attribute' => 'amount',
                     'value' => function ($model) {
@@ -62,7 +68,7 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
                 [
                     'attribute' => 'platform',
                     'value' => function ($model) {
-                        return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                        return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
                     },
                 ],
                 [

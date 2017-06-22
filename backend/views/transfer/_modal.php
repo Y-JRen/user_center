@@ -29,7 +29,17 @@ $organizations = FinanceLogic::instance()->getOrganization();
     </table>
     <div class="callout callout-info lead">
         <h4>银行账号信息</h4>
-        <?= $info ?>
+        <?php foreach (\common\helpers\JsonHelper::BankHelper($model->remark) as $key=>$data): ?>
+            <?php if ($key == 'referenceImg'): ?>
+                <p><?= $data['label'] ?>:
+                    <?php foreach ($data['value'] as $image) {
+                        echo \yii\helpers\Html::a('点击查看', $image);
+                    } ?>
+                </p>
+            <? else: ?>
+                <p><?= $data['label'] ?>: <?= $data['value'] ?></p>
+            <?php endif; ?>
+        <?php endforeach; ?>
     </div>
 </div>
 <form class="form-horizontal" action="<?= \yii\helpers\Url::to(['/transfer/confirm-success']) ?>" method="post">
@@ -51,7 +61,7 @@ $organizations = FinanceLogic::instance()->getOrganization();
         </div>
         <div class="form-group">
             <input type="hidden" name="account" id="account">
-            <label class="col-sm-2 control-label"><span>*</span>收入账号:</label>
+            <label class="col-sm-2 control-label"><span>*</span>打款账号:</label>
             <div class="col-sm-10">
                 <select class="form-control" name="account_id" id="account_id">
                 </select>
@@ -61,7 +71,7 @@ $organizations = FinanceLogic::instance()->getOrganization();
         <div class="form-group">
             <input type="hidden" name="type_id" id="type_id"/>
             <input type="hidden" name="type" id="type"/>
-            <label class="col-sm-2 control-label"><span>*</span>收入类型:</label>
+            <label class="col-sm-2 control-label"><span>*</span>打款类型:</label>
             <div class="col-sm-10" id="finTypeDiv">
 
             </div>
