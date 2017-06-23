@@ -2,8 +2,10 @@
 
 namespace common\models;
 
+use common\helpers\JsonHelper;
 use common\logic\FinanceLogic;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "transfer_confirm".
@@ -21,6 +23,7 @@ use Yii;
  * @property string $remark
  * @property string $amount
  * @property string $att_ids
+ * @property integer $status
  * @property integer $created_at
  */
 class TransferConfirm extends BaseModel
@@ -40,7 +43,7 @@ class TransferConfirm extends BaseModel
     {
         return [
             [['order_id', 'account_id', 'account', 'back_order', 'org', 'org_id', 'type_id', 'type', 'transaction_time', 'created_at'], 'required'],
-            [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'created_at'], 'integer'],
+            [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'status', 'created_at'], 'integer'],
             [['remark'], 'string'],
             [['amount'], 'number'],
             ['order_id', 'unique'],
@@ -48,16 +51,40 @@ class TransferConfirm extends BaseModel
         ];
     }
 
+    public function getOrder()
+    {
+        return $this->hasOne(Order::className(), ['order_id' => 'order_id']);
+    }
+
     public function afterSave($insert, $changedAttributes)
     {
-        $data = [
-            'organization_id' => $this->org_id,
-            'account_id' => $this->account_id,
-            'tag_id' => $this->type_id,
-            'money' => $this->amount,
-            'time' => date('Y-m-d', $this->transaction_time),
-            'trade_number' => $this->back_order,
-        ];
-        FinanceLogic::instance()->payment($data);
+        if ($insert) {
+            if ($this->status == 1) {
+                $remark = ArrayHelper::getValue($this->order, 'remark');
+                $remarkArr = JsonHelper::BankHelper($remark);
+                $data = [
+                    'organization_id' => $this->org_id,
+                    'account_id' => $this->account_id,
+                    'tag_id' => $this->type_id,
+                    'money' => $this->amount,
+                    'time' => date('Y-m-d', $this->transaction_time),
+                    'trade_number' => $this->back_order,
+                    'order_number' => $this->order_id,
+                    'other_name' => ArrayHelper::getValue($remarkArr, 'accountName'),
+                    'other_card' => ArrayHelper::getValue($remarkArr, 'bankCard'),
+                    'other_bank' => ArrayHelper::getValue($remarkArr, 'bankName'),
+                    'remark' => $this->remark,
+                    'order_type' => 104
+                ];
+
+                $result = FinanceLogic::instance()->payment($data);
+                if ($result['success']) {
+                    $this->status = 3;
+                } else {
+                    $this->status = 4;
+                }
+                $this->save();
+            }
+        }
     }
 }

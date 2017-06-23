@@ -26,6 +26,7 @@ class RechargePushJob extends Object implements Job
 
     public function execute($queue)
     {
+        $status = 1;
         switch ($this->method) {
             case 1;
                 $config = Yii::$app->params['recharge_push']['alipay'];
@@ -49,6 +50,7 @@ class RechargePushJob extends Object implements Job
             $org_id = '';
             $org = '';
             $remark = '获取组织信息失败';
+            $status = 2;
         }
 
         $model = new RechargeConfirm();
@@ -64,6 +66,7 @@ class RechargePushJob extends Object implements Job
         $model->type_id = $config['type_id'];
         $model->type = $config['type'];
         $model->remark = $remark;
+        $model->status = $status;
         $model->created_at = time();
         if (!$model->save()) {
             echo '充值记录添加失败' . json_encode($model->errors);
