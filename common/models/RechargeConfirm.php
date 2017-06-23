@@ -11,7 +11,7 @@ use yii\helpers\ArrayHelper;
  * This is the model class for table "recharge_confirm".
  *
  * @property integer $id
- * @property integer $order_id
+ * @property string $order_id
  * @property integer $account_id
  * @property string $account
  * @property string $back_order
@@ -44,11 +44,11 @@ class RechargeConfirm extends BaseModel
     {
         return [
             [['order_id', 'account_id', 'account', 'back_order', 'org', 'org_id', 'type_id', 'type', 'transaction_time', 'created_at'], 'required'],
-            [['order_id', 'account_id', 'org_id', 'type_id', 'transaction_time', 'method', 'status', 'created_at'], 'integer'],
+            [['account_id', 'org_id', 'type_id', 'transaction_time', 'method', 'status', 'created_at'], 'integer'],
             [['remark'], 'string'],
             [['amount'], 'number'],
             ['order_id', 'unique'],
-            [['account', 'back_order', 'org', 'type', 'att_ids'], 'string', 'max' => 255],
+            [['order_id', 'account', 'back_order', 'org', 'type', 'att_ids'], 'string', 'max' => 255],
         ];
     }
 
