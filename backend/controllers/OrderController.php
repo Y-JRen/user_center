@@ -85,6 +85,7 @@ class OrderController extends BaseController
             $recharge->transaction_time = strtotime($post['transaction_time']);
             $recharge->remark = $post['remark'];
             $recharge->amount = $model->amount;
+            $recharge->status = 1;
             $recharge->created_at = time();
             if (!$recharge->save()) {
                 throw new Exception('确认失败，保存充值信息失败');

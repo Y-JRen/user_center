@@ -80,6 +80,7 @@ class TransferController extends BaseController
             $recharge->transaction_time = strtotime($post['transaction_time']);
             $recharge->remark = $post['remark'];
             $recharge->amount = $model->amount;
+            $recharge->status = 1;
             $recharge->created_at = time();
 
             if (!$recharge->save()) {

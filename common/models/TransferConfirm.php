@@ -70,9 +70,9 @@ class TransferConfirm extends BaseModel
                     'time' => date('Y-m-d', $this->transaction_time),
                     'trade_number' => $this->back_order,
                     'order_number' => $this->order_id,
-                    'other_name' => ArrayHelper::getValue($remarkArr, 'accountName'),
-                    'other_card' => ArrayHelper::getValue($remarkArr, 'bankCard'),
-                    'other_bank' => ArrayHelper::getValue($remarkArr, 'bankName'),
+                    'other_name' => ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'accountName', []), 'value'),
+                    'other_card' => ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'bankCard', []), 'value'),
+                    'other_bank' => ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'bankName', []), 'value'),
                     'remark' => $this->remark,
                     'order_type' => 104
                 ];

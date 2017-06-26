@@ -121,7 +121,7 @@ class FinanceLogic extends Logic
         $resultInfo = HttpLogic::instance()->http($url, 'POST', $data);
         $result = json_decode($resultInfo, true);
         if (empty($result['success'])) {
-            Yii::error(json_encode($result['message']));
+            Yii::error(var_export($result['message'], true));
         }
     }
 
