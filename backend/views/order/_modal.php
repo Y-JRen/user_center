@@ -30,13 +30,13 @@ $organizations = FinanceLogic::instance()->getOrganization();
     <div class="callout callout-info lead">
         <h4>银行账号信息</h4>
         <?php foreach (\common\helpers\JsonHelper::BankHelper($model->remark) as $key=>$data): ?>
-            <?php if ($key == 'referenceImg'): ?>
+            <?php if ($key=='referenceImg'): ?>
                 <p><?= $data['label'] ?>:
                     <?php foreach ($data['value'] as $image) {
                         echo \yii\helpers\Html::a('点击查看', $image);
                     } ?>
                 </p>
-            <? else: ?>
+            <?php else: ?>
                 <p><?= $data['label'] ?>: <?= $data['value'] ?></p>
             <?php endif; ?>
         <?php endforeach; ?>

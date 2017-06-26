@@ -69,7 +69,7 @@ class TransferController extends BaseController
         $db = Yii::$app->db->beginTransaction();
         try {
             $recharge = new TransferConfirm();
-            $recharge->order_id = $model->id;
+            $recharge->order_id = $model->order_id;
             $recharge->org_id = $post['org_id'];
             $recharge->org = $post['org'];
             $recharge->account_id = $post['account_id'];
