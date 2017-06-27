@@ -9,7 +9,10 @@
 namespace passport\modules\inside\models;
 
 
+use common\models\UserInfo;
 use passport\helpers\Config;
+use Yii;
+use yii\helpers\ArrayHelper;
 
 class Order extends \common\models\Order
 {
@@ -79,5 +82,45 @@ class Order extends \common\models\Order
         } else {
             return false;
         }
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'uid']);
+    }
+
+    public function getUserInfo()
+    {
+        return $this->hasOne(UserInfo::className(), ['uid' => 'uid']);
+    }
+
+    public function fields()
+    {
+        $controllerAction = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
+
+        if (in_array($controllerAction, ['trade/info', 'trade/search'])) {// 针对pos机的请求返回
+            return [
+                'order_id',
+                'phone' => function ($model) {
+                    return ArrayHelper::getValue($model->user, 'phone');
+                },
+                'real_name' => function ($model) {
+                    if ($userInfo = $model->userInfo) {
+                        return $userInfo->verifyReal() ? $userInfo->real_name : '';
+                    } else {
+                        return '';
+                    }
+                },
+                'desc',
+                'type',
+                'amount',
+                'status',
+                'statusName' => function ($model) {
+                    return $this->orderStatus;
+                },
+                'created_at'
+            ];
+        }
+        return parent::fields();
     }
 }
