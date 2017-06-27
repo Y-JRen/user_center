@@ -42,7 +42,7 @@ class OrderForm extends Order
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
             ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
-            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'alipay_app', 'alipay_mobile', 'line_down'], 'when' => function ($model) {
+            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'alipay_app', 'alipay_mobile', 'line_down', 'lakala'], 'when' => function ($model) {
                 return $model->order_type == self::TYPE_RECHARGE;
             }],
             ['order_subtype', 'validatorOrderSubType'],
