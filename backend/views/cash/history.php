@@ -1,7 +1,8 @@
 <?php
 
-use common\models\Order;
+use backend\models\Order;
 use passport\helpers\Config;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -39,7 +40,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'filter' => Order::getTypeName()
             ],
-            'order_subtype',
+            [
+                'attribute' => 'order_subtype',
+                'value' => function ($model) {
+                    return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                },
+            ],
             [
                 'attribute' => 'amount',
                 'value' => function ($model) {

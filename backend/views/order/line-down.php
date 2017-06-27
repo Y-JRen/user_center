@@ -1,7 +1,8 @@
 <?php
 
-use common\models\Order;
+use backend\models\Order;
 use passport\helpers\Config;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
@@ -18,84 +19,89 @@ $this->registerJsFile('/js/web.js', ['depends' => 'yii\web\JqueryAsset']);
 $this->registerCssFile('/datetimepicker/css/bootstrap-datetimepicker.min.css', ['depends' => 'yii\bootstrap\BootstrapAsset']);
 $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['depends' => 'yii\bootstrap\BootstrapAsset']);
 ?>
-<div class="order-index">
-    
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => isset($searchModel) ? $searchModel : null,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+    <div class="order-index">
 
-            [
-                'attribute' => 'uid',
-                'label' => '用户',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    $phone = \common\models\User::findOne($model->uid)->phone;
-                    return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
-                }
-            ],
-            'platform_order_id',
-            'order_id',
-            [
-                'attribute' => 'order_type',
-                'value' => function ($model) {
-                    return $model->type;
-                },
-                'filter' => Order::getTypeName()
-            ],
-            'order_subtype',
-            [
-                'attribute' => 'amount',
-                'value' => function ($model) {
-                    return Yii::$app->formatter->asCurrency($model->amount);
-                }
-            ],
-            [
-                'attribute' => 'status',
-                'value' => function ($model) {
-                    return \backend\models\Order::getStatus($model->status);
-                },
-                'filter' => Order::getStatusName()
-            ],
-            'created_at:datetime',
-            'updated_at:datetime',
-            [
-                'attribute' => 'platform',
-                'value' => function ($model) {
-                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-                },
-            ],
-            [
-                'label' => '操作',
-                'format' => 'raw',
-                'value' => function ($data) {
-                    return Html::button('确认充值', [
-                            'data-toggle' => "modal",
-                            'data-target' => "#modal",
-                            'class' => 'btn btn-success modalClass btn-xs',
-                            'url' => \yii\helpers\Url::to(['/order/line-down-form', 'id' => $data->id])
-                        ])
-                        .'&nbsp;&nbsp;'.
-                        Html::a('充值失败',
-                            ['/order/confirm-fail', 'id' => $data->id],
-                            ['class'=>'btn btn-primary btn-xs', 'data-confirm'=>'确定要设置为充值失败吗？', 'data-method'=>'post']
-                        );
-                }
-            ]
-        ],
-    ]); ?>
-  </div>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => isset($searchModel) ? $searchModel : null,
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
 
-
-<div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-        <div class="modal-content">
-        </div>
-        <!-- /.modal-content -->
+                [
+                    'attribute' => 'uid',
+                    'label' => '用户',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        $phone = \common\models\User::findOne($model->uid)->phone;
+                        return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
+                    }
+                ],
+                'platform_order_id',
+                'order_id',
+                [
+                    'attribute' => 'order_type',
+                    'value' => function ($model) {
+                        return $model->type;
+                    },
+                    'filter' => Order::getTypeName()
+                ],
+                [
+                    'attribute' => 'order_subtype',
+                    'value' => function ($model) {
+                        return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                    },
+                ],
+                [
+                    'attribute' => 'amount',
+                    'value' => function ($model) {
+                        return Yii::$app->formatter->asCurrency($model->amount);
+                    }
+                ],
+                [
+                    'attribute' => 'status',
+                    'value' => function ($model) {
+                        return Order::getStatus($model->status);
+                    },
+                    'filter' => Order::getStatusName()
+                ],
+                'created_at:datetime',
+                'updated_at:datetime',
+                [
+                    'attribute' => 'platform',
+                    'value' => function ($model) {
+                        return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                    },
+                ],
+                [
+                    'label' => '操作',
+                    'format' => 'raw',
+                    'value' => function ($data) {
+                        return Html::button('确认充值', [
+                                'data-toggle' => "modal",
+                                'data-target' => "#modal",
+                                'class' => 'btn btn-success modalClass btn-xs',
+                                'url' => Url::to(['/order/line-down-form', 'id' => $data->id])
+                            ])
+                            . '&nbsp;&nbsp;' .
+                            Html::a('充值失败',
+                                ['/order/confirm-fail', 'id' => $data->id],
+                                ['class' => 'btn btn-primary btn-xs', 'data-confirm' => '确定要设置为充值失败吗？', 'data-method' => 'post']
+                            );
+                    }
+                ]
+            ],
+        ]); ?>
     </div>
-    <!-- /.modal-dialog -->
-</div>
+
+
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
     <script>
         var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
         var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';

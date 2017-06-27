@@ -12,6 +12,9 @@ namespace backend\models;
 use common\models\User;
 use yii\helpers\ArrayHelper;
 
+/**
+ * Class Order
+ */
 class Order extends \common\models\Order
 {
     const SCENARIO_FINANCE_CONFIRM = 'finance_confirm';// 财务确认 线下充值确认、提现确认
@@ -88,4 +91,22 @@ class Order extends \common\models\Order
         $this->status = self::STATUS_TRANSFER;
         return $this->save();
     }
+
+    /**
+     * 支付方式格式化
+     * @return mixed
+     */
+    public static $subTypeName = [
+        self::SUB_TYPE_CONSUME_QUICK_PAY => '快捷支付',
+        self::SUB_TYPE_LOAN_RECORD => '贷款入账',
+        self::SUB_TYPE_LOAN_REFUND => '贷款出账',
+        'wechat_code' => '微信二维码',
+        'wechat_jsapi' => '公众号支付',
+        'alipay_pc' => '支付宝PC网站支付',
+        'alipay_wap' => '支付宝手机网站支付',
+        'alipay_app' => '支付宝APP支付',
+        'alipay_mobile' => '支付宝移动支付',
+        'line_down' => '线下充值',
+        'bank' => '银行'
+    ];
 }
