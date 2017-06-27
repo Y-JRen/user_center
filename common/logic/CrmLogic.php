@@ -32,7 +32,7 @@ class CrmLogic extends Logic
         if (empty($phone)) {
             return false;
         } else {
-            $url = \Yii::$app->params['crm']['domain'] . '/thirdpartyapi/clue/get-clue?phone=' . $phone;
+            $url = \Yii::$app->params['crm']['domain'] . 'thirdpartyapi/clue/get-clue?phone=' . $phone;
             $resultInfo = HttpLogic::instance()->http($url, 'GET');
             $result = json_decode($resultInfo, true);
             if ($result['msg'] == 'success') {
