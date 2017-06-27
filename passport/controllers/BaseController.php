@@ -24,7 +24,7 @@ class BaseController extends Controller
      */
     public function behaviors()
     {
-        return ArrayHelper::merge(parent::behaviors(),[
+        return ArrayHelper::merge(parent::behaviors(), [
             'contentNegotiator' => [
                 'class' => ContentNegotiator::className(),
                 'formats' => [
@@ -69,6 +69,7 @@ class BaseController extends Controller
             ksort($params);
             $verifyToken = md5(http_build_query($params) . $domainInfo['tokenKey']);
             if ($verifyToken != $accessToken) {
+                Yii::error('$verifyToken:' . $verifyToken . ';$accessToken:' . $accessToken, 'token');
                 throw new HttpException(401, '参数不正确', -995);
             }
         }

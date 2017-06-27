@@ -29,14 +29,25 @@ $organizations = FinanceLogic::instance()->getOrganization();
     </table>
     <div class="callout callout-info lead">
         <h4>银行账号信息</h4>
-        <?= $info ?>
+        <?php foreach (\common\helpers\JsonHelper::BankHelper($model->remark) as $key=>$data): ?>
+            <?php if ($key=='referenceImg'): ?>
+                <p><?= $data['label'] ?>:
+                    <?php foreach ($data['value'] as $image) {
+                        echo \yii\helpers\Html::a('点击查看', $image);
+                    } ?>
+                </p>
+            <?php else: ?>
+                <p><?= $data['label'] ?>: <?= $data['value'] ?></p>
+            <?php endif; ?>
+        <?php endforeach; ?>
     </div>
 </div>
-<form class="form-horizontal" action="<?= \yii\helpers\Url::to(['/order/line-down-save']) ?>" method="post" id="mark_form">
+<form class="form-horizontal" action="<?= \yii\helpers\Url::to(['/order/line-down-save']) ?>" method="post"
+      id="mark_form">
     <div class="box-body">
         <input type="hidden" class="form-control" value="<?= $model->id ?>" name='id'>
         <div class="form-group">
-            <input type="hidden" name="org" id="org" value="<?=$organizations[0]['name']?>">
+            <input type="hidden" name="org" id="org" value="<?= $organizations[0]['name'] ?>">
             <label class="col-sm-2 control-label"><span>*</span>公司部门:</label>
             <div class="col-sm-10">
                 <select class="form-control" onchange="createAccounts()" name="org_id" id="org_id">
@@ -94,8 +105,8 @@ $organizations = FinanceLogic::instance()->getOrganization();
             <label class="col-sm-2 control-label"><span>*</span>财务流水</label>
 
             <div class="col-sm-10">
-                    <input type="radio" checked="" value="1" name="sync">自动生成
-                    <input type="radio" name="sync" value="0">不生成
+                <input type="radio" checked="" value="1" name="sync">自动生成
+                <input type="radio" name="sync" value="0">不生成
             </div>
         </div>
 
@@ -118,10 +129,10 @@ function prefix($num)
 
 <script type="text/javascript">
     createAccounts();
-    createFinType(1,1);
+    createFinType(1, 1);
     $('#transaction_time').datetimepicker({
         format: 'yyyy-mm-dd',
-        autoclose:true,//自动关闭
-        minView:2//最精准的时间选择为日期0-分 1-时 2-日 3-月
+        autoclose: true,//自动关闭
+        minView: 2//最精准的时间选择为日期0-分 1-时 2-日 3-月
     });
 </script>

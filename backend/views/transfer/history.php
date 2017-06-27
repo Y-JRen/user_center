@@ -1,7 +1,8 @@
 <?php
 
-use common\models\Order;
+use backend\models\Order;
 use passport\helpers\Config;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -20,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => isset($searchModel) ? $searchModel : null,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-    
+
             [
                 'attribute' => 'uid',
                 'label' => '用户',
@@ -39,7 +40,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'filter' => Order::getTypeName()
             ],
-            'order_subtype',
+            [
+                'attribute' => 'order_subtype',
+                'value' => function ($model) {
+                    return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                },
+            ],
             [
                 'attribute' => 'amount',
                 'value' => function ($model) {
@@ -49,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'status',
                 'value' => function ($model) {
-                    return \backend\models\Order::getStatus($model->status);
+                    return Order::getStatus($model->status);
                 },
                 'filter' => Order::getStatusName()
             ],
@@ -58,13 +64,13 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'platform',
                 'value' => function ($model) {
-                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                    return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
                 },
             ],
             [
                 'label' => '操作',
                 'format' => 'raw',
-                'value' => function($data) {
+                'value' => function ($data) {
                     return Html::a('查看', ['/order/view-line-down', 'id' => $data->id]);
                 }
             ],
