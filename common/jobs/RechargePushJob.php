@@ -43,9 +43,7 @@ class RechargePushJob extends Object implements Job
         if ($orgInfo) {
             $org_id = ArrayHelper::getValue($orgInfo, 'shop_id');
             $org = ArrayHelper::getValue($orgInfo, 'shop_name');
-            $salesman_id = ArrayHelper::getValue($orgInfo, 'salesman_id');
-            $salesman_name = ArrayHelper::getValue($orgInfo, 'salesman_name');
-            $remark = json_encode(["salesman_id" => $salesman_id, 'salesman_name' => $salesman_name]);
+            $remark = '';
         } else {
             $org_id = 0;
             $org = '获取组织信息失败';
