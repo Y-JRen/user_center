@@ -98,6 +98,7 @@ class Order extends \common\models\Order
      */
     public static $subTypeName = [
         self::SUB_TYPE_CONSUME_QUICK_PAY => '快捷支付',
+        self::SUB_TYPE_CONSUME_FEE => '手续费',
         self::SUB_TYPE_LOAN_RECORD => '贷款入账',
         self::SUB_TYPE_LOAN_REFUND => '贷款出账',
         'wechat_code' => '微信二维码',

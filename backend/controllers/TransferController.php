@@ -84,7 +84,7 @@ class TransferController extends BaseController
             $recharge->created_at = time();
 
             if (!$recharge->save()) {
-                throw new ErrorException('确认失败，保存打款信息失败');
+                throw new ErrorException('确认失败，保存打款信息失败'.json_encode($recharge->errors));
             }
 
             if (!$model->setOrderTransfer()) {

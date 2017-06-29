@@ -88,7 +88,7 @@ class OrderController extends BaseController
             $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
             if (!$recharge->save()) {
-                throw new Exception('确认失败，保存充值信息失败');
+                throw new Exception('确认失败，保存充值信息失败'.json_encode($recharge->errors));
             }
 
             if (!$model->userBalance->plus($model->amount)) {
