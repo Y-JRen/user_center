@@ -85,7 +85,7 @@ class TradeController extends BaseController
             if ($user) {
                 $query->where(['uid' => $user['id']]);
             } else {
-                return $this->_error(2007, '没有该手机号用户');
+                return $this->_return(null, 0, '暂无相关数据');
             }
         }
 
