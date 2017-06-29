@@ -219,4 +219,73 @@ class OrderLogic extends Logic
         }
         return false;
     }
+
+
+    /**
+     * 拉卡拉POS机回调
+     * @param $params
+     */
+    public function lakalaNotify($params)
+    {
+        $orderId = ArrayHelper::getValue($params, 'out_trade_no');// 商家订单号
+        if (!$orderId) {
+            return false;
+        }
+
+        $order = OrderForm::findOne(['order_id' => $orderId]);
+        $amount = ArrayHelper::getValue($params, 'total_fee');// 订单金额
+        if ($order && $order->amount <= $amount) {// 有手续费,所以可能小于
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $status = 1;
+                $order->receipt_amount = $amount;
+                $order->counter_fee = ($amount - $order->amount);
+                if (!$order->setOrderSuccess())// 更新订单状态
+                {
+                    throw new Exception('订单更新失败');
+                }
+
+                if (!$order->userBalance->plus($order->amount)) {
+                    throw new Exception('余额添加失败');
+                }
+
+                if (!$order->addFeeOrder()) {
+                    throw new Exception('添加手续费消费订单失败');
+                }
+
+                if ($order->quick_pay) {// 快捷支付
+                    $res = $order->addQuickPayOrder();
+                    $status = ($res ? 1 : 3);
+                }
+
+                $transaction->commit();
+
+                // 异步回调通知平台
+                Yii::$app->queue_second->push(new OrderCallbackJob([
+                    'notice_platform_param' => $order->notice_platform_param,
+                    'order_id' => $order->order_id,
+                    'platform_order_id' => $order->platform_order_id,
+                    'quick_pay' => $order->quick_pay,
+                    'status' => $status,
+                ]));
+
+                // 添加充值到账的记录,并推送到财务系统 @todo 拉卡拉pos机流水账号，其他参数未好
+                Yii::$app->queue_second->push(new RechargePushJob([
+                    'back_order' => ArrayHelper::getValue($params, 'trade_no'),
+                    'order_id' => $order->order_id,
+                    'amount' => $order->amount,
+                    'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
+                    'method' => 3,//拉卡拉
+                    'uid' => $order->uid
+                ]));
+
+                return true;
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                throw $e;
+            }
+        }
+
+        return false;
+    }
 }

@@ -26,6 +26,9 @@ use yii\helpers\ArrayHelper;
  * @property string $remark
  * @property integer $platform
  * @property integer $quick_pay
+ * @property string $receipt_amount
+ * @property string $counter_fee
+ * @property string $discount_amount
  *
  * @property string $type
  * @property string $orderStatus
@@ -58,6 +61,7 @@ class Order extends \yii\db\ActiveRecord
      * 消费子类型
      */
     const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
+    const SUB_TYPE_CONSUME_FEE = 'fee';// 手续费消费
     const SUB_TYPE_LOAN_RECORD = 'loan_record';// 贷款入账 充值、消费时都使用
     const SUB_TYPE_LOAN_REFUND = 'loan_refund';// 贷款退款
 
@@ -77,7 +81,7 @@ class Order extends \yii\db\ActiveRecord
         return [
             [['uid', 'platform_order_id', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
-            [['amount'], 'number'],
+            [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             [['order_id'], 'unique'],
@@ -283,7 +287,7 @@ class Order extends \yii\db\ActiveRecord
     {
         $data = [
             self::STATUS_PROCESSING => '处理中',
-            self::STATUS_SUCCESSFUL=> '处理成功',
+            self::STATUS_SUCCESSFUL => '处理成功',
             self::STATUS_FAILED => '处理不成功',
             self::STATUS_PENDING => '待处理',
         ];

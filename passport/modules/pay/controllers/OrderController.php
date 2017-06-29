@@ -104,6 +104,7 @@ class OrderController extends AuthController
             return $this->_error(2007);
         }
         $model = new OrderForm();
+        $param['notice_status'] = 4;
         if ($model->load($param, '') && $model->save()) {
             $model->refundSave();
             $data['platform_order_id'] = $model->platform_order_id;
@@ -136,6 +137,7 @@ class OrderController extends AuthController
         }
 
         $model = new OrderForm();
+        $param['notice_status'] = 4;
         if ($model->load($param, '') && $model->save()) {
             $model->cashSave();
 

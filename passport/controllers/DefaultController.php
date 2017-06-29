@@ -12,6 +12,7 @@ namespace passport\controllers;
 use common\lib\pay\wechat\PayCore;
 use dosamigos\qrcode\QrCode;
 use passport\modules\pay\logic\OrderLogic;
+use Yii;
 use yii\web\Controller;
 
 /**
@@ -23,23 +24,15 @@ use yii\web\Controller;
 class DefaultController extends Controller
 {
     public $enableCsrfValidation = false;
+
     /**
      * 生成图片二维码
      *
-     * @param $url
+     * @param $url string
      */
     public function actionQrcode($url)
     {
         return QrCode::jpg($url);
-    }
-
-    /**
-     * 二维码示例
-     *
-     */
-    public function actionDemo($url)
-    {
-        echo "<img src=".$url.">";
     }
 
     /**
@@ -48,12 +41,12 @@ class DefaultController extends Controller
      */
     public function actionWechatNotify()
     {
-        $xml = \Yii::$app->request->getRawBody();
+        $xml = Yii::$app->request->getRawBody();
 
 
         $pay = PayCore::instance();
         $data = $pay->xmlToArray($xml);
-        if(empty($data)) {
+        if (empty($data)) {
             $return = [
                 'return_code' => 'FAIL',
                 'return_msg' => '参数错误'
@@ -83,6 +76,21 @@ class DefaultController extends Controller
             }
         }
         header("Content-type:text/xml");
-        echo $pay->buildXml($return);exit();
+        echo $pay->buildXml($return);
+        exit();
+    }
+
+    /**
+     * 拉卡拉回调
+     */
+    public function actionLakalaNotify()
+    {
+        $post = Yii::$app->request->post();
+
+        if (OrderLogic::instance()->lakalaNotify($post)) {
+            echo 'success';
+        } else {
+            echo 'fail';
+        }
     }
 }

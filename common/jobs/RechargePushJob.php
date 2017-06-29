@@ -34,6 +34,9 @@ class RechargePushJob extends Object implements Job
             case 2:
                 $config = Yii::$app->params['recharge_push']['wechat'];
                 break;
+            case 3:
+                $config = Yii::$app->params['recharge_push']['lakala'];
+                break;
             default:
                 echo '充值方式错误';
                 Yii::$app->end();
