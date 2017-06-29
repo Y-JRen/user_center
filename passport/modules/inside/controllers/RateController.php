@@ -26,11 +26,11 @@ class RateController extends BaseController
     {
         $data = [
             'info' => [
-                'debit_card' => ['ratio' => 0.5, 'capped' => 20, 'label' => '借记卡'],// 借记卡
-                'credit_card' => ['ratio' => 0.6, 'capped' => 0, 'label' => '信用卡'],// 信用卡
-                'outside_card' => ['ratio' => 2, 'capped' => 0, 'label' => '境外卡'],// 境外卡
+                'debit_card' => ['ratio' => 0.5, 'capped' => 20, 'label' => '借记卡', 'is_show' => true],// 借记卡
+                'credit_card' => ['ratio' => 0.6, 'capped' => 0, 'label' => '信用卡', 'is_show' => true],// 信用卡
+                'outside_card' => ['ratio' => 2, 'capped' => 0, 'label' => '境外卡', 'is_show' => true],// 境外卡
             ],
-            'default' => 'debit_card',// 默认借记卡
+            'default_checked' => 'debit_card',// 默认借记卡
             'is_modify' => false// m默认不允许修改
         ];
 
