@@ -43,7 +43,7 @@ class OrderLogic extends Logic
             return false;
         }
         $order = OrderForm::findOne(['order_id' => $orderId]);
-        $cashFee = ArrayHelper::getValue($param, 'cash_fee');
+        $cashFee = ArrayHelper::getValue($param, 'total_fee');
         if (!empty($order) && $order->amount * 100 == $cashFee) {
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();

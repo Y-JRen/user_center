@@ -80,6 +80,50 @@ class DefaultController extends Controller
         exit();
     }
 
+
+    /**
+     * 微信回调补救
+     *
+     */
+    public function actionWechatNotifyBak()
+    {
+        $json = Yii::$app->request->post('json');
+        $data = json_decode($json,true);
+        $pay = PayCore::instance();
+        if (empty($data)) {
+            $return = [
+                'return_code' => 'FAIL',
+                'return_msg' => '参数错误'
+            ];
+        } else {
+            $sign = $data['sign'];
+            unset($data['sign']);
+            if ($sign == $pay->sign($data)) {
+                $result = OrderLogic::instance()->notify($data);
+                if ($result) {
+                    $return = [
+                        'return_code' => 'SUCCESS',
+                        'return_msg' => 'OK'
+                    ];
+                } else {
+                    $return = [
+                        'return_code' => 'FAIL',
+                        'return_msg' => '订单更新失败'
+                    ];
+                }
+
+            } else {
+                $return = [
+                    'return_code' => 'FAIL',
+                    'return_msg' => '签名失败'
+                ];
+            }
+        }
+        header("Content-type:text/xml");
+        echo $pay->buildXml($return);
+        exit();
+    }
+
     /**
      * 拉卡拉回调
      */
