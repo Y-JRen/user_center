@@ -10,6 +10,8 @@ namespace passport\modules\pay\models;
 
 use common\jobs\OrderCallbackJob;
 use common\logic\RefundLogin;
+use common\models\PoolBalance;
+use common\models\PoolFreeze;
 use passport\logic\AccountLogic;
 use Yii;
 use common\models\Order;
@@ -126,6 +128,11 @@ class OrderForm extends Order
                 throw new Exception('余额增加失败');
             }
 
+            // 添加资金流水记录
+            if (!$this->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$this->setOrderSuccess()) {
                 throw new Exception('更新消费订单状态失败');
             }
@@ -154,8 +161,18 @@ class OrderForm extends Order
                 throw new Exception('余额扣除失败');
             }
 
+            // 添加资金流水记录
+            if (!$this->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$this->userFreeze->plus($this->amount)) {
                 throw new Exception('冻结失败');
+            }
+
+            // 添加冻结资金流水记录
+            if (!$this->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$this->setOrderProcessing()) {
@@ -274,8 +291,16 @@ class OrderForm extends Order
                 throw new Exception('余额扣除失败');
             }
 
+            if (!$this->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$this->userFreeze->plus($this->amount)) {
                 throw new Exception('资金冻结失败');
+            }
+
+            if (!$this->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$this->setOrderProcessing()) {
@@ -300,6 +325,10 @@ class OrderForm extends Order
         try {
             if (!$model->userFreeze->less($this->amount)) {
                 throw new Exception('资金解冻失败');
+            }
+
+            if (!$this->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$this->setOrderSuccess()) {
@@ -336,4 +365,6 @@ class OrderForm extends Order
             throw $e;
         }
     }
+
+
 }

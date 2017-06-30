@@ -319,4 +319,75 @@ class Order extends \yii\db\ActiveRecord
 
 //        Yii::error(json_encode($this->errors));
     }
+
+    /**
+     * 添加用户余额资金流水记录
+     * @param $style string 流水方式
+     * @return bool
+     */
+    public function addPoolBalance($style)
+    {
+        if ($style == PoolBalance::STYLE_PLUS) {
+            $amount = $this->receipt_amount;
+        } elseif ($style == PoolBalance::STYLE_LESS) {
+            $amount = -$this->receipt_amount;
+        } else {
+            return false;
+        }
+
+        $model = new PoolBalance();
+        $model->created_at = time();
+        $model->order_id = $this->order_id;
+        $model->amount = $amount;
+        $model->before_amount = PoolBalance::getUserBalance($this->uid);
+        $model->after_amount = ($model->before_amount + $model->amount);
+        $model->uid = $this->uid;
+        $model->desc = $this->getDescription();
+        if ($model->save()) {
+            return true;
+        } else {
+            Yii::error(json_encode($model->errors), 'modelSave');
+            return false;
+        }
+    }
+
+    /**
+     * 添加用户余额资金流水记录
+     * @param $style string 流水方式
+     * @return bool
+     */
+    public function addPoolFreeze($style)
+    {
+        if ($style == PoolFreeze::STYLE_PLUS) {
+            $amount = $this->receipt_amount;
+        } elseif ($style == PoolBalance::STYLE_LESS) {
+            $amount = -$this->receipt_amount;
+        } else {
+            return false;
+        }
+
+        $model = new PoolFreeze();
+        $model->created_at = time();
+        $model->order_id = $this->order_id;
+        $model->amount = $amount;
+        $model->before_amount = PoolFreeze::getUserBalance($this->uid);
+        $model->after_amount = ($model->before_amount + $model->amount);
+        $model->uid = $this->uid;
+        $model->desc = $this->getDescription();
+        if ($model->save()) {
+            return true;
+        } else {
+            Yii::error(json_encode($model->errors), 'modelSave');
+            return false;
+        }
+    }
+
+    /**
+     * 先放4大类型，后期扩展
+     *
+     */
+    public function getDescription()
+    {
+        return $this->getType();
+    }
 }

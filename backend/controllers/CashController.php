@@ -12,6 +12,7 @@ namespace backend\controllers;
 use backend\models\Order;
 use backend\models\search\OrderSearch;
 use common\models\LogReview;
+use common\models\PoolFreeze;
 use common\models\User;
 use Yii;
 use yii\base\ErrorException;
@@ -93,6 +94,11 @@ class CashController extends BaseController
                 if (!$model->userFreeze->less($model->amount)) {
                     throw new ErrorException('更新用户冻结余额失败');
                 }
+
+                if (!$model->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                    throw new ErrorException('添加冻结资金流水记录失败');
+                }
+
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', '处理成功');
             } catch (ErrorException $e) {

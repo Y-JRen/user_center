@@ -11,6 +11,7 @@ namespace passport\modules\pay\logic;
 
 use common\jobs\OrderCallbackJob;
 use common\jobs\RechargePushJob;
+use common\models\PoolBalance;
 use common\models\RechargeConfirm;
 use passport\modules\pay\models\OrderForm;
 use Yii;
@@ -57,6 +58,10 @@ class OrderLogic extends Logic
 
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额更新失败');
+                }
+
+                if (!$order->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                    throw new Exception('添加资金流水记录失败');
                 }
 
                 // 快捷支付， 直接消费
@@ -123,6 +128,10 @@ class OrderLogic extends Logic
                     throw new Exception('余额添加失败');
                 }
 
+                if (!$order->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                    throw new Exception('添加资金流水记录失败');
+                }
+
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
                     $status = ($res ? 1 : 3);
@@ -186,6 +195,10 @@ class OrderLogic extends Logic
                     throw new Exception('余额添加失败');
                 }
 
+                if (!$order->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                    throw new Exception('添加资金流水记录失败');
+                }
+
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
                     $status = ($res ? 1 : 3);
@@ -247,6 +260,10 @@ class OrderLogic extends Logic
 
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额添加失败');
+                }
+
+                if (!$order->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                    throw new Exception('添加资金流水记录失败');
                 }
 
                 if (!$order->addFeeOrder()) {
