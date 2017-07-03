@@ -5,10 +5,12 @@
  * Date: 2017/6/5
  * Time: 14:31
  */
+
 namespace common\logic;
 
 
 use yii\helpers\FileHelper;
+
 /**
  * api 接口日志
  * Class ApiLogsLogic
@@ -26,6 +28,7 @@ class ApiLogsLogic extends Logic
         $filePath = $this->getFilePath($fileName);
         $this->writeLogs($filePath, $data);
     }
+
     /**
      * 写日志
      * @param $filePath
@@ -35,6 +38,7 @@ class ApiLogsLogic extends Logic
     {
         $this->writeLogs($filePath, $data);
     }
+
     /**
      * 获取文件路径
      * @param $fileName
@@ -42,8 +46,9 @@ class ApiLogsLogic extends Logic
      */
     private function getFilePath($fileName)
     {
-        return \Yii::$app->getRuntimePath() . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . date("Y-m") . DIRECTORY_SEPARATOR . date('d') . DIRECTORY_SEPARATOR . $fileName;
+        return \Yii::$app->getRuntimePath() . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'pay' . DIRECTORY_SEPARATOR . date("Y_m_d_") . $fileName;
     }
+
     /**
      * 写日志
      * @param $filePath
@@ -58,7 +63,7 @@ class ApiLogsLogic extends Logic
         if (!empty($data)) {
             $fp = @fopen($filePath, 'ab');
             if ($fp) {
-                $data  = json_encode($data);
+                $data = '[' . date('Y-m-d H:i:s') . '] ' . json_encode($data);
                 @flock($fp, LOCK_EX);
                 fwrite($fp, $data . PHP_EOL);
                 @flock($fp, LOCK_UN);

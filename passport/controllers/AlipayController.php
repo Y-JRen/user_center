@@ -37,7 +37,7 @@ class AlipayController extends \yii\web\Controller
     public function actionNotify()
     {
         $post = Yii::$app->request->post();
-        ApiLogsLogic::instance()->addLogs('alipay', json_encode($post));
+        ApiLogsLogic::instance()->addLogs('alipay.data', json_encode($post));
 
         $alipay = new PayCore(Config::getAlipayConfig());
         $result = $alipay->check($post);
@@ -63,7 +63,7 @@ class AlipayController extends \yii\web\Controller
     public function actionMobile()
     {
         $post = Yii::$app->request->post();
-        ApiLogsLogic::instance()->addLogs('alipay', json_encode($post));
+        ApiLogsLogic::instance()->addLogs('alipay.data', json_encode($post));
 
         $alipay = new \AlipayNotify(Config::getAlipayMobileConfig());
         $result = $alipay->verifyNotify();

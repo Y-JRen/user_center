@@ -10,6 +10,7 @@ namespace passport\controllers;
 
 
 use common\lib\pay\wechat\PayCore;
+use common\logic\ApiLogsLogic;
 use dosamigos\qrcode\QrCode;
 use passport\modules\pay\logic\OrderLogic;
 use Yii;
@@ -88,7 +89,7 @@ class DefaultController extends Controller
     public function actionWechatNotifyBak()
     {
         $json = Yii::$app->request->post('json');
-        $data = json_decode($json,true);
+        $data = json_decode($json, true);
         $pay = PayCore::instance();
         if (empty($data)) {
             $return = [
@@ -130,6 +131,10 @@ class DefaultController extends Controller
     public function actionLakalaNotify()
     {
         $post = Yii::$app->request->post();
+
+        Yii::info(json_encode($post));
+
+        ApiLogsLogic::instance()->addLogs('lakala.data', json_encode($post));
 
         if (OrderLogic::instance()->lakalaNotify($post)) {
             echo 'success';
