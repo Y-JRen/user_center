@@ -18,19 +18,18 @@ use yii\grid\GridView;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+//            'id',
             'order_id',
-            'account_id',
+//            'account_id',
             'account',
             'back_order',
-
-            // 'org',
+             'org',
             // 'org_id',
             // 'type_id',
-            // 'type',
-            // 'transaction_time:datetime',
+             'type',
+             'transaction_time:datetime',
             // 'remark:ntext',
-            // 'amount',
+             'amount',
             // 'att_ids',
 //             'status',
             [
@@ -49,6 +48,19 @@ use yii\grid\GridView;
                 }
             ],
             // 'method',
+            [
+                'attribute' => 'method',
+                'label' => '支付方式',
+                'value' => function($model){
+                    if($model->method==1){
+                        return '支付宝';
+                    }elseif($model->method==2){
+                        return '微信';
+                    }elseif($model->method==3){
+                        return '银行卡';
+                    }
+                }
+            ],
             // 'created_at',
 
             ['class' => 'yii\grid\ActionColumn',

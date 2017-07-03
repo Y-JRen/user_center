@@ -51,6 +51,30 @@ class TransferConfirm extends BaseModel
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'order_id' => '订单号',
+            'account_id' => '公司收款账号id',
+            'account' => '收款账号',
+            'back_order' => '银行流水号',
+            'org' => '机构',
+            'org_id' => '机构id',
+            'type_id' => '类型id',
+            'type' => '类型',
+            'transaction_time' => '到账时间',
+            'remark' => '标记',
+            'amount' => '金额',
+            'att_ids' => '附件id',
+            'status' => '推送状态',
+            'created_at' => '创建时间',
+        ];
+    }
+
     public function getOrder()
     {
         return $this->hasOne(Order::className(), ['order_id' => 'order_id']);

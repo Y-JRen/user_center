@@ -18,21 +18,20 @@ use yii\grid\GridView;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+//            'id',
             'order_id',
-            'account_id',
+//            'account_id',
             'account',
             'back_order',
-            // 'org',
+             'org',
             // 'org_id',
             // 'type_id',
-            // 'type',
-            // 'transaction_time:datetime',
+             'type',
+             'transaction_time:datetime',
             // 'remark:ntext',
-            // 'amount',
+             'amount',
             // 'att_ids',
 //             'status',
-
             [
                 'label'=>'推送状态',
                 'attribute'=>'status',
@@ -48,10 +47,8 @@ use yii\grid\GridView;
                     };
                 }
             ],
-
             // 'method',
             // 'created_at',
-
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{view2}',
                 'buttons' => [
