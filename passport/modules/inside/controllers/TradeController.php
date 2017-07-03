@@ -89,6 +89,16 @@ class TradeController extends BaseController
             }
         }
 
+        $type = Yii::$app->request->get('type');
+        if (!empty($type)) {
+            $query->andFilterWhere(['order_type' => $type]);
+        }
+
+        $status = Yii::$app->request->get('status');
+        if (!empty($status)) {
+            $query->andFilterWhere(['status' => $status]);
+        }
+
         $data = new ActiveDataProvider([
             'query' => $query,
         ]);
