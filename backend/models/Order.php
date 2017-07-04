@@ -108,6 +108,7 @@ class Order extends \common\models\Order
         'alipay_app' => '支付宝APP支付',
         'alipay_mobile' => '支付宝移动支付',
         'line_down' => '线下充值',
-        'bank' => '银行'
+        'bank' => '银行',
+        'lakala' => '拉卡拉POS机'
     ];
 }
