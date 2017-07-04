@@ -49,6 +49,7 @@ class OrderController extends AuthController
         }
 
         $model = new OrderForm();
+        $param['notice_status'] = 1;
         if ($model->load($param, '') && $model->save()) {// 创建充值订单
             $result = PayLogic::instance()->pay($model);
 
@@ -76,6 +77,7 @@ class OrderController extends AuthController
             return $this->_error(2007);
         }
         $model = new OrderForm();
+        $param['notice_status'] = 1;
         if ($model->load($param, '') && $model->save()) {
             $model->consumeSave();
 
