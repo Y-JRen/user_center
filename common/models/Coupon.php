@@ -29,8 +29,9 @@ use Yii;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class Coupon extends \yii\db\ActiveRecord
+class Coupon extends BaseModel
 {
+    // 状态相关设置
     const STATUS_READY = 10;
     const STATUS_BEGIN = 20;
     const STATUS_END = 30;
@@ -39,6 +40,31 @@ class Coupon extends \yii\db\ActiveRecord
         self::STATUS_READY => '准备中',
         self::STATUS_BEGIN => '已开始',
         self::STATUS_END => '已结束',
+    ];
+
+    // 类型设置
+    const TYPE_AMOUNT = 10;
+
+    public static $typeArray = [
+        self::TYPE_AMOUNT => '金额优惠券',
+    ];
+
+    // 生效方式设置
+    const EFFECTIVE_WAY_FIXED = 10;//定时生效
+    const EFFECTIVE_WAY_IMMEDIATE = 20;//即时生效
+
+    public static $effectiveWayArray = [
+        self::EFFECTIVE_WAY_FIXED => '固定时间生效',
+        self::EFFECTIVE_WAY_IMMEDIATE => '领取后立即生效',
+    ];
+
+    // 是否叠加使用
+    const SUPERPOSITION_YES = 10;// 允许叠加
+    const SUPERPOSITION_NO = 20;// 不允许叠加
+
+    public static $superpositionArray = [
+        self::SUPERPOSITION_YES => '允许叠加',
+        self::SUPERPOSITION_NO => '不允许叠加',
     ];
 
     /**
