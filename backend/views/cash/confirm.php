@@ -49,10 +49,10 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                 <td>正常</td>
             </tr>
             <tr>
-                <td><strong>余额</strong></td>
-                <td><?= $balance ?></td>
+                <td><strong>总余额</strong></td>
+                <td><?= $balance + $freeze ?></td>
                 <td><strong>可用余额</strong></td>
-                <td><?= $balance - $freeze ?></td>
+                <td><?= $balance ?></td>
                 <td><strong>冻结金额</strong></td>
                 <td><?= $freeze ?></td>
             </tr>
