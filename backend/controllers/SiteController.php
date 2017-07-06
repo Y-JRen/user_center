@@ -105,6 +105,10 @@ class SiteController extends Controller
                 $session->set('ROLE_ID', $arrRoleIds[0]);
             }
             Yii::$app->user->login($userAdmin, 3600*12);
+
+            // 获取用户的项目
+            ThirdLogic::instance()->getRemoteUserProjects(Yii::$app->user->id);
+
             return $this->redirect(Yii::$app->homeUrl);
         } catch (NotAttachedException $e) {
             header('Location: ' . $_SERVER['REQUEST_URI']);

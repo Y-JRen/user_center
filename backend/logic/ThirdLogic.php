@@ -24,15 +24,15 @@ use yii\helpers\ArrayHelper;
 class ThirdLogic extends Logic
 {
     public $baseUrl;
-    
+
     public $_token;
-    
+
     public function init()
     {
         $this->baseUrl = \Yii::$app->params['power']['apiUrl'];
         $this->_token = \Yii::$app->params['power']['token'];
     }
-    
+
     /**
      * 获取用户
      */
@@ -45,12 +45,12 @@ class ThirdLogic extends Logic
             'show_deleted' => 1,
         ];
         $data = [];
-        $returnData = HttpLogic::instance()->http($this->baseUrl.$url, 'POST', $arrPost);
+        $returnData = HttpLogic::instance()->http($this->baseUrl . $url, 'POST', $arrPost);
         $returnData = json_decode($returnData, true);
-        if( $returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
-            &&!empty($returnData['data']['data']))
-        {
-            foreach($returnData['data']['data'] as $val) {
+        if ($returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
+            && !empty($returnData['data']['data'])
+        ) {
+            foreach ($returnData['data']['data'] as $val) {
                 $data[] = [
                     $val['id'],
                     $val['name'],
@@ -60,15 +60,15 @@ class ThirdLogic extends Logic
                     $val['email'],
                     $val['phone'],
                     $val['bqq_open_id'],
-                    implode(',',ArrayHelper::getColumn($val['roles'], 'id'))
+                    implode(',', ArrayHelper::getColumn($val['roles'], 'id'))
                 ];
             }
         }
         $db = \Yii::$app->db;
         $transaction = $db->beginTransaction();
-        try{
+        try {
             $db->createCommand()->delete('admin_user')->execute();
-            $db->createCommand()->batchInsert('admin_user',[
+            $db->createCommand()->batchInsert('admin_user', [
                 'id', 'name', 'org_id', 'is_delete', 'profession', 'email', 'phone', 'bqq_open_id', 'role_ids'
             ], $data)->execute();
             $transaction->commit();
@@ -78,7 +78,7 @@ class ThirdLogic extends Logic
             throw $e;
         }
     }
-    
+
     /**
      * 获取菜单树形结构
      *
@@ -91,14 +91,15 @@ class ThirdLogic extends Logic
             '_token' => $this->_token,
             'per_page' => 100000,
         ];
-        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl.$url, 'POST', $arrPost), true);
-        if( $returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
-            &&!empty($returnData['data'])) {
+        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl . $url, 'POST', $arrPost), true);
+        if ($returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
+            && !empty($returnData['data'])
+        ) {
             return $returnData['data'];
         }
         return [];
     }
-    
+
     /**
      * 获取 角色权限
      *
@@ -111,11 +112,12 @@ class ThirdLogic extends Logic
         $arrPost = [
             '_token' => $this->_token,
         ];
-        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl.$url, 'POST', $arrPost), true);
-        if( $returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
-            &&!empty($returnData['data'])) {
+        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl . $url, 'POST', $arrPost), true);
+        if ($returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
+            && !empty($returnData['data'])
+        ) {
             $data = [];
-            foreach($returnData['data']['data'] as $val) {
+            foreach ($returnData['data']['data'] as $val) {
                 $data[] = [
                     $val['id'],
                     $val['name'],
@@ -141,7 +143,7 @@ class ThirdLogic extends Logic
         }
         return [];
     }
-    
+
     /**
      * 获取菜单树形结构
      *
@@ -154,11 +156,49 @@ class ThirdLogic extends Logic
             '_token' => $this->_token,
             'per_page' => 100000,
         ];
-        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl.$url, 'POST', $arrPost), true);
-        if( $returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
-            &&!empty($returnData['data'])) {
+        $returnData = json_decode(HttpLogic::instance(['debug' => 0])->http($this->baseUrl . $url, 'POST', $arrPost), true);
+        if ($returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])
+            && !empty($returnData['data'])
+        ) {
             return $returnData['data']['data'];
         }
         return [];
+    }
+
+    /**
+     * 远程获取用户的项目，更新缓存
+     * @param $id
+     */
+    public function getRemoteUserProjects($id)
+    {
+        $url = "users/{$id}/projects";
+        $arrGet = [
+            '_token' => $this->_token,
+        ];
+
+        $requestUrl = $this->baseUrl . $url . '?' . http_build_query($arrGet);
+
+        $returnData = json_decode(HttpLogic::instance()->http($requestUrl, 'GET'), true);
+        if ($returnData['success'] == 1 && is_array($returnData['data']) && !empty($returnData['data'])) {
+            $redis = \Yii::$app->redis;
+            $redis->set(self::getUserProjectsRedisKey($id), json_encode($returnData['data']));
+            $redis->expire(self::getUserProjectsRedisKey($id), 86400);
+        }
+    }
+
+    public function getUserProjects($id)
+    {
+        $redis = \Yii::$app->redis;
+        $data = json_decode($redis->get(self::getUserProjectsRedisKey($id)), true);
+        if (is_array($data)) {
+            return $data;
+        } else {
+            return [];
+        }
+    }
+
+    public static function getUserProjectsRedisKey($id)
+    {
+        return 'UserProjects' . $id;
     }
 }
