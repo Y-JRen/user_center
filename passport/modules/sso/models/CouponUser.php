@@ -10,9 +10,12 @@ namespace passport\modules\sso\models;
 
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class CouponUser extends \common\models\CouponUser
 {
+    public $statusName;
+
     /**
      * @inheritdoc
      */
@@ -27,11 +30,44 @@ class CouponUser extends \common\models\CouponUser
     }
 
     /**
+     * 获取关联的优惠券
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCoupon()
+    {
+        return $this->hasOne(Coupon::className(), ['id' => 'coupon_id']);
+    }
+
+    /**
      * 生成券码
      * @return string
      */
     public function generateCode()
     {
         return Yii::$app->security->generateRandomString(12);
+    }
+
+    public function fields()
+    {
+        $data['name'] = function ($model) {
+            return ArrayHelper::getValue($model->coupon, 'name');
+        };
+        $data['short_name'] = function ($model) {
+            return ArrayHelper::getValue($model->coupon, 'short_name');
+        };
+        $data['image'] = function ($model) {
+            return ArrayHelper::getValue($model->coupon, 'image');
+        };
+        $data['amount'] = function ($model) {
+            return ArrayHelper::getValue($model->coupon, 'amount');
+        };
+        $data['tips'] = function ($model) {
+            return ArrayHelper::getValue($model->coupon, 'tips');
+        };
+        $data['desc'] = function ($model) {
+            return ArrayHelper::getValue($model->coupon, 'desc');
+        };
+
+        return ArrayHelper::merge($data, parent::fields());
     }
 }
