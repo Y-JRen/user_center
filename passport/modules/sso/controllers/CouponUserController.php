@@ -13,6 +13,8 @@ use passport\modules\sso\models\CouponUser;
 use Yii;
 use passport\controllers\AuthController;
 use yii\base\InvalidParamException;
+use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 
 class CouponUserController extends AuthController
 {
@@ -69,6 +71,39 @@ class CouponUserController extends AuthController
         } else {
             return $this->_return('领取失败了，再试一次、、、');
         }
+    }
+
+    public function actionList()
+    {
+        $query = CouponUser::find()->where(['uid' => Yii::$app->user->id]);
+
+        $status = Yii::$app->request->get('status');
+        if (!empty($status)) {
+            $query->andFilterWhere(['status' => $status]);
+        }
+
+        $valid = Yii::$app->request->get('valid', false);
+        if ($valid) {
+            $currentTime = time();
+            $query->andFilterWhere(['<=', 'start_valid_time', $currentTime]);
+            $query->andFilterWhere(['>', 'end_valid_time', $currentTime]);
+        }
+
+        $data = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $pagination = new Pagination(['totalCount' => $query->count()]);
+
+        return $this->_return([
+            'list' => $data->getModels(),
+            'pages' => [
+                'totalCount' => intval($pagination->totalCount),
+                'pageCount' => $pagination->getPageCount(),
+                'currentPage' => $pagination->getPage() + 1,
+                'perPage' => $pagination->getPageSize(),
+            ]
+        ]);
     }
 
     /**
