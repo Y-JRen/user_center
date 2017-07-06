@@ -33,6 +33,11 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
 
         <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
+        <?php if ($model->image): ?>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-8"><?= Html::img($model->image, ['height' => '100px']) ?></div>
+            </div>
+        <?php endif; ?>
         <?= $form->field($model, 'image')->fileInput() ?>
 
         <?= $form->field($model, 'type')->dropDownList(Coupon::$typeArray) ?>
@@ -44,15 +49,15 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
         <?= $form->field($model, 'effective_way')->radioList(Coupon::$effectiveWayArray) ?>
 
         <div class="markEffectiveWay mark<?= Coupon::EFFECTIVE_WAY_FIXED ?>" style="display: none;">
-            <?= $form->field($model, 'start_time')->textInput(['class' => 'form-control markDataTime']) ?>
+            <?= $form->field($model, 'start_time_fix')->textInput(['class' => 'form-control markDataTime']) ?>
 
-            <?= $form->field($model, 'end_time')->textInput(['class' => 'form-control markDataTime']) ?>
+            <?= $form->field($model, 'end_time_fix')->textInput(['class' => 'form-control markDataTime']) ?>
         </div>
 
         <div class="markEffectiveWay mark<?= Coupon::EFFECTIVE_WAY_IMMEDIATE ?>" style="display: none;">
-            <?= $form->field($model, 'start_time')->dropDownList(Coupon::$startTimeArray)->label('领取后') ?>
+            <?= $form->field($model, 'start_time_immediate')->dropDownList(Coupon::$startTimeArray) ?>
 
-            <?= $form->field($model, 'end_time')->textInput()->label('生效时长')->hint('天') ?>
+            <?= $form->field($model, 'end_time_immediate')->textInput()->hint('天') ?>
         </div>
 
         <?= $form->field($model, 'upper_limit')->textInput(['maxlength' => true]) ?>
@@ -85,6 +90,8 @@ $js = <<<JS
         autoclose: true,//自动关闭
         minView: 1//最精准的时间选择为日期0-分 1-时 2-日 3-月
     });
+
+    effectiveShow();
 
     $('input[name="Coupon[effective_way]"]').change(function() {
        effectiveShow();
