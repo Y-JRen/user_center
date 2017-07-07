@@ -20,7 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $brand_name
  * @property integer $brand_id
  * @property string $insurance_end_date
- * @property integer $insurance_price
+ * @property string $insurance_price
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
@@ -45,10 +45,11 @@ class CarManagement extends BaseModel
     {
         return [
             [['uid', 'plate_number', 'frame_number', 'engine_number', 'car_brand_son_type_name', 'car_brand_son_type_id', 'car_brand_type_name', 'car_brand_type_id', 'brand_name', 'brand_id', 'insurance_end_date', 'insurance_price', 'status'], 'required'],
-            [['uid', 'car_brand_son_type_id', 'car_brand_type_id', 'brand_id', 'insurance_price', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['uid', 'car_brand_son_type_id', 'car_brand_type_id', 'brand_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['insurance_end_date'], 'safe'],
             [['plate_number'], 'string', 'max' => 10],
             [['frame_number', 'engine_number', 'car_brand_son_type_name', 'car_brand_type_name', 'brand_name'], 'string', 'max' => 100],
+            [['insurance_price'], 'string', 'max' => 30],
         ];
     }
 
