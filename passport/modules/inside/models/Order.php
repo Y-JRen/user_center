@@ -22,7 +22,7 @@ class Order extends \common\models\Order
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            ['platform_order_id', 'validatorPlatformOrderId'],
+//            ['platform_order_id', 'validatorPlatformOrderId'],
         ];
     }
 
@@ -74,6 +74,27 @@ class Order extends \common\models\Order
         $model->order_type = self::TYPE_CONSUME;
         $model->order_subtype = self::SUB_TYPE_LOAN_RECORD;
         $model->desc = "订单号：[{$model->platform_order_id}]贷款进入冻结金额";
+        if ($model->save()) {
+            return $model;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 添加消费订单
+     * @param array $data
+     * @return bool|Order
+     */
+    public function createConsumeOrder($data = [])
+    {
+        $model = new self();
+        $model->uid = $this->uid;
+        $model->platform_order_id = $this->platform_order_id;
+        $model->amount = $this->amount;
+        $model->order_type = self::TYPE_CONSUME;
+        $model->notice_status = 4;
+        $model->load($data, '');
         if ($model->save()) {
             return $model;
         } else {
