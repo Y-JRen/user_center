@@ -75,6 +75,7 @@ class OrderController extends BaseController
                 throw $e;
             }
         } else {
+            Yii::error(var_export($model->getErrors(),true), 'actionLoan');
             return $this->_error(2401);
         }
     }

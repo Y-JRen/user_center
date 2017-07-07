@@ -25,11 +25,12 @@ class Order extends \common\models\Order
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            ['platform_order_id', 'validatorPlatformOrderId'],
+//            ['platform_order_id', 'validatorPlatformOrderId'],
         ];
     }
 
     /**
+     * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
      * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
      * @return bool
      */
