@@ -189,6 +189,7 @@ class OrderController extends BaseController
                 throw new Exception('增加用户冻结余额失败');
             }
 
+            unset($consumeModel->userFreeze);
             if (!$consumeModel->userFreeze->less($consumeModel->amount)) {
                 throw new Exception('扣除用户冻结余额失败');
             }
