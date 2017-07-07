@@ -29,12 +29,12 @@ class Order extends \common\models\Order
         ];
     }
 
-    /**
-     * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
-     * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
-     * @return bool
-     */
-    public function validatorPlatformOrderId()
+        /**
+         * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
+         * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
+         * @return bool
+         */
+        public function validatorPlatformOrderId()
     {
         if ($this->order_type != self::TYPE_RECHARGE) {
             return true;
@@ -78,6 +78,26 @@ class Order extends \common\models\Order
         $model->order_type = self::TYPE_CONSUME;
         $model->order_subtype = self::SUB_TYPE_LOAN_RECORD;
         $model->desc = "订单号：[{$model->platform_order_id}]贷款进入冻结金额";
+        if ($model->save()) {
+            return $model;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 添加消费订单
+     * @param array $data
+     * @return bool|Order
+     */
+    public function createConsumeOrder($data = [])
+    {
+        $model = new self();
+        $model->uid = $this->uid;
+        $model->platform_order_id = $this->platform_order_id;
+        $model->amount = $this->amount;
+        $model->order_type = self::TYPE_CONSUME;
+        $model->load($data, '');
         if ($model->save()) {
             return $model;
         } else {
