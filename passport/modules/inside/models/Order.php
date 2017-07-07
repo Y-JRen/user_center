@@ -97,6 +97,7 @@ class Order extends \common\models\Order
         $model->platform_order_id = $this->platform_order_id;
         $model->amount = $this->amount;
         $model->order_type = self::TYPE_CONSUME;
+        $model->notice_status = 4;
         $model->load($data, '');
         if ($model->save()) {
             return $model;

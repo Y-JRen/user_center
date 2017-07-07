@@ -140,7 +140,7 @@ class OrderController extends BaseController
         $transaction_time = Yii::$app->request->post('transaction_time');// Y-m-d H:i:s 格式
 
         $subtype = Yii::$app->request->post('subtype');
-        if (!in_array($subtype, ['tamll'])) {
+        if (!in_array($subtype, ['tmall'])) {
             return $this->_error(2007, '类型参数有误');
         }
 
@@ -155,9 +155,11 @@ class OrderController extends BaseController
             $recharge = new Order();
             $recharge->order_type = Order::TYPE_RECHARGE;
             $recharge->order_subtype = $subtype;
-            $recharge->load(Yii::$app->request->post());
+            $recharge->notice_status = 4;
+            $recharge->load(Yii::$app->request->post(), '');
 
             if (!$recharge->save()) {
+                Yii::error(var_export($recharge->errors, true), 'actionBill');
                 throw new Exception('保存充值订单失败');
             }
 
@@ -172,7 +174,7 @@ class OrderController extends BaseController
             // 添加消费订单
             $consumeArr = [
                 'order_subtype' => $subtype,
-                'desc' => '订单号：[{$model->platform_order_id}]的天猫消费订单'
+                'desc' => "订单号：[{$recharge->platform_order_id}]的天猫消费订单"
             ];
 
             if (!$consumeModel = $recharge->createConsumeOrder($consumeArr)) {
@@ -191,7 +193,7 @@ class OrderController extends BaseController
                 throw new Exception('扣除用户冻结余额失败');
             }
 
-            if (!$consumeModel->setOrderProcessing()) {
+            if (!$consumeModel->setOrderSuccess()) {
                 throw new Exception('更新消费订单状态失败');
             }
 
