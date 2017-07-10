@@ -29,28 +29,28 @@ class CouponUserController extends AuthController
 
         // 检测活动是否结束
         if ($coupon->status == Coupon::STATUS_END) {
-            return $this->_return('该卡券领取活动已结束');
+            return $this->_return(null, 0, '该卡券领取活动已结束');
         }
 
         // 检测卡券领取时间是否正确
         if ($currentTime < $coupon->receive_start_time) {
-            return $this->_return('领取时间未到');
+            return $this->_return(null, 0, '领取时间未到');
         }
 
         if ($currentTime >= $coupon->receive_end_time) {
-            return $this->_return('领取时间已过');
+            return $this->_return(null, 0, '领取时间已过');
         }
 
         // 库存数量
         $count = CouponUser::find()->where(['coupon_id' => $couponId])->count();
         if ($count >= $coupon->number) {
-            return $this->_return('已全部领取完毕');
+            return $this->_return(null, 0, '已全部领取完毕');
         }
 
         // 用户领取的数量
         $userCount = CouponUser::find()->where(['coupon_id' => $couponId, 'uid' => Yii::$app->user->id])->count();
         if ($userCount >= $coupon->upper_limit) {
-            return $this->_return('您已达到领取的上限');
+            return $this->_return(null, 0, '您已达到领取的上限');
         }
 
         // 发放卡券给用户
@@ -69,7 +69,7 @@ class CouponUserController extends AuthController
         if ($model->save()) {
             return $this->_return($model);
         } else {
-            return $this->_return('领取失败了，再试一次、、、');
+            return $this->_return(null, 0, '领取失败了，再试一次、、、');
         }
     }
 
