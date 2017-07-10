@@ -24,7 +24,7 @@ class CouponUserController extends AuthController
     public function actionGet()
     {
         $currentTime = time();
-        $couponId = Yii::$app->request->get('coupon_id');
+        $couponId = Yii::$app->request->post('coupon_id');
         $coupon = $this->findModel($couponId);
 
         // 检测活动是否结束
