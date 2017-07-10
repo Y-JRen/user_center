@@ -30,8 +30,8 @@ class SmsLogic extends Logic
     private static $yy_apptoken = 'e6cd6def0fcf4c71942c810aff1561ef';
 
     protected $sms_tpl = [
-        '1' => '【车城用户中心】您好，您的验证码是%s。退订回T',//注册短信
-        '2' => '【车城用户中心】您好，您的验证码是%s。退订回T',//注册短信
+        '1' => '【车城】您好，您的验证码是%s。退订回T',//注册短信
+        '2' => '【车城】您好，您的验证码是%s。退订回T',//注册短信
     ];
 
     /**
