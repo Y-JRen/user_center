@@ -9,6 +9,7 @@
 namespace passport\controllers;
 
 
+use common\lib\pay\lakala\LakalaCore;
 use common\lib\pay\wechat\PayCore;
 use common\logic\ApiLogsLogic;
 use dosamigos\qrcode\QrCode;
@@ -132,11 +133,12 @@ class DefaultController extends Controller
     {
         $post = Yii::$app->request->post();
 
-        Yii::info(json_encode($post));
-
         ApiLogsLogic::instance()->addLogs('lakala.data', json_encode($post));
 
-        if (OrderLogic::instance()->lakalaNotify($post)) {
+        $lakala = new LakalaCore(['publicKeyPath' => Yii::$app->params['pay']['lakala']['public_key']]);
+        $result = $lakala->verifyNotify();
+
+        if ($result && OrderLogic::instance()->lakalaNotify($post)) {
             echo 'success';
         } else {
             echo 'fail';
