@@ -2,6 +2,7 @@
 
 namespace passport\modules\sso\controllers;
 
+use passport\controllers\AuthController;
 use passport\modules\sso\models\CarManagement;
 use Yii;
 use yii\base\InvalidParamException;
@@ -11,7 +12,7 @@ use yii\data\Pagination;
 /**
  * CarManagementController implements the CRUD actions for CarManagement model.
  */
-class CarManagementController extends BaseController
+class CarManagementController extends AuthController
 {
     /**
      * Lists all CarManagement models.
