@@ -64,7 +64,7 @@ class CarManagementController extends BaseController
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->_return('添加成功');
         } else {
-            Yii::error(json_encode($model->getErrors()));
+            Yii::error(var_export($model->getErrors(), true), 'actionCreate');
             return $this->_error(1102, current($model->getFirstErrors()));
         }
     }
