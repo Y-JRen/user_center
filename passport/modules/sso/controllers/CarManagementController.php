@@ -60,11 +60,12 @@ class CarManagementController extends BaseController
     {
         $model = new CarManagement();
         $model->status = CarManagement::STATUS_SHOW;
+        $model->uid = Yii::$app->user->id;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             return $this->_return('添加成功');
         } else {
-            Yii::error(var_export($model->getErrors(), true), 'actionCreate');
+            Yii::error(json_encode($model->getErrors()));
             return $this->_error(1102, current($model->getFirstErrors()));
         }
     }
@@ -80,7 +81,7 @@ class CarManagementController extends BaseController
         $model = $this->findModel($id);
         $model->setScenario(CarManagement::SCENARIO_UPDATE);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             return $this->_return('更新成功');
         } else {
             Yii::error(json_encode($model->getErrors()));
