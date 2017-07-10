@@ -9,6 +9,8 @@
 namespace passport\modules\sso\models;
 
 
+use yii\helpers\ArrayHelper;
+
 class CarManagement extends \common\models\CarManagement
 {
     const SCENARIO_UPDATE = 'update';
@@ -18,11 +20,10 @@ class CarManagement extends \common\models\CarManagement
     {
         $data = $this->attributes;
         unset($data['id'], $data['uid'], $data['status']);
-        return [
-            self::SCENARIO_DEFAULT => [],
+        return ArrayHelper::merge(parent::scenarios(), [
             self::SCENARIO_UPDATE => $data,
             self::SCENARIO_DELETE => ['status', 'updated_at'],
-        ];
+        ]);
     }
 
     public function getUser()
