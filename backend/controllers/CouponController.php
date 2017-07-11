@@ -3,11 +3,11 @@
 namespace backend\controllers;
 
 use common\lib\Upload;
+use backend\models\CouponUser;
 use Yii;
 use backend\models\Coupon;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
-use yii\web\UploadedFile;
 
 /**
  * CouponController implements the CRUD actions for Coupon model.
@@ -82,6 +82,22 @@ class CouponController extends BaseController
 
         return $this->render('update', [
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * 领取详情
+     * @param  $id int
+     * @return string
+     */
+    public function actionUserCoupon($id)
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => CouponUser::find()->where(['coupon_id' => $id]),
+        ]);
+
+        return $this->render('user-coupon', [
+            'dataProvider' => $dataProvider,
         ]);
     }
 
