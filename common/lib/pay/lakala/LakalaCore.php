@@ -21,12 +21,12 @@ class LakalaCore extends yii\base\Object
         if (empty($post)) {
             return false;
         } else {
-            $data = ArrayHelper::getValue($post, 'data');
+            $dataArr = json_decode(ArrayHelper::getValue($post, 'data'), true);
             $sign = ArrayHelper::getValue($post, 'sign');
 
             // 生成验签字符串
-            $dataArr = json_decode($data, true);
-            $content = $this->createLinkString($dataArr);
+            $data = $this->argSort($dataArr);
+            $content = $this->createLinkString($data);
 
             // 解析public_key
             $pubKey = file_get_contents($this->publicKeyPath);

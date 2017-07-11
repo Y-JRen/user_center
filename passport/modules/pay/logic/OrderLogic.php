@@ -236,17 +236,21 @@ class OrderLogic extends Logic
 
     /**
      * 拉卡拉POS机回调
-     * @param $params
+     * @param $post
+     * @return bool
+     * @throws Exception
      */
-    public function lakalaNotify($params)
+    public function lakalaNotify($post)
     {
+        $params = json_decode(ArrayHelper::getValue($post, 'data'), true);
         $orderId = ArrayHelper::getValue($params, 'out_trade_no');// 商家订单号
         if (!$orderId) {
             return false;
         }
 
         $order = OrderForm::findOne(['order_id' => $orderId]);
-        $amount = ArrayHelper::getValue($params, 'total_fee');// 订单金额
+        $totalFee = (int)ArrayHelper::getValue($params, 'total_fee');// 订单金额
+        $amount = $totalFee/100;
         if ($order && $order->amount <= $amount) {// 有手续费,所以可能小于
             $transaction = Yii::$app->db->beginTransaction();
             try {
@@ -288,10 +292,10 @@ class OrderLogic extends Logic
 
                 // 添加充值到账的记录,并推送到财务系统 @todo 拉卡拉pos机流水账号，其他参数未好
                 Yii::$app->queue_second->push(new RechargePushJob([
-                    'back_order' => ArrayHelper::getValue($params, 'trade_no'),
+                    'back_order' => ArrayHelper::getValue($params, 'transaction_id'),
                     'order_id' => $order->order_id,
                     'amount' => $order->amount,
-                    'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
+                    'transaction_time' => ArrayHelper::getValue($params, 'time_end'),
                     'method' => 3,//拉卡拉
                     'uid' => $order->uid
                 ]));
@@ -299,6 +303,7 @@ class OrderLogic extends Logic
                 return true;
             } catch (Exception $e) {
                 $transaction->rollBack();
+                Yii::error($e->getMessage());
                 throw $e;
             }
         }
