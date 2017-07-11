@@ -8,14 +8,12 @@
 
 namespace passport\modules\inside\controllers;
 
-
 use common\jobs\RechargePushJob;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use passport\modules\inside\models\Order;
 use Yii;
 use yii\base\Exception;
-use yii\helpers\ArrayHelper;
 
 class OrderController extends BaseController
 {
@@ -129,8 +127,8 @@ class OrderController extends BaseController
         }
     }
 
-
     /**
+     * 天猫走账
      * @return array
      * @throws Exception
      */
@@ -167,6 +165,10 @@ class OrderController extends BaseController
                 throw new Exception('添加用户可用余额失败');
             }
 
+            if (!$recharge->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$recharge->setOrderSuccess()) {
                 throw new Exception('更新充值订单状态失败');
             }
@@ -185,12 +187,24 @@ class OrderController extends BaseController
                 throw new Exception('扣除用户可用余额失败');
             }
 
+            if (!$consumeModel->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$consumeModel->userFreeze->plus($consumeModel->amount)) {
                 throw new Exception('增加用户冻结余额失败');
             }
 
+            if (!$consumeModel->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                throw new Exception('添加冻结资金流水记录失败');
+            }
+
             if (!$consumeModel->userFreeze->less($consumeModel->amount)) {
                 throw new Exception('扣除用户冻结余额失败');
+            }
+
+            if (!$consumeModel->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$consumeModel->setOrderSuccess()) {
