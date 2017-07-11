@@ -6,7 +6,8 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-
+$this->title = '收款推送一览';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="recharge-confirm-index">
 

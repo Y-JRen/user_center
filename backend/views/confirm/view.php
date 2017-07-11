@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model common\models\RechargeConfirm */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Recharge Confirms', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => '收款推送一览', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="recharge-confirm-view">
