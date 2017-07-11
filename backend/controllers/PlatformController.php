@@ -12,7 +12,7 @@ use yii\filters\VerbFilter;
 /**
  * PlatformController implements the CRUD actions for Platform model.
  */
-class PlatformController extends Bas
+class PlatformController extends BaseController
 {
     /**
      * Lists all Platform models.
