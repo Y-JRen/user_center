@@ -9,6 +9,7 @@
 namespace common\jobs;
 
 use common\logic\CrmLogic;
+use common\models\Order;
 use common\models\RechargeConfirm;
 use Yii;
 use yii\base\Object;
@@ -26,13 +27,20 @@ class RechargePushJob extends Object implements Job
 
     public function execute($queue)
     {
+        $order = Order::find()->where(['order_id' => $this->order_id])->asArray()->one();
         $status = 1;
         switch ($this->method) {
             case 1;
-                $config = Yii::$app->params['recharge_push']['alipay'];
+                $alipay = Yii::$app->params['recharge_push']['alipay'];
+                $subtype = ArrayHelper::getValue($order, 'order_subtype');
+                $key = (($subtype == 'tmall') ? 'app@che.com' : 'default');
+                $config = ArrayHelper::getValue($alipay, $key);
                 break;
             case 2:
                 $config = Yii::$app->params['recharge_push']['wechat'];
+                break;
+            case 3:
+                $config = Yii::$app->params['recharge_push']['lakala'];
                 break;
             default:
                 echo '充值方式错误';
@@ -43,9 +51,7 @@ class RechargePushJob extends Object implements Job
         if ($orgInfo) {
             $org_id = ArrayHelper::getValue($orgInfo, 'shop_id');
             $org = ArrayHelper::getValue($orgInfo, 'shop_name');
-            $salesman_id = ArrayHelper::getValue($orgInfo, 'salesman_id');
-            $salesman_name = ArrayHelper::getValue($orgInfo, 'salesman_name');
-            $remark = json_encode(["salesman_id" => $salesman_id, 'salesman_name' => $salesman_name]);
+            $remark = '';
         } else {
             $org_id = 0;
             $org = '获取组织信息失败';

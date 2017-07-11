@@ -151,6 +151,7 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getUserBalance()
     {
+        unset($this->balance);
         $object = $this->balance;
         if (empty($object)) {
             $object = new UserBalance();
@@ -176,6 +177,7 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getUserFreeze()
     {
+        unset($this->freeze);
         $object = $this->freeze;
         if (empty($object)) {
             $object = new UserFreeze();
