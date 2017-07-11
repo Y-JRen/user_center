@@ -13,23 +13,8 @@ use yii\filters\VerbFilter;
 /**
  * RechargeConfirmController implements the CRUD actions for RechargeConfirm model.
  */
-class ConfirmController extends Controller
+class ConfirmController extends BaseController
 {
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
     /**
      * Lists all RechargeConfirm models.
      * @return mixed
