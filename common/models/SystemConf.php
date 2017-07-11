@@ -15,7 +15,7 @@ use Yii;
  * @property integer $disabled
  * @property integer $is_show
  */
-class SystemConf extends \yii\db\ActiveRecord
+class SystemConf extends BaseModel
 {
     /**
      * @inheritdoc
@@ -34,7 +34,8 @@ class SystemConf extends \yii\db\ActiveRecord
             [['key', 'label', 'value'], 'required'],
             [['value'], 'string'],
             [['disabled', 'is_show'], 'integer'],
-            [['key', 'label', 'type', 'remark'], 'string', 'max' => 255],
+            [['key'], 'string', 'max' => 100],
+            [['label', 'type', 'remark'], 'string', 'max' => 255],
         ];
     }
 
