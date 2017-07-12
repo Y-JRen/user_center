@@ -8,6 +8,9 @@ $model = new \common\models\SystemConf();
 /* @var $this yii\web\View */
 /* @var $model common\models\SystemConf */
 /* @var $form yii\widgets\ActiveForm */
+
+$this->title = '拉卡拉支付费率设置';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="system-conf-update">
 
