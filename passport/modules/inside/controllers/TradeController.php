@@ -76,7 +76,9 @@ class TradeController extends BaseController
      */
     public function actionSearch($key)
     {
-        $query = Order::find();
+        $sort = Yii::$app->request->get('sort', 'desc');
+
+        $query = Order::find()->orderBy("id {$sort}");
         if (strlen($key) > 11)// 订单号
         {
             $query->where(['order_id' => $key]);
@@ -92,6 +94,11 @@ class TradeController extends BaseController
         $type = Yii::$app->request->get('type');
         if (!empty($type)) {
             $query->andFilterWhere(['order_type' => $type]);
+        }
+
+        $subtype = Yii::$app->request->get('subtype');
+        if (!empty($subtype)) {
+            $query->andFilterWhere(['order_subtype' => $subtype]);
         }
 
         $status = Yii::$app->request->get('status');
