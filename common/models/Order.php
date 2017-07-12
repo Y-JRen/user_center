@@ -101,7 +101,7 @@ class Order extends \yii\db\ActiveRecord
             'order_type' => '订单类型',
             'type' => '订单类型',
             'order_subtype' => '支付方式',
-            'amount' => '金额',
+            'amount' => '订单金额',
             'status' => '状态',
             'desc' => '订单描述',
             'notice_status' => '通知平台状态',
@@ -110,7 +110,10 @@ class Order extends \yii\db\ActiveRecord
             'updated_at' => '最后一次更新时间',
             'remark' => '备注',
             'platform' => '平台',
-            'quick_pay' => '快捷支付'
+            'quick_pay' => '快捷支付',
+            'receipt_amount' => '实际金额',
+            'counter_fee' => '服务费',
+            'discount_amount' => '优惠金额',
         ];
     }
 

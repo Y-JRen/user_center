@@ -62,12 +62,10 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                 'filter' => Order::getTypeName()
             ],
             'order_subtype',
-            [
-                'attribute' => 'amount',
-                'value' => function ($model) {
-                    return Yii::$app->formatter->asCurrency($model->amount);
-                }
-            ],
+            'amount:currency',
+            'counter_fee:currency',
+            'discount_amount:currency',
+            'receipt_amount:currency',
         ],
     ]); ?>
 </div>
