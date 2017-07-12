@@ -1,8 +1,11 @@
 <?php
 
+use passport\helpers\Config;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\UserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -13,13 +16,12 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="user-index">
 
 
-<?php Pjax::begin(); ?>    <?= GridView::widget([
+    <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            //'id',
             [
                 'attribute' => 'phone',
                 'format' => 'raw',
@@ -29,9 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'user_name',
             'email:email',
-            //'passwd',
             'status',
-            'from_platform',
+            [
+                'attribute' => 'from_platform',
+                'value' => function ($model) {
+                    return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
+                },
+            ],
             'from_channel',
             'reg_time:datetime',
             'reg_ip',
@@ -39,8 +45,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}'
+                'template' => '{view} {order_view} {amount_view}',
+                'buttons' => [
+                    'view' => function ($url, $model, $key) {
+                        return Html::a('详情', ['user/view', 'id' => $model->id], ['class' => 'btn btn-success btn-xs']);
+                    },
+                    'order_view' => function ($url, $model, $key) {
+                        return Html::a('订单详情', ['user/order', 'uid' => $model->id], ['class' => 'btn btn-success btn-xs']);
+                    },
+                    'amount_view' => function ($url, $model, $key) {
+                        return Html::a('资金详情', ['user/amount', 'uid' => $model->id], ['class' => 'btn btn-success btn-xs']);
+                    }
+                ]
             ],
         ],
     ]); ?>
-<?php Pjax::end(); ?></div>
+    <?php Pjax::end(); ?></div>

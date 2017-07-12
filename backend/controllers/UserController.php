@@ -4,9 +4,12 @@ namespace backend\controllers;
 
 use backend\models\Order;
 use backend\models\search\OrderSearch;
+use common\models\PoolBalance;
+use common\models\PoolFreeze;
 use Yii;
 use common\models\User;
 use backend\models\search\UserSearch;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -51,7 +54,7 @@ class UserController extends BaseController
      */
     public function actionOrder($uid)
     {
-        $user = User::findOne($uid);
+        $user = $this->findModel($uid);
         $queryParams['OrderSearch'] = [
             'status' => Order::STATUS_SUCCESSFUL,
             'uid' => $uid
@@ -60,6 +63,25 @@ class UserController extends BaseController
         $dataProvider = $searchModel->search($queryParams);
         return $this->render('order', [
             'dataProvider' => $dataProvider,
+            'userModel' => $user
+        ]);
+    }
+
+    public function actionAmount($uid)
+    {
+        $user = $this->findModel($uid);
+
+        $balanceProvider = new ActiveDataProvider([
+            'query' => PoolBalance::find()->orderBy('id desc'),
+        ]);
+
+        $freezeProvider = new ActiveDataProvider([
+            'query' => PoolFreeze::find()->orderBy('id desc'),
+        ]);
+
+        return $this->render('amount', [
+            'balanceProvider' => $balanceProvider,
+            'freezeProvider' => $freezeProvider,
             'userModel' => $user
         ]);
     }
