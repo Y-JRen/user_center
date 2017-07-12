@@ -31,7 +31,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'user_name',
             'email:email',
-            'status',
+            [
+                'attribute' => 'status',
+                'value' => function ($model) {
+                    return $model->status == 1 ? '正常' : '禁用';
+                },
+            ],
             [
                 'attribute' => 'from_platform',
                 'value' => function ($model) {
