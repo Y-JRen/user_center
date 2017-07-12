@@ -22,6 +22,25 @@ use yii\behaviors\TimestampBehavior;
  */
 class UserInfo extends BaseModel
 {
+    public static $sexArr = [
+        1 => '男',
+        2 => '女',
+        3 => '保密'
+    ];
+
+    public static $realArr = [
+        0 => '没有',
+        1 => '已认证',
+        2 => '认证失败',
+        3 => '待审核'
+    ];
+
+    // 资金状态数组
+    public static $fundsArr = [
+        1 => '正常',
+        2 => '异常',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -51,16 +70,17 @@ class UserInfo extends BaseModel
     {
         return [
             'uid' => 'Uid',
-            'real_name' => 'Real Name',
-            'card_number' => 'Card Number',
-            'birthday' => 'Birthday',
-            'sex' => 'Sex',
-            'is_real' => 'Is Real',
-            'area' => 'Area',
-            'city' => 'City',
-            'county' => 'County',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'real_name' => '真实姓名',
+            'card_number' => '身份证号码',
+            'birthday' => '生日',
+            'sex' => '性别',
+            'is_real' => '是否实名认证',
+            'area' => '省',
+            'city' => '市',
+            'county' => '区',
+            'funds_status' => '资金状态',
+            'created_at' => '创建时间',
+            'updated_at' => '更新时间',
         ];
     }
 
