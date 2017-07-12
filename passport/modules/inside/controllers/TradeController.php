@@ -101,6 +101,9 @@ class TradeController extends BaseController
 
         $data = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => Yii::$app->request->get('page_size', 20),
+            ],
         ]);
         $pagination = new Pagination(['totalCount' => $query->count()]);
 
