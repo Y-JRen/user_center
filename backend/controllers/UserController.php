@@ -72,11 +72,11 @@ class UserController extends BaseController
         $user = $this->findModel($uid);
 
         $balanceProvider = new ActiveDataProvider([
-            'query' => PoolBalance::find()->orderBy('id desc'),
+            'query' => PoolBalance::find()->where(['uid' => $uid])->orderBy('id desc'),
         ]);
 
         $freezeProvider = new ActiveDataProvider([
-            'query' => PoolFreeze::find()->orderBy('id desc'),
+            'query' => PoolFreeze::find()->where(['uid' => $uid])->orderBy('id desc'),
         ]);
 
         return $this->render('amount', [
