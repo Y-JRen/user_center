@@ -47,11 +47,6 @@ return [
             'rules' => [
             ],
         ],
-        'formatter' => [
-            'datetimeFormat' => 'php:Y-m-d H:i',
-            'currencyCode' => 'CNY',
-        ],
-
     ],
     'params' => $params,
 ];
