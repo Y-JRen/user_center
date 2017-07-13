@@ -76,7 +76,11 @@ class TradeController extends BaseController
      */
     public function actionSearch($key)
     {
-        $sort = Yii::$app->request->get('sort', 'desc');
+        $sort = Yii::$app->request->get('sort', 'DESC');
+
+        if (!in_array(strtoupper($sort), ['ASC', 'DESC'])) {
+            $sort = 'DESC';
+        }
 
         $query = Order::find()->orderBy("id {$sort}");
         if (strlen($key) > 11)// 订单号
