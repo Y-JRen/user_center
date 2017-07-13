@@ -3,6 +3,10 @@ return [
     'language' => 'zh-CN',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
+        'formatter' => [
+            'datetimeFormat' => 'php:Y-m-d H:i',
+            'currencyCode' => 'CNY',
+        ],
         'cache' => [
             'class' => 'yii\redis\Cache',
         ],
