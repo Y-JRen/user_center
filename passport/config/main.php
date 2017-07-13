@@ -34,10 +34,6 @@ return [
         ],
     ],
     'components' => [
-        'formatter' => [
-            'datetimeFormat' => 'php:Y-m-d H:i',
-            'currencyCode' => 'CNY',
-        ],
         'request' => [
             'csrfParam' => '_csrf-passport',
         ],

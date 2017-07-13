@@ -2,7 +2,6 @@
 
 namespace common\models;
 
-use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -51,7 +50,7 @@ class Order extends \yii\db\ActiveRecord
     /**
      * 订单处理状态
      */
-    const STATUS_PROCESSING = 1;// 带处理
+    const STATUS_PROCESSING = 1;// 处理中
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理
@@ -101,7 +100,7 @@ class Order extends \yii\db\ActiveRecord
             'order_type' => '订单类型',
             'type' => '订单类型',
             'order_subtype' => '支付方式',
-            'amount' => '金额',
+            'amount' => '订单金额',
             'status' => '状态',
             'desc' => '订单描述',
             'notice_status' => '通知平台状态',
@@ -110,33 +109,10 @@ class Order extends \yii\db\ActiveRecord
             'updated_at' => '最后一次更新时间',
             'remark' => '备注',
             'platform' => '平台',
-            'quick_pay' => '快捷支付'
-        ];
-    }
-
-    public function fields()
-    {
-        return [
-            'platform_order_id',
-            'order_id',
-            'order_type',
-            'order_subtype',
-            'amount',
-            'desc',
-            'status',
-            'statusName' => function ($model) {
-                return $this->orderStatus;
-            },
-            'notice_platform_param',
-            'platform' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-            },
-            'created_at' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            },
-            'updated_at' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            }
+            'quick_pay' => '快捷支付',
+            'receipt_amount' => '实际金额',
+            'counter_fee' => '服务费',
+            'discount_amount' => '优惠金额',
         ];
     }
 
@@ -342,7 +318,7 @@ class Order extends \yii\db\ActiveRecord
         $model->order_id = $this->order_id;
         $model->amount = $amount;
         $model->before_amount = PoolBalance::getUserBalance($this->uid);
-        $model->after_amount = ($model->before_amount + $model->amount);
+        $model->after_amount = ((float)$model->before_amount + (float)$model->amount);
         $model->uid = $this->uid;
         $model->desc = $this->getDescription();
         if ($model->save()) {
@@ -373,7 +349,7 @@ class Order extends \yii\db\ActiveRecord
         $model->order_id = $this->order_id;
         $model->amount = $amount;
         $model->before_amount = PoolFreeze::getUserBalance($this->uid);
-        $model->after_amount = ($model->before_amount + $model->amount);
+        $model->after_amount = ((float)$model->before_amount + (float)$model->amount);
         $model->uid = $this->uid;
         $model->desc = $this->getDescription();
         if ($model->save()) {

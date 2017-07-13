@@ -43,9 +43,14 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $cashFee = ArrayHelper::getValue($param, 'total_fee');
-        if (!empty($order) && $order->amount * 100 == $cashFee) {
+        if ($order->amount * 100 == $cashFee) {
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
@@ -113,9 +118,14 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $amount = ArrayHelper::getValue($params, 'total_amount');// 订单金额
-        if ($order && $order->amount == $amount) {
+        if ($order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
@@ -180,9 +190,13 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $amount = ArrayHelper::getValue($params, 'total_fee');// 订单金额
-        if ($order && $order->amount == $amount) {
+        if ($order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
@@ -236,18 +250,26 @@ class OrderLogic extends Logic
 
     /**
      * 拉卡拉POS机回调
-     * @param $params
+     * @param $post
+     * @return bool
+     * @throws Exception
      */
-    public function lakalaNotify($params)
+    public function lakalaNotify($post)
     {
+        $params = json_decode(ArrayHelper::getValue($post, 'data'), true);
         $orderId = ArrayHelper::getValue($params, 'out_trade_no');// 商家订单号
         if (!$orderId) {
             return false;
         }
 
-        $order = OrderForm::findOne(['order_id' => $orderId]);
-        $amount = ArrayHelper::getValue($params, 'total_fee');// 订单金额
-        if ($order && $order->amount <= $amount) {// 有手续费,所以可能小于
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
+        $totalFee = (int)ArrayHelper::getValue($params, 'total_fee');// 订单金额
+        $amount = $totalFee / 100;
+        if ($order->amount <= $amount) {// 有手续费,所以可能小于
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
@@ -288,10 +310,10 @@ class OrderLogic extends Logic
 
                 // 添加充值到账的记录,并推送到财务系统 @todo 拉卡拉pos机流水账号，其他参数未好
                 Yii::$app->queue_second->push(new RechargePushJob([
-                    'back_order' => ArrayHelper::getValue($params, 'trade_no'),
+                    'back_order' => ArrayHelper::getValue($params, 'transaction_id'),
                     'order_id' => $order->order_id,
                     'amount' => $order->amount,
-                    'transaction_time' => ArrayHelper::getValue($params, 'gmt_payment'),
+                    'transaction_time' => ArrayHelper::getValue($params, 'time_end'),
                     'method' => 3,//拉卡拉
                     'uid' => $order->uid
                 ]));
@@ -299,10 +321,26 @@ class OrderLogic extends Logic
                 return true;
             } catch (Exception $e) {
                 $transaction->rollBack();
+                Yii::error($e->getMessage());
                 throw $e;
             }
         }
 
         return false;
+    }
+
+    /**
+     * 获取订单信息，并检测订单状态
+     * @param $orderId
+     * @return array|bool|null|OrderForm
+     */
+    protected function findOrder($orderId)
+    {
+        $model = OrderForm::find()->where(['order_id' => $orderId])->one();
+        if ($model && $model->status == OrderForm::STATUS_PENDING) {
+            return $model;
+        } else {
+            return false;
+        }
     }
 }

@@ -52,14 +52,14 @@ class PoolFreeze extends BaseModel
     {
         return [
             'id' => 'ID',
-            'uid' => 'Uid',
-            'order_id' => 'Order ID',
-            'amount' => 'Amount',
-            'desc' => 'Desc',
-            'before_amount' => 'Before Amount',
-            'after_amount' => 'After Amount',
-            'remark' => 'Remark',
-            'created_at' => 'Created At',
+            'uid' => '用户',
+            'order_id' => '订单号',
+            'amount' => '交易金额',
+            'desc' => '描述',
+            'before_amount' => '交易前金额',
+            'after_amount' => '交易后金额',
+            'remark' => '备注',
+            'created_at' => '交易时间',
         ];
     }
 

@@ -60,7 +60,7 @@ class TransferConfirm extends BaseModel
             'id' => 'ID',
             'order_id' => '订单号',
             'account_id' => '公司收款账号id',
-            'account' => '收款账号',
+            'account' => '打款账号',
             'back_order' => '银行流水号',
             'org' => '机构',
             'org_id' => '机构id',

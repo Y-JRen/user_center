@@ -6,13 +6,13 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Coupons';
+$this->title = '卡券';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="coupon-index">
 
     <p>
-        <?= Html::a('Create Coupon', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('添加卡券', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -41,7 +41,15 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'created_at',
             // 'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view} {update} {userCoupon}',
+                'buttons' => [
+                    'userCoupon' => function ($url, $model) {
+                        return Html::a('领取详情', ['user-coupon', 'id' => $model->id], ['class' => 'btn btn-success btn-xs']);
+                    },
+                ]
+            ],
         ],
     ]); ?>
 </div>

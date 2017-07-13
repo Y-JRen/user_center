@@ -13,6 +13,8 @@ use common\models\Order;
  */
 class OrderSearch extends Order
 {
+    public $phone;
+
     /**
      * @inheritdoc
      */
@@ -20,7 +22,7 @@ class OrderSearch extends Order
     {
         return [
             [['id', 'uid', 'order_type', 'notice_status', 'updated_at', 'platform'], 'integer'],
-            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'created_at', 'notice_platform_param', 'remark', 'status'], 'safe'],
+            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'created_at', 'notice_platform_param', 'remark', 'status', 'phone'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -63,10 +65,11 @@ class OrderSearch extends Order
         $query->andFilterWhere([
             'order_type' => $this->order_type,
             'amount' => $this->amount,
+            'uid' => $this->uid
         ]);
 
-        if (!empty($this->uid)) {
-            $query->andFilterWhere(['in', 'uid', User::find()->select('id')->where(['like', 'phone', $this->uid])]);
+        if (!empty($this->phone)) {
+            $query->andFilterWhere(['in', 'uid', User::find()->select('id')->where(['like', 'phone', $this->phone])]);
         }
 
         if (!empty($this->status)) {

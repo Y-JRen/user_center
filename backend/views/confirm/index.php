@@ -6,7 +6,8 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-
+$this->title = '收款推送一览';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="recharge-confirm-index">
 
@@ -37,9 +38,9 @@ use yii\grid\GridView;
                 'attribute'=>'status',
                 'value'=> function ($model){
                     if($model->status==1){
-                        return '推送';
+                        return '需要推送';
                     }elseif($model->status==2){
-                        return '不推送';
+                        return '不需要推送';
                     }elseif($model->status==3){
                         return '推送失败';
                     }elseif($model->status==4){

@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
                 'options' => ['class' => 'form-inline']
             ]); ?>
 
-            <?= $form->field($model, 'uid', ['options' => ['class' => 'col-sm-4']])->label('用户手机') ?>
+            <?= $form->field($model, 'phone', ['options' => ['class' => 'col-sm-4']])->label('用户手机') ?>
 
             <?= $form->field($model, 'platform_order_id', ['options' => ['class' => 'col-sm-4']])->label('电商订单') ?>
 

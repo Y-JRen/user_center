@@ -18,8 +18,8 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'status', 'from_platform', 'reg_time', 'login_time'], 'integer'],
-            [['phone', 'user_name', 'email', 'passwd', 'from_channel', 'reg_ip'], 'safe'],
+            [['id', 'reg_time', 'login_time'], 'integer'],
+            [['phone', 'user_name', 'from_channel', 'reg_ip'], 'safe'],
         ];
     }
 

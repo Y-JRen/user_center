@@ -14,7 +14,7 @@ use passport\helpers\Config;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class Order extends \common\models\Order
+class Order extends \passport\models\Order
 {
     public function rules()
     {
@@ -29,12 +29,12 @@ class Order extends \common\models\Order
         ];
     }
 
-        /**
-         * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
-         * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
-         * @return bool
-         */
-        public function validatorPlatformOrderId()
+    /**
+     * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
+     * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
+     * @return bool
+     */
+    public function validatorPlatformOrderId()
     {
         if ($this->order_type != self::TYPE_RECHARGE) {
             return true;
@@ -140,6 +140,8 @@ class Order extends \common\models\Order
                 'statusName' => function ($model) {
                     return $this->orderStatus;
                 },
+                'quick_pay',
+                'order_type',
                 'created_at'
             ];
         }

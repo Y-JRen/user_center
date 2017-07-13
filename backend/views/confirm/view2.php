@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $model common\models\RechargeConfirm */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Transfer Confirms', 'url' => ['index2']];
+$this->params['breadcrumbs'][] = ['label' => '打款推送一览', 'url' => ['index2']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transfer-confirm-view">

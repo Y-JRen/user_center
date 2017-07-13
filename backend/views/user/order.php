@@ -1,8 +1,7 @@
 <?php
 
-use common\models\Order;
+use backend\models\Order;
 use yii\grid\GridView;
-use yii\widgets\Pjax;
 use yii\helpers\ArrayHelper;
 
 
@@ -61,13 +60,16 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                 },
                 'filter' => Order::getTypeName()
             ],
-            'order_subtype',
             [
-                'attribute' => 'amount',
+                'attribute' => 'order_subtype',
                 'value' => function ($model) {
-                    return Yii::$app->formatter->asCurrency($model->amount);
-                }
+                    return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                },
             ],
+            'amount:currency',
+            'counter_fee:currency',
+            'discount_amount:currency',
+            'receipt_amount:currency',
         ],
     ]); ?>
 </div>

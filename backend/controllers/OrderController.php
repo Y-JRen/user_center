@@ -165,6 +165,17 @@ class OrderController extends BaseController
     }
 
     /**
+     * @param $orderId
+     * @return string
+     */
+    public function actionDetail($orderId)
+    {
+        return $this->render('view', [
+            'model' => $this->findModelByOrderId($orderId),
+        ]);
+    }
+
+    /**
      * Finds the Order model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
@@ -174,6 +185,22 @@ class OrderController extends BaseController
     protected function findModel($id)
     {
         if (($model = Order::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
+     * Finds the Order model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param string $orderId
+     * @return Order the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModelByOrderId($orderId)
+    {
+        if (($model = Order::find()->where(['order_id'=>$orderId])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
