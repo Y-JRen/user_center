@@ -23,6 +23,10 @@ class JsonHelper
         $data = [];
         if ($remark) {
             $array = json_decode($remark, true);
+            if (!is_array($array)) {
+                return $data;
+            }
+
             if (array_key_exists('bankName', $array)) {
                 $data['bankName'] = ['label' => '银行名称', 'value' => $array['bankName']];
             }
