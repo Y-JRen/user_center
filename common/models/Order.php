@@ -50,7 +50,7 @@ class Order extends \yii\db\ActiveRecord
     /**
      * 订单处理状态
      */
-    const STATUS_PROCESSING = 1;// 带处理
+    const STATUS_PROCESSING = 1;// 处理中
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理

@@ -43,9 +43,14 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $cashFee = ArrayHelper::getValue($param, 'total_fee');
-        if (!empty($order) && $order->amount * 100 == $cashFee) {
+        if ($order->amount * 100 == $cashFee) {
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
@@ -113,9 +118,14 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $amount = ArrayHelper::getValue($params, 'total_amount');// 订单金额
-        if ($order && $order->amount == $amount) {
+        if ($order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
@@ -180,9 +190,13 @@ class OrderLogic extends Logic
         if (!$orderId) {
             return false;
         }
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $amount = ArrayHelper::getValue($params, 'total_fee');// 订单金额
-        if ($order && $order->amount == $amount) {
+        if ($order->amount == $amount) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
@@ -248,10 +262,14 @@ class OrderLogic extends Logic
             return false;
         }
 
-        $order = OrderForm::findOne(['order_id' => $orderId]);
+        $order = $this->findOrder($orderId);
+        if (!$order) {
+            return false;
+        }
+
         $totalFee = (int)ArrayHelper::getValue($params, 'total_fee');// 订单金额
-        $amount = $totalFee/100;
-        if ($order && $order->amount <= $amount) {// 有手续费,所以可能小于
+        $amount = $totalFee / 100;
+        if ($order->amount <= $amount) {// 有手续费,所以可能小于
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
@@ -309,5 +327,20 @@ class OrderLogic extends Logic
         }
 
         return false;
+    }
+
+    /**
+     * 获取订单信息，并检测订单状态
+     * @param $orderId
+     * @return array|bool|null|OrderForm
+     */
+    protected function findOrder($orderId)
+    {
+        $model = OrderForm::find()->where(['order_id' => $orderId])->one();
+        if ($model && $model->status == OrderForm::STATUS_PENDING) {
+            return $model;
+        } else {
+            return false;
+        }
     }
 }

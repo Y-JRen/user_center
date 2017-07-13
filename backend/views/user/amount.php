@@ -64,9 +64,9 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                             }
                         ],
                         'desc',
-                        'before_amount:currency',
                         'amount:currency',
                         'after_amount:currency',
+                        'created_at:datetime',
                         'remark',
                     ],
                 ]); ?>
@@ -87,9 +87,9 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                             }
                         ],
                         'desc',
-                        'before_amount:currency',
                         'amount:currency',
                         'after_amount:currency',
+                        'created_at:datetime',
                         'remark',
                     ],
                 ]); ?>
