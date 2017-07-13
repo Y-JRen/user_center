@@ -2,6 +2,7 @@
 
 namespace backend\models\search;
 
+use passport\modules\sso\models\User;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -12,14 +13,16 @@ use common\models\Order;
  */
 class OrderSearch extends Order
 {
+    public $phone;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'uid', 'order_type', 'notice_status', 'created_at', 'updated_at', 'platform'], 'integer'],
-            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'notice_platform_param', 'remark', 'status'], 'safe'],
+            [['id', 'uid', 'order_type', 'notice_status', 'updated_at', 'platform'], 'integer'],
+            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'created_at', 'notice_platform_param', 'remark', 'status', 'phone'], 'safe'],
             [['amount'], 'number'],
         ];
     }
@@ -60,27 +63,32 @@ class OrderSearch extends Order
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'uid' => $this->uid,
             'order_type' => $this->order_type,
             'amount' => $this->amount,
-            'notice_status' => $this->notice_status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'platform' => $this->platform,
-            'order_subtype' => $this->order_subtype
+            'uid' => $this->uid
         ]);
-        if (is_array($this->status)) {
-            $query->andWhere(['in', 'status', $this->status]);
-        } else {
-            $query->andWhere(['status' => $this->status]);
+
+        if (!empty($this->phone)) {
+            $query->andFilterWhere(['in', 'uid', User::find()->select('id')->where(['like', 'phone', $this->phone])]);
         }
+
+        if (!empty($this->status)) {
+            $query->andFilterWhere(['status' => $this->status]);
+        }
+
+        if (!empty($this->created_at)) {
+            $startTime = strtotime(substr($this->created_at, 0, 10));
+            $endTime = strtotime(substr($this->created_at, -10));
+            $query->andFilterWhere(['>=', 'created_at', $startTime])
+                ->andFilterWhere(['<', 'created_at', $endTime]);
+        }
+
+        if (!empty($this->order_subtype)) {
+            $query->andFilterWhere(['like', 'order_subtype', $this->order_subtype]);
+        }
+
         $query->andFilterWhere(['like', 'platform_order_id', $this->platform_order_id])
-            ->andFilterWhere(['like', 'order_id', $this->order_id])
-            //->andFilterWhere(['like', 'order_subtype', $this->order_subtype])
-            ->andFilterWhere(['like', 'desc', $this->desc])
-            ->andFilterWhere(['like', 'notice_platform_param', $this->notice_platform_param])
-            ->andFilterWhere(['like', 'remark', $this->remark]);
+            ->andFilterWhere(['like', 'order_id', $this->order_id]);
 
         return $dataProvider;
     }

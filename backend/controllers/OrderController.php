@@ -6,6 +6,7 @@ use backend\models\Order;
 use common\logic\FinanceLogic;
 use common\models\CompanyAccount;
 use common\models\LogReview;
+use common\models\PoolBalance;
 use common\models\RechargeConfirm;
 use Yii;
 use backend\models\search\OrderSearch;
@@ -85,14 +86,18 @@ class OrderController extends BaseController
             $recharge->transaction_time = strtotime($post['transaction_time']);
             $recharge->remark = $post['remark'];
             $recharge->amount = $model->amount;
-            $recharge->status = 1;
+            $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
             if (!$recharge->save()) {
-                throw new Exception('确认失败，保存充值信息失败');
+                throw new Exception('确认失败，保存充值信息失败'.json_encode($recharge->errors));
             }
 
             if (!$model->userBalance->plus($model->amount)) {
                 throw new Exception('增加用户余额失败');
+            }
+
+            if (!$model->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                throw new Exception('添加资金流水记录失败');
             }
 
             if (!$model->setOrderSuccess()) {
@@ -121,8 +126,8 @@ class OrderController extends BaseController
 
         if ($model->setOrderFail()) {
             Yii::$app->session->setFlash('success', '操作成功');
-        }else{
-            Yii::$app->session->setFlash('success', '操作失败'.json_encode($model->errors));
+        } else {
+            Yii::$app->session->setFlash('success', '操作失败' . json_encode($model->errors));
         }
 
         return $this->redirect(['line-down']);
@@ -148,92 +153,6 @@ class OrderController extends BaseController
     }
 
     /**
-     * 完成财务确认动作
-     * @param $id
-     * @return string
-     * @throws ErrorException
-     */
-    public function actionViewLineDown($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->isEdit && Yii::$app->request->isPost) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $logModel = new LogReview(['order_id' => $id]);
-                $logModel->load(Yii::$app->request->post());
-                if (!$logModel->save()) {
-                    throw new ErrorException(print_r($logModel->errors, true));
-                }
-
-                $model->status = $logModel->order_status;
-                if (!$model->save()) {
-                    throw new ErrorException('更新订单状态失败');
-                }
-
-                if ($model->isSuccessful) {
-                    if (!$model->userBalance->plus($model->amount)) {
-                        throw new ErrorException('更新用户余额失败');
-                    }
-                }
-                $transaction->commit();
-                Yii::$app->session->setFlash('success', '处理成功');
-            } catch (ErrorException $e) {
-                Yii::$app->session->setFlash('error', '处理失败');
-                $transaction->rollBack();
-                throw $e;
-            }
-        }
-
-        return $this->render('view', [
-            'model' => $model
-        ]);
-    }
-
-    /**
-     * 完成财务提现确认动作
-     * @param $id
-     * @return string
-     * @throws ErrorException
-     */
-    public function actionViewCash($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->isEdit && Yii::$app->request->isPost) {
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $logModel = new LogReview(['order_id' => $id]);
-                $logModel->load(Yii::$app->request->post());
-                if (!$logModel->save()) {
-                    throw new ErrorException(print_r($logModel->errors, true));
-                }
-
-                $model->status = $logModel->order_status;
-                if (!$model->save()) {
-                    throw new ErrorException('更新订单状态失败');
-                }
-
-                if ($model->isSuccessful) {
-                    if (!$model->userFreeze->less($model->amount)) {
-                        throw new ErrorException('更新用户冻结余额失败');
-                    }
-                }
-                $transaction->commit();
-                Yii::$app->session->setFlash('success', '处理成功');
-            } catch (ErrorException $e) {
-                Yii::$app->session->setFlash('error', '处理失败');
-                $transaction->rollBack();
-                throw $e;
-            }
-        }
-
-        return $this->render('view', [
-            'model' => $model
-        ]);
-    }
-
-    /**
      * Displays a single Order model.
      * @param integer $id
      * @return mixed
@@ -242,6 +161,17 @@ class OrderController extends BaseController
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * @param $orderId
+     * @return string
+     */
+    public function actionDetail($orderId)
+    {
+        return $this->render('view', [
+            'model' => $this->findModelByOrderId($orderId),
         ]);
     }
 
@@ -255,6 +185,22 @@ class OrderController extends BaseController
     protected function findModel($id)
     {
         if (($model = Order::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
+     * Finds the Order model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param string $orderId
+     * @return Order the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModelByOrderId($orderId)
+    {
+        if (($model = Order::find()->where(['order_id'=>$orderId])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

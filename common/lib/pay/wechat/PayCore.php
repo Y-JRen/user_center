@@ -44,7 +44,7 @@ class PayCore extends Logic
     /**
      * 关闭订单
      */
-    const CLOSE_ORDER ='https://api.mch.weixin.qq.com/pay/closeorder';
+    const CLOSE_ORDER = 'https://api.mch.weixin.qq.com/pay/closeorder';
 
     const SHORT_URL = 'https://api.mch.weixin.qq.com/tools/shorturl';
 
@@ -72,7 +72,7 @@ class PayCore extends Logic
         $data['nonce_str'] = $this->nonceStr();
         $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);
-        return $this->http(static::UNIFIED_ORDER , $dataXml);
+        return $this->http(static::UNIFIED_ORDER, $dataXml);
     }
 
     /**
@@ -89,7 +89,7 @@ class PayCore extends Logic
         $data['nonce_str'] = $this->nonceStr();
         $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);
-        return $this->http(static::UNIFIED_ORDER , $dataXml);
+        return $this->http(static::UNIFIED_ORDER, $dataXml);
     }
 
     /**
@@ -132,7 +132,7 @@ class PayCore extends Logic
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_POST, TRUE);
 
-        if($check) {
+        if ($check) {
             curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
             curl_setopt($ch, CURLOPT_SSLCERT, \Yii::$app->basePath . '/../apiclient_cert.pem');
             curl_setopt($ch, CURLOPT_SSLKEY, \Yii::$app->basePath . '/../apiclient_key.pem');
@@ -204,10 +204,8 @@ class PayCore extends Logic
         //禁止引用外部xml实体
         libxml_disable_entity_loader(true);
         $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        $filePath = \Yii::$app->getRuntimePath() . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'wechat' .
-            DIRECTORY_SEPARATOR . date("Y-m") . DIRECTORY_SEPARATOR . 'wechat_pay_'.date("Y-m-d").'.data';
         //写入日志
-        ApiLogsLogic::instance()->addLogging($filePath, $values);
+        ApiLogsLogic::instance()->addLogs('wechat.data', $values);
         return $values;
     }
 }

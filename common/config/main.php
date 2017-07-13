@@ -1,8 +1,13 @@
 <?php
 return [
     'language' => 'zh-CN',
+    'timeZone' => 'Asia/Shanghai',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
+        'formatter' => [
+            'datetimeFormat' => 'php:Y-m-d H:i',
+            'currencyCode' => 'CNY',
+        ],
         'cache' => [
             'class' => 'yii\redis\Cache',
         ],

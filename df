@@ -1,0 +1,1446 @@
+[33mcommit a37bb6d3ec6f8804ef7cb17f65561c42171de8c5[m[33m ([m[1;36mHEAD -> [m[1;32mrelease/1.0[m[33m)[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 18:42:08 2017 +0800
+
+    完成财务系统对接
+
+[33mcommit aa58a5e188329f3cc80137052502b245143b42af[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 17:56:22 2017 +0800
+
+    添加提现实名认证
+
+[33mcommit a84ba028243e34ede98131c3c155df32236516ba[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 17:47:54 2017 +0800
+
+    后台页面优化
+
+[33mcommit d2ed94e23b41e0d1948684b99d30767aeec85005[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 13:37:25 2017 +0800
+
+    修复注册ip为空bug
+
+[33mcommit 3d4ec80b56c1a0ede3025c6b5a51a129091d2583[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 05:06:11 2017 +0800
+
+    净化日志格式
+
+[33mcommit ea2484481ea440c3a9ad5f8593cee8bbfd980466[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 04:39:25 2017 +0800
+
+    提现入账错了
+
+[33mcommit 11abbafe2fe0a512094900cf3fce6d0b6a3c1d14[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 04:31:39 2017 +0800
+
+    推送财务系统，收入支出相反
+
+[33mcommit 0efbe62b82a9a97c8ce74c8a38af62009245dddc[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 04:04:29 2017 +0800
+
+    优化银行显示bug
+
+[33mcommit 8824d25eaf48135b4cf8bc809880b7bbd5c1f6f7[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 04:02:12 2017 +0800
+
+    优化异步推送
+
+[33mcommit c53ec3d9cd5afad7c22c6497d804ac8ba772a07d[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 03:22:02 2017 +0800
+
+    优化推送到财务系统
+
+[33mcommit cda0e9bd41d95ba0206d212ae3c6b44a7d8e6b6a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 03:00:45 2017 +0800
+
+    加入财务系统配置
+
+[33mcommit 5294bd698514deea3df8a7e0e75e7dd1e9a8eb9f[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 02:41:10 2017 +0800
+
+    优化后台审核
+
+[33mcommit df3330085df990905a579857081fa149a12f05db[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 02:32:31 2017 +0800
+
+    修复交易记录时间类型
+
+[33mcommit 19e54c387ef84e15d6f15a5f2a145aaa4ae92e03[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 02:22:42 2017 +0800
+
+    添加支付宝、微信充值 推送到财务系统
+
+[33mcommit f774a626e1d1391ccb409803cd869a8253672c2b[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 01:10:57 2017 +0800
+
+    完成线下充值确认，并对接到财务系统
+
+[33mcommit 7ae94adb5481277498e26cdac2fd90901aa990ef[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 22 00:13:43 2017 +0800
+
+    出纳打款确认+财务系统对接
+
+[33mcommit 61b0dc2cd765c93ac94c68cad8bb1f04dfd9a9ee[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 22:56:08 2017 +0800
+
+    同步电商密码加密
+
+[33mcommit d39d273d259f5ca5bbd6637c7395e59000046c2b[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 21:19:01 2017 +0800
+
+    退款确认回调
+
+[33mcommit feedc7aa2b2fc56473e3aeb0e7ef7827ef7c53d9[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 20:20:40 2017 +0800
+
+    订单抛异常，返回相关参数
+
+[33mcommit e4add100447b2f3c590dce229229ba18c30e946c[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 17:38:07 2017 +0800
+
+    修复冻结金额bug
+
+[33mcommit 10c16a5427c604fa000bcad4d5cbb6998253b236[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 15:23:46 2017 +0800
+
+    修复异步日志记录
+
+[33mcommit b7aeaf2fddaff16ca3cef00525d0fd50ccefbdb6[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 15:01:16 2017 +0800
+
+    异步回调返回信息记录
+
+[33mcommit c3b60374723af6d532a2123ca22ee201215b8334[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 11:04:58 2017 +0800
+
+    用户名没有的时候用手机号填充
+
+[33mcommit 84f066cc12e41d64f611c5a0573398d66197f2eb[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 10:40:46 2017 +0800
+
+    统一配置
+
+[33mcommit 9f2dd18299097b029a75bc45046181de35fd4c1a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 21 10:21:36 2017 +0800
+
+    支付配置统一设置
+
+[33mcommit 7fe503ba9719bb07180c261929995a47de340b0d[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 22:17:06 2017 +0800
+
+    完成退款确认
+
+[33mcommit a0e7aa6d8fc0e5134700a72b7533984484dbfa22[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 18:20:22 2017 +0800
+
+    添加第三方erp退款确认接口
+
+[33mcommit 3c64ea5ae066926b02c447eb15be934d0f28577a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 17:46:35 2017 +0800
+
+    交易记录添加倒序
+
+[33mcommit 4c57b52105b3a48d6a9df946b7f7b95773f21d46[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 17:34:12 2017 +0800
+
+    部分细节，以及后台出纳打款
+
+[33mcommit 514ec9625a99af7bcb8162662d40b4aefbbe3854[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 17:25:36 2017 +0800
+
+    修复新用户首次消费失败bug
+
+[33mcommit 834dc241fd701837d99bed86ed8b417cc29c6020[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 16:23:23 2017 +0800
+
+    微信、支付（移动支付除外）禁用信用卡
+
+[33mcommit e94f94c5583fa351baac3863727d84a8ce85af6a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 15:41:27 2017 +0800
+
+    添加异步回调脚本执行输出
+
+[33mcommit 49b353ab37f3bbc00224e08846a56eae5a5e2080[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 15:29:32 2017 +0800
+
+    交易记录倒序
+
+[33mcommit e78c99aa91952cce9b64a8a7ef2f776e8d70e817[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 15:16:22 2017 +0800
+
+    添加更新订单的返回信息
+
+[33mcommit a2e6f353df927bcd744508631495037658a7e995[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 13:29:02 2017 +0800
+
+    优化后台页面显示
+
+[33mcommit 321db879c5e72284d917efa98609b63d38ddd717[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 11:54:06 2017 +0800
+
+    更新检测用户是否存在接口
+
+[33mcommit a6abe8105c2d536cdc86b35bad47b6aff6f4edfd[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 11:25:07 2017 +0800
+
+    短信限制bug
+
+[33mcommit 0cec8b389b7496f29e00c04344f0e6c0ed378a9d[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 10:53:09 2017 +0800
+
+    短信接口添加1分钟两次的限制
+
+[33mcommit c462629f2ad4df9ade347af6dbdab73446e58ef0[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 10:44:29 2017 +0800
+
+    修复平台订单号为空bug
+
+[33mcommit 94c0615be561991d88e2d116eb7a9110526c08c7[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 10:40:02 2017 +0800
+
+    bug 修复
+
+[33mcommit 141e935b0f863917aca4eb751e3b0640fe8927ec[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 20 10:36:27 2017 +0800
+
+    修复平台订单号不能为空bug
+
+[33mcommit f6f3b13ea0a5b0c6e0c9677c28de60d3fa741391[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 21:22:24 2017 +0800
+
+    完成财务确认
+
+[33mcommit ad86382ecf55e909e85f5371c1c2d667656d6fa4[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 20:12:59 2017 +0800
+
+    后台充值审核修复
+
+[33mcommit 1d527803dd478c37482831b91729ec33b0f78834[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 17:28:52 2017 +0800
+
+    优化状态显示
+
+[33mcommit 94cf5640820567aae4ea791694bf908f535a8187[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 15:11:09 2017 +0800
+
+    移动支付回调
+
+[33mcommit c000518cb938254773df381a9eea4d5e7cba42c4[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 13:57:20 2017 +0800
+
+    修复移动支付异步回调
+
+[33mcommit 61ec5ddadefd3a87ee3c2943184368ad3a9e6238[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 13:41:57 2017 +0800
+
+    修复异步回调bug
+
+[33mcommit d8b4e36847d785d0873e6ccd2edde3ca7265da80[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 13:18:19 2017 +0800
+
+    添加支付宝移动支付异步回调
+
+[33mcommit 60d60a7bac5088fa65c295fc6107e5915a285a8b[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 11:52:35 2017 +0800
+
+    修复支付宝移动支付
+
+[33mcommit 78819901995c233446161f743df219a196e01733[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 11:08:03 2017 +0800
+
+    添加交易记录的状态
+
+[33mcommit 2e1ad0a55c6fe7ac85a1ed3435de98f05ae868c7[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 19 10:57:46 2017 +0800
+
+    完成移动支付
+
+[33mcommit b4ad575cb1aef9116a5cedabcfffb1ec82afa7ca[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 17 19:07:19 2017 +0800
+
+    添加电商解冻退款接口以及解冻接口
+
+[33mcommit dccf12801b614e8687d8e78663b6ae27a2724a40[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 17 18:04:25 2017 +0800
+
+    添加app支付
+
+[33mcommit d6f86fc561f4c837f0ebf20d5c9da73ffb744179[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 21:42:37 2017 +0800
+
+    打开端口日志监听
+
+[33mcommit c132e458f32cea66d06e5f38437651c1ddadac12[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 21:39:10 2017 +0800
+
+    修复消费bug
+
+[33mcommit 7bd615eaf8f29aaceb0b1ad3355f1858edabd316[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 21:13:42 2017 +0800
+
+    修复快捷登录bug
+
+[33mcommit 1341516f47360bee9fc7545d99cff9d164c6353f[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 20:56:56 2017 +0800
+
+    推广渠道优化
+
+[33mcommit 6876471d731e3c87421ef3551c8fe64f6ba15e7a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 20:44:50 2017 +0800
+
+    大小写bug
+
+[33mcommit be6f3e066d2ef47d5747e18f8a69dff8623e6622[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 19:41:41 2017 +0800
+
+    优化快捷登录
+
+[33mcommit 1927d918bea5117ade4e292bc3b9bbfb2feb6945[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 18:55:44 2017 +0800
+
+    消费添加冻结、解冻步骤
+
+[33mcommit 66d243ee93c80e615ee7b1df162a7960e5005b5d[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 16 18:14:04 2017 +0800
+
+    后台
+
+[33mcommit f9d7d65ba833bd5e6f77638964ab46b35640f9e4[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 16:38:56 2017 +0800
+
+    完成贷款解冻操作
+
+[33mcommit 6d8124e6d6cef51eb94607ee15cfce3b74058451[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 15:01:03 2017 +0800
+
+    添加贷款入账
+
+[33mcommit 6da89d82599cdd9d80a586ef911218e6debb12e6[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 14:52:43 2017 +0800
+
+    修复快捷注册用户
+
+[33mcommit 3bf9b07149ec4ed8678c70e4e2f8e9c1c3016b4f[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 14:05:05 2017 +0800
+
+    添加订单记录倒序排列
+
+[33mcommit 902eff5539989bbcc392f06f2efbfd967ca046a0[m
+Merge: d5f9471 5a0311c
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 13:27:11 2017 +0800
+
+    Merge branch 'develop' of 192.168.1.12:wangdiao/user_center into develop
+
+[33mcommit d5f94710469a40a1310301136186859527cb4a43[m
+Author: 华伟 <619530038@qq.com>
+Date:   Fri Jun 16 13:26:52 2017 +0800
+
+    添加检测用户接口
+
+[33mcommit 5a0311c54c734015d94342516295eafb1f40bd5e[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 16 13:06:35 2017 +0800
+
+    快捷登陆
+
+[33mcommit 749a800b9636997e0143be485b6f588e8e2eb06f[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 19:17:54 2017 +0800
+
+    用户自动注册
+
+[33mcommit 96065ef4fbc2ee6dabfff026d28f98c69d7eb0a1[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 18:44:17 2017 +0800
+
+    修复quick_pay 为null的bug
+
+[33mcommit f4dd3d57a138ad4f2093fdd0b68a45c87ef70088[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 15 18:07:03 2017 +0800
+
+    代码修改
+
+[33mcommit a52e9d8c8d505767f40410cef75866877819ac72[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 15 17:52:08 2017 +0800
+
+    代码调整
+
+[33mcommit e372c23500e61cfc74d862f1e5c1cf5b638734fa[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 17:49:30 2017 +0800
+
+    添加内部的接口模块
+
+[33mcommit 2418ef151586761d4166abdaa72cde967ccd5802[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 15 17:33:18 2017 +0800
+
+    代码调整
+
+[33mcommit c2652ccab3a81dcb63d8190d64e5b3d3ddc6f6b5[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 15 17:28:22 2017 +0800
+
+    用户中心对接
+
+[33mcommit c446a2355c39129f821ec14f89761f90d433fafa[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 16:55:04 2017 +0800
+
+    优化返回参数
+
+[33mcommit 4b269b056b26aa208ccb17d0f21d108f404713b6[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 16:53:06 2017 +0800
+
+    优化登录，超过三次才会需要验证码
+
+[33mcommit baa17b90a88c653a12fa75e307b88ff280976c3f[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 16:46:40 2017 +0800
+
+    修改微信异步回调参数bug
+
+[33mcommit 785fb94e6b95371eccf9934bd37b2c9a8ce0c3ec[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 16:31:06 2017 +0800
+
+    修复快捷支付回调bug
+
+[33mcommit f53392646f2ba9a8b7c9709305829b117bd875c9[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 16:09:36 2017 +0800
+
+    快捷支付订单回调修改
+
+[33mcommit 786df69e358ebaf59b722f86ec9e54133c735d87[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 15:48:53 2017 +0800
+
+    修复生成快捷消费订单的bug
+
+[33mcommit aacd51805dd6c27020417f4b120bd5e605f69d6a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 15:35:26 2017 +0800
+
+    修复生成快捷消费订单的bug
+
+[33mcommit 77fdcafd6b108b39b0711bef6f4463b7c4b748fd[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 14:46:44 2017 +0800
+
+    完成消费异步回调
+
+[33mcommit 792b308eb0ec5e805bc3165770ceb3cc04257c91[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 14:19:26 2017 +0800
+
+    修复添加异步回调
+
+[33mcommit 0f2fa07b70a5bbce853ab84a6c545151e03868a3[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 13:24:52 2017 +0800
+
+    支付宝回调，添加日志
+
+[33mcommit 1bf233cdcb3246ec8a1d2b4fd42e1473eb3ba86d[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 12:55:03 2017 +0800
+
+    添加快捷支付
+
+[33mcommit 2ef472d402ff854d2a1bd44b6fbd31413c202075[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 15 11:23:37 2017 +0800
+
+    修改支付状态
+
+[33mcommit 476cd3abb58bf3e8b60684127319b498aca8308d[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 14 21:08:20 2017 +0800
+
+    修改支付宝配置，应该使用支付宝公钥而不是应用公钥
+
+[33mcommit dc4f66a9dd0ad85877ea2f94497bf84e0730cb9b[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 14 19:42:46 2017 +0800
+
+    修复异步通知修改通知状态的bug
+
+[33mcommit 12fc5c55417e3f61c878b4510034a20c407b1290[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 14 19:06:12 2017 +0800
+
+    修复redis队列通道bug
+
+[33mcommit 22d1fd5250fc83c8c210d6bd74599d02f34403f0[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 14 17:47:24 2017 +0800
+
+    添加支付宝回调，添加异步通知
+
+[33mcommit a94297c8e06dbae3fba094c393eab009ead7fd71[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 14 14:51:01 2017 +0800
+
+    添加无需图形的短信验证码
+
+[33mcommit ea9e4efc7705f6133af4eef589f5e03eed3830fb[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 14 10:47:36 2017 +0800
+
+    修改获取用户信息接口
+
+[33mcommit e416de9aa1df7806208c69f6a880606cc9133c4a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 18:20:42 2017 +0800
+
+    添加单挑交易记录
+
+[33mcommit 211630003a6364ed705c562e9042679d0d75caaf[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 18:08:49 2017 +0800
+
+    添加通过订单获取订单信息接口、所有订单的用户id全部通过token获取，优化用户银行卡历史记录排序
+
+[33mcommit 4ef53197398a54218057ffe8aed19e6ef78d0bcf[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 17:06:46 2017 +0800
+
+    添加获取实名认证
+
+[33mcommit 45faea65c955472135b15d3394e13ba1a4e85247[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 16:03:05 2017 +0800
+
+    添加提现时保存银行卡信息
+
+[33mcommit a05ca7e1b530aa18b9d2818abfedb89e408800ae[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 15:05:21 2017 +0800
+
+    优化实名认证方法
+
+[33mcommit 0e12a97c72ed551767deec4868db62453bd15250[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 13:52:44 2017 +0800
+
+    修复支付宝回调地址问题
+
+[33mcommit 15e5e90fb6efa3f27012b8cff95e49a0bdb2dd68[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 12:30:52 2017 +0800
+
+    添加支付宝同步回调地址
+
+[33mcommit 129cc16114515e9bc4fc365ff05b4c2a797e62c1[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 11:29:58 2017 +0800
+
+    修复返回bug
+
+[33mcommit 21236a8fb23ce8c75a9f86a72f5c0bc959f79802[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 10:53:01 2017 +0800
+
+    完善配置
+
+[33mcommit 5225cad52f2a45d48e2126a3ad475a0441adc8ba[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 13 10:33:02 2017 +0800
+
+    完成后台财务充值审核、提现审核
+
+[33mcommit 268169a9b5288e0aceeb321afbc74eba0116e6ca[m
+Merge: b10ba8f 8e48a34
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 19:07:37 2017 +0800
+
+    Merge branch 'feature/admin' into develop
+
+[33mcommit b10ba8fd201b5acfad3d2ef286352c1ce82694e4[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 19:06:55 2017 +0800
+
+    添加财务确认
+
+[33mcommit 8e48a3478f613339d79a93e99a7ede3a4d95cdeb[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 18:51:09 2017 +0800
+
+    修改
+
+[33mcommit f9989f9868de067df59dfae6734d5506bde3ace3[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 18:45:40 2017 +0800
+
+    代码调整
+
+[33mcommit 1b75ce4ca60632bee077cb704e94d6fafe7d4861[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 18:34:46 2017 +0800
+
+    账户信心
+
+[33mcommit 97a2d3454fbec284a9112b3db8365462c5a2ba56[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 18:13:46 2017 +0800
+
+    添加银行卡
+
+[33mcommit e1d7235e13f663f1b22fc0bf200ffc00952083ed[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 18:13:39 2017 +0800
+
+    添加银行卡
+
+[33mcommit 8c51a6bd142debdb48c07b51a1b8b8f3041b6c24[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 18:06:31 2017 +0800
+
+    up
+
+[33mcommit 25aab95b266f7b992349090fec6f8eaa0d99b8ec[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 17:56:53 2017 +0800
+
+    实名认证
+
+[33mcommit 8c7dd17a39651748fa42560113ebae1f30b7bab0[m
+Merge: dac3a70 f0370e9
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 16:51:28 2017 +0800
+
+    冲突
+
+[33mcommit f0370e915357f7d993786e2aeb0d3f6b6c40e94c[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 16:49:17 2017 +0800
+
+    队列修改
+
+[33mcommit dac3a703c93aab55ba79da65f84bcf74e8a831fa[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 16:23:35 2017 +0800
+
+    新增队列
+
+[33mcommit 51c7429f1dff530606951e66bc0eb32462b7827d[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 16:23:35 2017 +0800
+
+    新增队列
+
+[33mcommit 05f12665ba69f91be6e726a00a5b873d0e594947[m
+Merge: cca359e cf487b7
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 15:08:33 2017 +0800
+
+    Merge branch 'feature/admin' into develop
+
+[33mcommit cf487b7f9be37d5e61215a87184a250696b6f8ec[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 15:06:44 2017 +0800
+
+    修改
+
+[33mcommit 7b922e326286712edae81309a1431ec291043494[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 15:05:45 2017 +0800
+
+    修改
+
+[33mcommit cca359ef4c6729e1964a1712cc59ca46cc81f064[m
+Merge: b000ee3 d17f305
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 14:59:31 2017 +0800
+
+    修复合并冲突
+
+[33mcommit d17f3059e28bddc2f8e295b02d25a43d3ec483b1[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 14:31:40 2017 +0800
+
+    修复合并冲突
+
+[33mcommit 872b6c24dc9c45ce632d78ab39ed326acb3079b9[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 14:29:25 2017 +0800
+
+    up
+
+[33mcommit ea34f1d4a691fa6e099124a7270bc369ac351719[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 13:50:32 2017 +0800
+
+    添加获取一条交易记录的接口
+
+[33mcommit 010946152a0e560d4926e3e94974287280102e2a[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 13:43:47 2017 +0800
+
+    消费记录
+
+[33mcommit 59dbd907ac6ab49d6dbc6fa38262e04149a442d7[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 13:28:03 2017 +0800
+
+    后台更新
+
+[33mcommit 25c85e49fc61fc288db01e3f4e9f195b753d3b63[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 13:17:25 2017 +0800
+
+    修改
+
+[33mcommit 79f10d0110098d45ccfc58aa44ac22d81d185539[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 10:53:41 2017 +0800
+
+    增加快捷支付字段
+
+[33mcommit 19a7db105adfad87d1e1638cab63ad9202d85d7f[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 10:16:38 2017 +0800
+
+    修改
+
+[33mcommit 3fd8de79449abecb49cb05675b1be3fd9cdb512a[m
+Author: huawei <619530038@qq.com>
+Date:   Mon Jun 12 09:43:14 2017 +0800
+
+    添加快捷支付
+
+[33mcommit f869c7a45443927c556e80751ecaddcd76dafd40[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 10 16:55:01 2017 +0800
+
+    添加支付宝回调接口
+
+[33mcommit fcd62b5bed8c6278ab45f60e6775ed00d8d183bc[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 17:58:02 2017 +0800
+
+    修改
+
+[33mcommit bfe27eaf7ec24040b2b68cb3fd5106859e9dbefc[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 17:48:22 2017 +0800
+
+    登录时间
+
+[33mcommit d39e03847bc8377ba26eec8162a5162fd326d27a[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 17:34:13 2017 +0800
+
+    登出
+
+[33mcommit b000ee37b9f801becbed7e7ab9d68738fbe01f60[m
+Merge: 714f51c 94f38f1
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 11:39:16 2017 +0800
+
+    Merge branch 'feature/admin' into develop
+
+[33mcommit 94f38f132821b993f72086f9259a393105590fe3[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 18:32:32 2017 +0800
+
+    代码更新
+
+[33mcommit 955edf1b3b457b96ba54a66dca76ff40fa75c44f[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:58:15 2017 +0800
+
+    后台模板
+
+[33mcommit 6e52c921fcb924da4c6cc0d48e634addd91bd400[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:34:15 2017 +0800
+
+    代码更新
+
+[33mcommit 714f51c6644dd93cedc76fbffcca5f2a77406b72[m
+Merge: 5bd81b8 4c4ac13
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 11:38:08 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 4c4ac13f2876158e7493b4ec4e123a44a253ece3[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 12 10:53:41 2017 +0800
+
+    增加快捷支付字段
+
+[33mcommit 173603cbc3aa213d8eec05813d8ee9bd740ecf06[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 12 10:16:38 2017 +0800
+
+    修改
+
+[33mcommit 5bd81b89c45dd969685e2ad8dde2cae30cebdddc[m
+Merge: 3c3ec83 61b2c7b
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 12 09:52:09 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 61b2c7b7c432bb0d6999bf3ff0ff7412a6894c58[m
+Author: huawei <619530038@qq.com>
+Date:   Mon Jun 12 09:43:14 2017 +0800
+
+    添加快捷支付
+
+[33mcommit e038679f1fa1a69d4b0c49217e4b406a44b69b2d[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 10 16:55:01 2017 +0800
+
+    添加支付宝回调接口
+
+[33mcommit a843668ffea0165152d28c3a4a763eae6bf16dfe[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 18:32:32 2017 +0800
+
+    代码更新
+
+[33mcommit 3c3ec83bd4e9920e805ed47c0dccf2768c402420[m
+Merge: 21dbf8e a415cec
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:59:48 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit a415cec08c952a8bdad994d3d9ceedbe404ccc69[m
+Merge: 5f7993e d5f7b25
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:59:07 2017 +0800
+
+    Merge branch 'feature/dev_sso' of 192.168.1.12:wangdiao/user_center into feature/dev_sso
+
+[33mcommit 3077364a1a51a5d0ae8b8c2df1970b1b28322df2[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:58:15 2017 +0800
+
+    后台模板
+
+[33mcommit d5f7b2523b54cf7a596eaf2c998e6dedb65470bc[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 17:58:02 2017 +0800
+
+    修改
+
+[33mcommit c71b4f71936f1bfdf2307e1b14843e4f9d3b8086[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 17:48:22 2017 +0800
+
+    登录时间
+
+[33mcommit 21dbf8e03dc5bafcc90ae4b621f9c118bf8c65f5[m
+Merge: d42f9e3 5f7993e
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:37:13 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 5f7993eb072c7cc9f617be09e9ca5d4121ac5cae[m
+Merge: f98c1d5 8849cee
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:35:37 2017 +0800
+
+    Merge branch 'feature/dev_sso' of 192.168.1.12:wangdiao/user_center into feature/dev_sso
+
+[33mcommit df926d6cba94cc67c4b6cdaf196e22a2437bcc1a[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 17:34:15 2017 +0800
+
+    代码更新
+
+[33mcommit 8849cee8691803318e1bac12c3db69ce11b33c2c[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 17:34:13 2017 +0800
+
+    登出
+
+[33mcommit d42f9e30cb6298ac6dde1484f11189998f622c93[m
+Merge: 5a7bcbc f98c1d5
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 13:52:34 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 5f41ee767f68ac9663a281653347abe36db930d9[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 13:52:20 2017 +0800
+
+    修改
+
+[33mcommit f98c1d55300fa458841521fae11bb560caeae5eb[m
+Merge: 97a1bc6 5f41ee7
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 13:52:02 2017 +0800
+
+    Merge branch 'feature/dev_sso' of 192.168.1.12:wangdiao/user_center into feature/dev_sso
+
+[33mcommit 97a1bc6adbe05e6adbaaea4577f50d268791d5d4[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 13:46:46 2017 +0800
+
+    up
+
+[33mcommit 896cc80b3d4a0c68ce750aa35fe7bd337de62395[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 11:50:40 2017 +0800
+
+    up
+
+[33mcommit 2991d2871a70609b03a702a3a0cbdaa91c752cff[m
+Merge: dc613ce 2a1943d
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 11:40:37 2017 +0800
+
+    Merge branch 'feature/dev_sso' of http://192.168.1.12/wangdiao/user_center into feature/dev_sso
+
+[33mcommit dc613ce2cc0ed7f12d4412c2a32e67a124e6c83f[m
+Author: jren <602598484@qq.com>
+Date:   Fri Jun 9 11:40:31 2017 +0800
+
+    图形验证码up
+
+[33mcommit 5a7bcbc17da08964e2e5a85dfa25f8fdc6a30e07[m
+Merge: fe18fc3 2a1943d
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 11:05:15 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 2a1943d97ff01d7b7447f60617fe5c4f3cfb3c75[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 11:04:40 2017 +0800
+
+    去掉图形验证码
+
+[33mcommit fe18fc38491255abd2ee90046278fb63be92d5af[m
+Merge: 68afe19 f975ecc
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 10:37:20 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+    
+    merge
+
+[33mcommit f975eccafa60d7bc5946b1f642c0a7cdd83c6005[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 10:36:54 2017 +0800
+
+    去掉图形验证吗
+
+[33mcommit 68afe19f1dd91baea9d502c97b855aa083b7aefb[m
+Merge: 471313f 772ec1e
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 10:32:23 2017 +0800
+
+    代码合并
+
+[33mcommit 772ec1e3fa45f0481c5b960f83f36a1a98d92e0f[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 9 10:30:40 2017 +0800
+
+    trade
+
+[33mcommit fea3e24583c1b609eb5b18d74736de08df558b76[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 8 19:23:29 2017 +0800
+
+    代码调整
+
+[33mcommit 471313f585cbfee181833d3596ab293a6eb6985f[m
+Merge: 729aa05 3d634de
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 19:22:19 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 3d634de015d1ec3f3136ca1848ceb36be012cb96[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 19:20:39 2017 +0800
+
+    修复消费订单bug
+
+[33mcommit 6909f82682c17b9f970ee9bef3be8befd58d451c[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 8 18:58:30 2017 +0800
+
+    列表
+
+[33mcommit 31da88a491b43b5d09fed176a911002b9830c054[m
+Author: jren <602598484@qq.com>
+Date:   Thu Jun 8 18:08:58 2017 +0800
+
+    修改
+
+[33mcommit 49c534f860a8cd7331ba8955d5b849f836d3a3b5[m
+Author: jren <602598484@qq.com>
+Date:   Thu Jun 8 17:49:00 2017 +0800
+
+    验证码
+
+[33mcommit 729aa05a72ff02c5d126dab2aa8c32635277a910[m
+Merge: c733605 a50694f
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 17:03:11 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit a50694f98da8e2e340494e804cef83394b4d6011[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 17:02:48 2017 +0800
+
+    添加用户信息中的余额、冻结余额显示
+
+[33mcommit 1c1cd088ef4f320b2fee5d732171f032f7012bde[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 16:10:41 2017 +0800
+
+    使用支付宝SDK完成网站支付、手机支付
+
+[33mcommit 5d09ef3b8e3b01f40294c209d22c293a09d7f7f8[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 8 14:37:55 2017 +0800
+
+    微信支付和消费
+
+[33mcommit c733605ecc3fcdf969fa2b1595afdd611830ffba[m
+Merge: 631209d a348563
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 11:58:02 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit a348563078b5a227a8db43b0cd110d8fb908241d[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 8 11:37:12 2017 +0800
+
+    fixed
+
+[33mcommit a84143c27e070d32ff0a011f6ef24b38d176f8f6[m
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 10:57:30 2017 +0800
+
+    统一返回参数
+
+[33mcommit 631209d11b85f04b9922d02ee600492f5a781fad[m[33m ([m[1;31morigin/release/0.3[m[33m)[m
+Merge: 471ca34 9890f70
+Author: 华伟 <619530038@qq.com>
+Date:   Thu Jun 8 00:29:23 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 9890f70013772534f0863383dc0adfe1469195b6[m
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 7 23:46:24 2017 +0800
+
+     修复订单冲突
+
+[33mcommit fe6dc638fffaaddf616ec51714dc99b809a06080[m
+Merge: 2cc11ee f025d8b
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 18:32:05 2017 +0800
+
+    Merge branch 'feature/dev_sso' of http://192.168.1.12/wangdiao/user_center into feature/dev_sso
+
+[33mcommit 2cc11eec2e20393f83f3d820295d9a69288e7e2c[m
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 18:31:57 2017 +0800
+
+    忘记密码
+
+[33mcommit f025d8b265ac8566d642a8f0fc043280ddef129b[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Wed Jun 7 17:54:36 2017 +0800
+
+    代码调整
+
+[33mcommit 18467e7e2f94c779775b84dbafe3a56976cebcb4[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Wed Jun 7 17:26:13 2017 +0800
+
+    up
+
+[33mcommit 471ca34090a24959b7e7417d72694e9d0d0b671b[m
+Merge: 29346ac 7955335
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 7 17:18:19 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 79553354350bcf9399036a20e9865303afeb203e[m
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 17:17:29 2017 +0800
+
+    修改
+
+[33mcommit a90a53dd2059bf7681469471acad7f436f636d9e[m
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 16:24:13 2017 +0800
+
+    修改
+
+[33mcommit 29346ac6a933d6d559cc18add24616353c665312[m
+Merge: 59eacc3 3950352
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 7 14:58:50 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 3950352b7026cfc8d8d198f38e512f503f25ce0e[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Wed Jun 7 14:51:18 2017 +0800
+
+    错误信息添加
+
+[33mcommit d17016f3b831d9661ee5e738a3e04d491d6d3c06[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Wed Jun 7 14:25:52 2017 +0800
+
+    微信回调
+
+[33mcommit 74d921b180c9ac536b25078525327e4ad95e3e07[m
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 14:04:18 2017 +0800
+
+    修改
+
+[33mcommit 59eacc34f0ca0d2265273c0d660033848afca443[m
+Merge: 1458242 857a4b6
+Author: 华伟 <619530038@qq.com>
+Date:   Wed Jun 7 13:48:15 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 857a4b6cc205fa95dcacf82ff7bbc2f0bcebba42[m
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 13:09:05 2017 +0800
+
+    user
+
+[33mcommit c04547ec569383aa0e4dc70c4683ffaa7bb6f12d[m
+Author: jren <602598484@qq.com>
+Date:   Wed Jun 7 10:02:05 2017 +0800
+
+    修改
+
+[33mcommit 45b93469eca4ab654fc7ff533948764d1ac49320[m
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 19:56:19 2017 +0800
+
+    修复Config helper 冲突
+
+[33mcommit 1458242ff7ea0c711d0a8d47be735a56225fc508[m
+Merge: 4c73d13 53cb544
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 18:34:22 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 53cb5444366d2ef98777d75170a78e4ba5b61f20[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Tue Jun 6 18:32:54 2017 +0800
+
+    二维码库
+
+[33mcommit 06b3944b13c0ac7b328f9a8433762396ec151423[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Tue Jun 6 18:31:54 2017 +0800
+
+    微信支付
+
+[33mcommit 4c73d13ba05ff6b7dad9462a67877e7f454c0cdd[m
+Merge: c46939f 8556ebc
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 14:59:21 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 8556ebc5c72f72d1574741f4d7803962e520aa9a[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 14:55:54 2017 +0800
+
+    修复版本合并bug
+
+[33mcommit 1c1fac25d567e4a910584b2a846204fa808dc323[m
+Merge: c0e8fac 2bf107b
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 14:23:58 2017 +0800
+
+    Merge branch 'feature/dev_sso' of http://192.168.1.12/wangdiao/user_center into feature/dev_sso
+
+[33mcommit c0e8facbb1ed79acc65e0ddaaa61a49f730dfbcf[m
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 14:23:49 2017 +0800
+
+    test
+
+[33mcommit c46939f903b8e81b3d1b645897723da309465c77[m
+Merge: d7e12a4 2bf107b
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 14:04:16 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 2bf107bb48bb2fbcd547e86c5ad573f0e2628cb6[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 14:03:10 2017 +0800
+
+    修改sso BaseController 继承关系
+
+[33mcommit 9417940d77472aa9f12141bb559ca774dcecf57e[m
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 13:36:29 2017 +0800
+
+    修改
+
+[33mcommit 780959cf4f71ce0128dfdd36f015f7e2aac621e0[m
+Merge: e1a709f 3d70042
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 13:35:40 2017 +0800
+
+    Merge branch 'feature/dev_sso' of http://192.168.1.12/wangdiao/user_center into feature/dev_sso
+
+[33mcommit d7e12a42ba113053e27f9aa577197130e950ff7a[m
+Merge: c8f723c 3d70042
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 12:00:35 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 3d70042d66d2c5e65271a1f013218762b71de7d4[m
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 11:58:36 2017 +0800
+
+    修改错误返回格式
+
+[33mcommit c8f723c1144ddb5fefda8a9b7f1ff3bb4fa8f66a[m
+Merge: 214c2bd ee6e865
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 11:45:15 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit e1a709f9fa9d3c5c488395138ff5bd7b8d38dec4[m
+Merge: 63df69e ee6e865
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 11:17:35 2017 +0800
+
+    Merge branch 'feature/dev_sso' of http://192.168.1.12/wangdiao/user_center into feature/dev_sso
+
+[33mcommit 63df69e3424a901201b76f0a9e9582b5d6f44686[m
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 11:16:33 2017 +0800
+
+    up
+
+[33mcommit 94165ffdf72618b7645015479c81dda2053f6991[m
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 11:12:35 2017 +0800
+
+    修改
+
+[33mcommit ee6e8653fa167d1764dba315aa6a60487b4eb521[m
+Merge: 7418aca 9220eb2
+Author: xjun <xiongjunceplj@163.com>
+Date:   Tue Jun 6 10:35:12 2017 +0800
+
+    fixewd
+
+[33mcommit 7418acadf90f869b7e7de9e9b31fba9862c500cd[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Tue Jun 6 10:31:46 2017 +0800
+
+    up
+
+[33mcommit 9220eb2c5c77c03ee0681bc5277c10ac0b45ce48[m
+Author: jren <602598484@qq.com>
+Date:   Tue Jun 6 10:27:02 2017 +0800
+
+    修改
+
+[33mcommit 214c2bd75f4fbf10d42b963ded44247f2aab3ebe[m
+Merge: 6f38e4a 80ab0b4
+Author: 华伟 <619530038@qq.com>
+Date:   Tue Jun 6 09:47:09 2017 +0800
+
+    Merge branch 'feature/dev_sso' into develop
+
+[33mcommit 30fa8800ea68f40272a36371abecad431ed4280a[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 5 19:27:37 2017 +0800
+
+    修改
+
+[33mcommit 80ab0b49af1b53fdbb383a6cb77a2dee9313298b[m
+Author: jren <602598484@qq.com>
+Date:   Mon Jun 5 19:07:29 2017 +0800
+
+    注册登入
+
+[33mcommit 6f38e4aa0fcc5d203e5f6dd25f85934c0b9dcbeb[m
+Merge: dcf7e94 3d60ff0
+Author: 王雕 <wd@youmeng.com>
+Date:   Mon Jun 5 17:12:26 2017 +0800
+
+    Merge branch 'feature/dev_sso' into 'develop'
+    
+    Feature/dev sso
+    
+    See merge request !1
+
+[33mcommit 3ea5237438d4a6f520f3cdddeaa64d126b4cc002[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 5 16:44:57 2017 +0800
+
+    代码更新
+
+[33mcommit 3d60ff0061fd95513618cfab03dfea2144e737f1[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 5 15:44:01 2017 +0800
+
+    添加测试环境不做验证
+
+[33mcommit 007fc035498dcc7af111686b3ea460e101cc7870[m
+Author: 华伟 <619530038@qq.com>
+Date:   Mon Jun 5 15:38:08 2017 +0800
+
+    添加项目ip、以及token的验证
+
+[33mcommit 0d1e30c0812670d93b600b987d79678e4a379df3[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 3 17:06:15 2017 +0800
+
+    添加redis扩展
+
+[33mcommit 3189eb383319155bd22975bf1d7523597f085bd1[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 5 15:37:36 2017 +0800
+
+    wetchat update
+
+[33mcommit 3e375e4090b766bb2772720a70f2ab8406304ed1[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 5 15:33:46 2017 +0800
+
+    wechat
+
+[33mcommit 57d92364631f268db6c4415089335b039e34eebe[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Mon Jun 5 09:32:49 2017 +0800
+
+    忽略文件
+
+[33mcommit 026d670435fa7d6f6288bf52b89e90cc14e52208[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 3 14:28:49 2017 +0800
+
+    初始化项目表结构
+
+[33mcommit 6ccce3d082861bc6ad46073acf8a244f7fc891cf[m
+Author: 华伟 <619530038@qq.com>
+Date:   Sat Jun 3 14:03:22 2017 +0800
+
+    配置passport环境
+
+[33mcommit 466ec5045cf80c49908024f08bad4ea57b001015[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 2 18:16:25 2017 +0800
+
+    定义借口
+
+[33mcommit cf53ec62f4f5a829a42bef9298f9e6c3d2f4fb42[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Fri Jun 2 13:30:13 2017 +0800
+
+    passport
+
+[33mcommit dcf7e94097897853753c4d31bedf510c2b29be92[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 1 18:59:46 2017 +0800
+
+    或略文件
+
+[33mcommit 2c96d3d5250e5268002530a795f1bdc95a1a83c0[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 1 18:55:01 2017 +0800
+
+    del
+
+[33mcommit 6d6c4315de4f6ce36e0bfa492a514d7f84aee16a[m
+Author: xjun <xiongjunceplj@163.com>
+Date:   Thu Jun 1 18:40:31 2017 +0800
+
+    first commit

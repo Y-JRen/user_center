@@ -8,7 +8,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-backend',
-    'name' => "车城用户中心",
+    'name' => "车城管理系统",
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
@@ -47,11 +47,6 @@ return [
             'rules' => [
             ],
         ],
-        'formatter' => [
-            'datetimeFormat' => 'php:Y-m-d H:i',
-            'currencyCode' => 'CNY',
-        ],
-
     ],
     'params' => $params,
 ];

@@ -132,6 +132,7 @@ function prefix($num)
     createFinType(1, 1);
     $('#transaction_time').datetimepicker({
         format: 'yyyy-mm-dd',
+        pickerPosition: 'top-right',
         autoclose: true,//自动关闭
         minView: 2//最精准的时间选择为日期0-分 1-时 2-日 3-月
     });

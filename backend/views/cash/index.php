@@ -45,12 +45,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
                 },
             ],
-            [
-                'attribute' => 'amount',
-                'value' => function ($model) {
-                    return Yii::$app->formatter->asCurrency($model->amount);
-                }
-            ],
+            'amount:currency',
+            'counter_fee:currency',
+            'discount_amount:currency',
+            'receipt_amount:currency',
             [
                 'attribute' => 'status',
                 'value' => function ($model) {

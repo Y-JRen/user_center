@@ -9,6 +9,8 @@
 namespace passport\modules\pay\controllers;
 
 use common\logic\RefundLogin;
+use common\models\PoolBalance;
+use common\models\PoolFreeze;
 use passport\modules\pay\models\OrderForm;
 use Yii;
 use passport\controllers\AuthController;
@@ -45,6 +47,10 @@ class FreezeController extends AuthController
         try {
             if (!$order->userFreeze->less($amount)) {
                 throw new Exception('用户冻结余额解冻失败');
+            }
+
+            if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$order->setOrderSuccess()) {
@@ -99,6 +105,10 @@ class FreezeController extends AuthController
                 throw new Exception('用户冻结余额解冻失败');
             }
 
+            if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
+            }
+
             if (!$order->setOrderSuccess()) {
                 throw new Exception('更新订单状态失败');
             }
@@ -116,6 +126,10 @@ class FreezeController extends AuthController
 
             if (!$model->userBalance->plus($refundAmount)) {
                 throw new Exception('用户余额增加失败');
+            }
+
+            if (!$model->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                throw new Exception('添加资金流水记录失败');
             }
 
             if (!$model->setOrderSuccess()) {

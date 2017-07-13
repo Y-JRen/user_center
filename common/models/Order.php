@@ -2,7 +2,6 @@
 
 namespace common\models;
 
-use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -26,6 +25,9 @@ use yii\helpers\ArrayHelper;
  * @property string $remark
  * @property integer $platform
  * @property integer $quick_pay
+ * @property string $receipt_amount
+ * @property string $counter_fee
+ * @property string $discount_amount
  *
  * @property string $type
  * @property string $orderStatus
@@ -48,7 +50,7 @@ class Order extends \yii\db\ActiveRecord
     /**
      * 订单处理状态
      */
-    const STATUS_PROCESSING = 1;// 带处理
+    const STATUS_PROCESSING = 1;// 处理中
     const STATUS_SUCCESSFUL = 2;// 处理成功
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理
@@ -58,6 +60,7 @@ class Order extends \yii\db\ActiveRecord
      * 消费子类型
      */
     const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
+    const SUB_TYPE_CONSUME_FEE = 'fee';// 手续费消费
     const SUB_TYPE_LOAN_RECORD = 'loan_record';// 贷款入账 充值、消费时都使用
     const SUB_TYPE_LOAN_REFUND = 'loan_refund';// 贷款退款
 
@@ -77,7 +80,7 @@ class Order extends \yii\db\ActiveRecord
         return [
             [['uid', 'platform_order_id', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
-            [['amount'], 'number'],
+            [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             [['order_id'], 'unique'],
@@ -97,7 +100,7 @@ class Order extends \yii\db\ActiveRecord
             'order_type' => '订单类型',
             'type' => '订单类型',
             'order_subtype' => '支付方式',
-            'amount' => '金额',
+            'amount' => '订单金额',
             'status' => '状态',
             'desc' => '订单描述',
             'notice_status' => '通知平台状态',
@@ -106,33 +109,10 @@ class Order extends \yii\db\ActiveRecord
             'updated_at' => '最后一次更新时间',
             'remark' => '备注',
             'platform' => '平台',
-            'quick_pay' => '快捷支付'
-        ];
-    }
-
-    public function fields()
-    {
-        return [
-            'platform_order_id',
-            'order_id',
-            'order_type',
-            'order_subtype',
-            'amount',
-            'desc',
-            'status',
-            'statusName' => function ($model) {
-                return $this->orderStatus;
-            },
-            'notice_platform_param',
-            'platform' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-            },
-            'created_at' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            },
-            'updated_at' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            }
+            'quick_pay' => '快捷支付',
+            'receipt_amount' => '实际金额',
+            'counter_fee' => '服务费',
+            'discount_amount' => '优惠金额',
         ];
     }
 
@@ -285,7 +265,7 @@ class Order extends \yii\db\ActiveRecord
     {
         $data = [
             self::STATUS_PROCESSING => '处理中',
-            self::STATUS_SUCCESSFUL=> '处理成功',
+            self::STATUS_SUCCESSFUL => '处理成功',
             self::STATUS_FAILED => '处理不成功',
             self::STATUS_PENDING => '待处理',
         ];
@@ -316,5 +296,76 @@ class Order extends \yii\db\ActiveRecord
         ];
 
 //        Yii::error(json_encode($this->errors));
+    }
+
+    /**
+     * 添加用户余额资金流水记录
+     * @param $style string 流水方式
+     * @return bool
+     */
+    public function addPoolBalance($style)
+    {
+        if ($style == PoolBalance::STYLE_PLUS) {
+            $amount = $this->receipt_amount;
+        } elseif ($style == PoolBalance::STYLE_LESS) {
+            $amount = -$this->receipt_amount;
+        } else {
+            return false;
+        }
+
+        $model = new PoolBalance();
+        $model->created_at = time();
+        $model->order_id = $this->order_id;
+        $model->amount = $amount;
+        $model->before_amount = PoolBalance::getUserBalance($this->uid);
+        $model->after_amount = ((float)$model->before_amount + (float)$model->amount);
+        $model->uid = $this->uid;
+        $model->desc = $this->getDescription();
+        if ($model->save()) {
+            return true;
+        } else {
+            Yii::error(json_encode($model->errors), 'modelSave');
+            return false;
+        }
+    }
+
+    /**
+     * 添加用户余额资金流水记录
+     * @param $style string 流水方式
+     * @return bool
+     */
+    public function addPoolFreeze($style)
+    {
+        if ($style == PoolFreeze::STYLE_PLUS) {
+            $amount = $this->receipt_amount;
+        } elseif ($style == PoolBalance::STYLE_LESS) {
+            $amount = -$this->receipt_amount;
+        } else {
+            return false;
+        }
+
+        $model = new PoolFreeze();
+        $model->created_at = time();
+        $model->order_id = $this->order_id;
+        $model->amount = $amount;
+        $model->before_amount = PoolFreeze::getUserBalance($this->uid);
+        $model->after_amount = ((float)$model->before_amount + (float)$model->amount);
+        $model->uid = $this->uid;
+        $model->desc = $this->getDescription();
+        if ($model->save()) {
+            return true;
+        } else {
+            Yii::error(json_encode($model->errors), 'modelSave');
+            return false;
+        }
+    }
+
+    /**
+     * 先放4大类型，后期扩展
+     *
+     */
+    public function getDescription()
+    {
+        return $this->getType();
     }
 }

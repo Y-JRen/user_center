@@ -10,12 +10,14 @@ namespace passport\modules\pay\models;
 
 use common\jobs\OrderCallbackJob;
 use common\logic\RefundLogin;
+use common\models\PoolBalance;
+use common\models\PoolFreeze;
 use passport\logic\AccountLogic;
 use Yii;
-use common\models\Order;
+use passport\models\Order;
 use passport\helpers\Config;
-use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 
 /**
  * 订单表单
@@ -42,7 +44,7 @@ class OrderForm extends Order
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
             ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
-            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'alipay_app', 'alipay_mobile', 'line_down'], 'when' => function ($model) {
+            ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'alipay_app', 'alipay_mobile', 'line_down', 'lakala'], 'when' => function ($model) {
                 return $model->order_type == self::TYPE_RECHARGE;
             }],
             ['order_subtype', 'validatorOrderSubType'],
@@ -76,11 +78,13 @@ class OrderForm extends Order
         // 新增订单时，设置平台、订单号、初始状态
         if ($this->isNewRecord) {
             $this->quick_pay = (empty($this->quick_pay) ? 0 : $this->quick_pay);
-            // 生成快捷消费订单时不需要设置一下两个信息
-            if (!($this->quick_pay && $this->order_type == self::TYPE_CONSUME)) {
+
+            // 生成快捷消费订单、手续费消费订单时不需要使用初始化设置以下两个信息
+            if (Yii::$app->user && ArrayHelper::getValue(Yii::$app->user, 'id')) {
                 $this->uid = Yii::$app->user->id;
                 $this->platform = Config::getPlatform();
             }
+
             $this->order_id = Config::createOrderId();
             $this->status = self::STATUS_PENDING;
         }
@@ -118,6 +122,11 @@ class OrderForm extends Order
                 throw new Exception('余额增加失败');
             }
 
+            // 添加资金流水记录
+            if (!$this->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$this->setOrderSuccess()) {
                 throw new Exception('更新消费订单状态失败');
             }
@@ -146,8 +155,18 @@ class OrderForm extends Order
                 throw new Exception('余额扣除失败');
             }
 
+            // 添加资金流水记录
+            if (!$this->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$this->userFreeze->plus($this->amount)) {
                 throw new Exception('冻结失败');
+            }
+
+            // 添加冻结资金流水记录
+            if (!$this->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$this->setOrderProcessing()) {
@@ -179,7 +198,7 @@ class OrderForm extends Order
         $model->amount = $this->amount;
         $model->status = self::STATUS_PROCESSING;
         $model->desc = '快捷支付消费订单';
-        $model->notice_status = 1;
+        $model->notice_status = 4;
         $model->notice_platform_param = $this->notice_platform_param;
         $model->remark = $this->remark;
         $model->platform = $this->platform;
@@ -191,6 +210,40 @@ class OrderForm extends Order
         } else {
             return false;
         }
+    }
+
+    /**
+     * 添加手续费订单
+     */
+    public function addFeeOrder()
+    {
+        if ($this->counter_fee <= 0) {
+            return true;
+        }
+
+        // 只有手续费大于0 的时候才需要添加手续费消费订单
+        $model = new self;
+        $model->uid = $this->uid;
+        $model->platform_order_id = $this->platform_order_id;
+        $model->order_id = Config::createOrderId();
+        $model->order_type = self::TYPE_CONSUME;
+        $model->order_subtype = self::SUB_TYPE_CONSUME_FEE;
+        $model->amount = $this->counter_fee;
+        $model->receipt_amount = $this->counter_fee;
+        $model->status = self::STATUS_PROCESSING;
+        $model->desc = 'POS机手续费';
+        $model->notice_status = 4;
+        $model->notice_platform_param = $this->notice_platform_param;
+        $model->remark = $this->remark;
+        $model->platform = $this->platform;
+        $model->quick_pay = 0;// 手续费的不需要通知第三方
+
+        if ($model->save()) {
+            $model->consumeSave();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -232,8 +285,16 @@ class OrderForm extends Order
                 throw new Exception('余额扣除失败');
             }
 
+            if (!$this->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$this->userFreeze->plus($this->amount)) {
                 throw new Exception('资金冻结失败');
+            }
+
+            if (!$this->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$this->setOrderProcessing()) {
@@ -260,6 +321,10 @@ class OrderForm extends Order
                 throw new Exception('资金解冻失败');
             }
 
+            if (!$this->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
+            }
+
             if (!$this->setOrderSuccess()) {
                 throw new Exception('更新消费订单状态失败');
             }
@@ -267,7 +332,7 @@ class OrderForm extends Order
             $transaction->commit();
 
             // 异步回调通知平台, 快捷消费订单不在此处回调
-            if (!$this->quick_pay) {
+            if ($this->notice_status == 1) {
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $this->notice_platform_param,
                     'order_id' => $this->order_id,
@@ -282,7 +347,7 @@ class OrderForm extends Order
             $transaction->rollBack();
 
             // 异步回调通知平台, 快捷消费订单不在此处回调
-            if (!$this->quick_pay) {
+            if ($this->notice_status == 1) {
                 Yii::$app->queue_second->push(new OrderCallbackJob([
                     'notice_platform_param' => $this->notice_platform_param,
                     'order_id' => $this->order_id,
@@ -294,4 +359,6 @@ class OrderForm extends Order
             throw $e;
         }
     }
+
+
 }

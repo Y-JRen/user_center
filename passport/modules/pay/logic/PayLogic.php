@@ -39,6 +39,9 @@ class PayLogic extends Logic
             case 'alipay_mobile':
                 return AlipayLogic::instance()->mobile($order);
                 break;
+            case 'lakala':
+                return LakalaLogic::instance()->pay($order);
+                break;
             case 'line_down':// 线下支付只要生成订单
                 return ['status' => 0];
                 break;

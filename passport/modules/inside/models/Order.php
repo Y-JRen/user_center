@@ -9,9 +9,12 @@
 namespace passport\modules\inside\models;
 
 
+use common\models\UserInfo;
 use passport\helpers\Config;
+use Yii;
+use yii\helpers\ArrayHelper;
 
-class Order extends \common\models\Order
+class Order extends \passport\models\Order
 {
     public function rules()
     {
@@ -27,6 +30,7 @@ class Order extends \common\models\Order
     }
 
     /**
+     * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
      * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
      * @return bool
      */
@@ -100,5 +104,47 @@ class Order extends \common\models\Order
         } else {
             return false;
         }
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'uid']);
+    }
+
+    public function getUserInfo()
+    {
+        return $this->hasOne(UserInfo::className(), ['uid' => 'uid']);
+    }
+
+    public function fields()
+    {
+        $controllerAction = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
+
+        if (in_array($controllerAction, ['trade/info', 'trade/search'])) {// 针对pos机的请求返回
+            return [
+                'order_id',
+                'phone' => function ($model) {
+                    return ArrayHelper::getValue($model->user, 'phone');
+                },
+                'real_name' => function ($model) {
+                    if ($userInfo = $model->userInfo) {
+                        return $userInfo->verifyReal() ? $userInfo->real_name : '';
+                    } else {
+                        return '';
+                    }
+                },
+                'desc',
+                'type',
+                'amount',
+                'status',
+                'statusName' => function ($model) {
+                    return $this->orderStatus;
+                },
+                'quick_pay',
+                'order_type',
+                'created_at'
+            ];
+        }
+        return parent::fields();
     }
 }

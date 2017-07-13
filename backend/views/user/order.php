@@ -1,16 +1,15 @@
 <?php
 
-use common\models\Order;
+use backend\models\Order;
 use yii\grid\GridView;
-use yii\widgets\Pjax;
 use yii\helpers\ArrayHelper;
 
 
 $this->title = '账户资金';
 $this->params['breadcrumbs'][] = $this->title;
 
-$balance = ArrayHelper::getValue($userModel->balance,'amount',0);
-$freeze = ArrayHelper::getValue($userModel->freeze,'amount',0);
+$balance = ArrayHelper::getValue($userModel->balance, 'amount', 0);
+$freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
 ?>
 <div class="order-index">
     <div class="box-body no-padding" style="background-color: #fff;">
@@ -18,19 +17,19 @@ $freeze = ArrayHelper::getValue($userModel->freeze,'amount',0);
             <tbody>
             <tr>
                 <td>用户ID</td>
-                <td><?=$userModel->id?></td>
+                <td><?= $userModel->id ?></td>
                 <td>用户手机</td>
-                <td><?=$userModel->phone?></td>
+                <td><?= $userModel->phone ?></td>
                 <td>资金账户状态</td>
                 <td>正常</td>
             </tr>
             <tr>
-                <td>余额</td>
-                <td><?=$balance?></td>
+                <td>总余额</td>
+                <td><?= $balance + $freeze ?></td>
                 <td>可用余额</td>
-                <td><?=$balance - $freeze?></td>
+                <td><?= $balance ?></td>
                 <td>冻结金额</td>
-                <td><?=$freeze?></td>
+                <td><?= $freeze ?></td>
             </tr>
             </tbody>
         </table>
@@ -61,13 +60,16 @@ $freeze = ArrayHelper::getValue($userModel->freeze,'amount',0);
                 },
                 'filter' => Order::getTypeName()
             ],
-            'order_subtype',
             [
-                'attribute' => 'amount',
+                'attribute' => 'order_subtype',
                 'value' => function ($model) {
-                    return Yii::$app->formatter->asCurrency($model->amount);
-                }
+                    return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                },
             ],
+            'amount:currency',
+            'counter_fee:currency',
+            'discount_amount:currency',
+            'receipt_amount:currency',
         ],
     ]); ?>
 </div>

@@ -9,6 +9,8 @@
 namespace passport\modules\inside\controllers;
 
 use common\jobs\RechargePushJob;
+use common\models\PoolBalance;
+use common\models\PoolFreeze;
 use passport\modules\inside\models\Order;
 use Yii;
 use yii\base\Exception;
@@ -33,6 +35,10 @@ class OrderController extends BaseController
                     throw new Exception('添加用户可用余额失败');
                 }
 
+                if (!$model->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                    throw new Exception('添加资金流水记录失败');
+                }
+
                 if (!$model->setOrderSuccess()) {
                     throw new Exception('更新贷款入账充值订单状态失败');
                 }
@@ -45,8 +51,16 @@ class OrderController extends BaseController
                     throw new Exception('扣除用户可用余额失败');
                 }
 
+                if (!$consumeModel->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                    throw new Exception('添加资金流水记录失败');
+                }
+
                 if (!$consumeModel->userFreeze->plus($consumeModel->amount)) {
                     throw new Exception('增加用户冻结余额失败');
+                }
+
+                if (!$consumeModel->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                    throw new Exception('添加冻结资金流水记录失败');
                 }
 
                 if (!$consumeModel->setOrderProcessing()) {
@@ -61,6 +75,7 @@ class OrderController extends BaseController
                 throw $e;
             }
         } else {
+            Yii::error(var_export($model->getErrors(), true), 'actionLoan');
             return $this->_error(2401);
         }
     }
@@ -96,6 +111,10 @@ class OrderController extends BaseController
                 throw new Exception('用户冻结余额解冻失败');
             }
 
+            if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
+            }
+
             if (!$order->setOrderSuccess()) {
                 throw new Exception('更新订单状态失败');
             }
@@ -109,6 +128,7 @@ class OrderController extends BaseController
     }
 
     /**
+     * 天猫走账
      * @return array
      * @throws Exception
      */
@@ -145,6 +165,10 @@ class OrderController extends BaseController
                 throw new Exception('添加用户可用余额失败');
             }
 
+            if (!$recharge->addPoolBalance(PoolBalance::STYLE_PLUS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$recharge->setOrderSuccess()) {
                 throw new Exception('更新充值订单状态失败');
             }
@@ -163,12 +187,24 @@ class OrderController extends BaseController
                 throw new Exception('扣除用户可用余额失败');
             }
 
+            if (!$consumeModel->addPoolBalance(PoolBalance::STYLE_LESS)) {
+                throw new Exception('添加资金流水记录失败');
+            }
+
             if (!$consumeModel->userFreeze->plus($consumeModel->amount)) {
                 throw new Exception('增加用户冻结余额失败');
             }
 
+            if (!$consumeModel->addPoolFreeze(PoolFreeze::STYLE_PLUS)) {
+                throw new Exception('添加冻结资金流水记录失败');
+            }
+
             if (!$consumeModel->userFreeze->less($consumeModel->amount)) {
                 throw new Exception('扣除用户冻结余额失败');
+            }
+
+            if (!$consumeModel->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                throw new Exception('添加冻结资金流水记录失败');
             }
 
             if (!$consumeModel->setOrderSuccess()) {
@@ -193,5 +229,4 @@ class OrderController extends BaseController
             throw $e;
         }
     }
-
 }

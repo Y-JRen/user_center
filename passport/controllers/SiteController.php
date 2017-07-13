@@ -27,9 +27,11 @@ class SiteController extends Controller
         ];
     }
 
-    public function acrionError()
+    public function actionError()
     {
 
     }
+
+
 
 }

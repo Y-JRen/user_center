@@ -80,11 +80,11 @@ class TransferController extends BaseController
             $recharge->transaction_time = strtotime($post['transaction_time']);
             $recharge->remark = $post['remark'];
             $recharge->amount = $model->amount;
-            $recharge->status = 1;
+            $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
 
             if (!$recharge->save()) {
-                throw new ErrorException('确认失败，保存打款信息失败');
+                throw new ErrorException('确认失败，保存打款信息失败'.json_encode($recharge->errors));
             }
 
             if (!$model->setOrderTransfer()) {
