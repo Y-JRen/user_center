@@ -14,9 +14,8 @@ use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use passport\logic\AccountLogic;
 use Yii;
-use common\models\Order;
+use passport\models\Order;
 use passport\helpers\Config;
-use yii\behaviors\TimestampBehavior;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 
@@ -84,11 +83,6 @@ class OrderForm extends Order
             if (Yii::$app->user && ArrayHelper::getValue(Yii::$app->user, 'id')) {
                 $this->uid = Yii::$app->user->id;
                 $this->platform = Config::getPlatform();
-            }
-
-            // 实际金额处理
-            if (empty($this->receipt_amount)) {
-                $this->receipt_amount = $this->amount;
             }
 
             $this->order_id = Config::createOrderId();

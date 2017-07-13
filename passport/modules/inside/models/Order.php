@@ -14,7 +14,7 @@ use passport\helpers\Config;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class Order extends \common\models\Order
+class Order extends \passport\models\Order
 {
     public function rules()
     {

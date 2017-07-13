@@ -2,7 +2,6 @@
 
 namespace common\models;
 
-use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -114,32 +113,6 @@ class Order extends \yii\db\ActiveRecord
             'receipt_amount' => '实际金额',
             'counter_fee' => '服务费',
             'discount_amount' => '优惠金额',
-        ];
-    }
-
-    public function fields()
-    {
-        return [
-            'platform_order_id',
-            'order_id',
-            'order_type',
-            'order_subtype',
-            'amount',
-            'desc',
-            'status',
-            'statusName' => function ($model) {
-                return $this->orderStatus;
-            },
-            'notice_platform_param',
-            'platform' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-            },
-            'created_at' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            },
-            'updated_at' => function ($model) {
-                return Yii::$app->formatter->asDatetime($model->created_at);
-            }
         ];
     }
 
@@ -345,7 +318,7 @@ class Order extends \yii\db\ActiveRecord
         $model->order_id = $this->order_id;
         $model->amount = $amount;
         $model->before_amount = PoolBalance::getUserBalance($this->uid);
-        $model->after_amount = ($model->before_amount + $model->amount);
+        $model->after_amount = ((float)$model->before_amount + (float)$model->amount);
         $model->uid = $this->uid;
         $model->desc = $this->getDescription();
         if ($model->save()) {
@@ -376,7 +349,7 @@ class Order extends \yii\db\ActiveRecord
         $model->order_id = $this->order_id;
         $model->amount = $amount;
         $model->before_amount = PoolFreeze::getUserBalance($this->uid);
-        $model->after_amount = ($model->before_amount + $model->amount);
+        $model->after_amount = ((float)$model->before_amount + (float)$model->amount);
         $model->uid = $this->uid;
         $model->desc = $this->getDescription();
         if ($model->save()) {
