@@ -45,4 +45,11 @@ class User extends \yii\db\ActiveRecord
             'phone' => '手机号'
         ];
     }
+
+    public function fields()
+    {
+        $data = parent::fields();
+        unset($data['passwd']);
+        return $data;
+    }
 }
