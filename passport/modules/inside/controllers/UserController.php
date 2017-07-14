@@ -46,6 +46,7 @@ class UserController extends BaseController
             $model->reg_ip = Yii::$app->request->getUserIp();
             $model->login_time = 0;
             $model->status = 1;
+            $model->client_type = Config::getClientType();
             if ($model->save()) {
                 return $this->_return(['uid' => $model->id]);
             } else {
