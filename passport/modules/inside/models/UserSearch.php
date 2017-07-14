@@ -51,9 +51,6 @@ class UserSearch extends User
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'pagination' => [
-                'pageSize' => Yii::$app->request->get('page_size', 20),
-            ],
         ]);
 
         $this->load($params, '');
@@ -70,16 +67,16 @@ class UserSearch extends User
         ]);
 
         if (!empty($this->reg_start_time)) {
-            $query->andWhere(['>=', 'reg_time', $this->reg_start_time]);
+            $query->andWhere(['>=', 'reg_time', strtotime($this->reg_start_time)]);
         }
         if (!empty($this->reg_end_time)) {
-            $query->andWhere(['<', 'reg_time', $this->reg_end_time]);
+            $query->andWhere(['<', 'reg_time', strtotime($this->reg_end_time)]);
         }
         if (!empty($this->login_start_time)) {
-            $query->andWhere(['>=', 'login_time', $this->login_start_time]);
+            $query->andWhere(['>=', 'login_time', strtotime($this->login_start_time)]);
         }
         if (!empty($this->login_end_time)) {
-            $query->andWhere(['<', 'login_time', $this->login_end_time]);
+            $query->andWhere(['<', 'login_time', strtotime($this->login_end_time)]);
         }
 
         return $dataProvider;
