@@ -18,6 +18,7 @@ use Yii;
  * @property integer $reg_time
  * @property string $reg_ip
  * @property integer $login_time
+ * @property string $client_type
  */
 class User extends \yii\db\ActiveRecord
 {

@@ -20,6 +20,7 @@ use yii\web\IdentityInterface;
  * @property integer $reg_time
  * @property string $reg_ip
  * @property integer $login_time
+ * @property string $client_type
  */
 class User extends BaseModel implements IdentityInterface
 {
@@ -42,7 +43,7 @@ class User extends BaseModel implements IdentityInterface
             [['phone'], 'string', 'max' => 12],
             [['user_name'], 'string', 'max' => 30],
             [['email'], 'string', 'max' => 20],
-            [['passwd'], 'string', 'max' => 50],
+            [['passwd', 'client_type'], 'string', 'max' => 50],
             [['from_channel'], 'string', 'max' => 128],
             [['reg_ip'], 'string', 'max' => 15],
         ];
@@ -65,6 +66,7 @@ class User extends BaseModel implements IdentityInterface
             'reg_time' => '注册时间',
             'reg_ip' => '注册IP',
             'login_time' => '最后登陆时间',
+            'client_type' => '客户端类型',
         ];
     }
 
