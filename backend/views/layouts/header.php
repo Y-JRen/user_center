@@ -20,7 +20,7 @@ use yii\helpers\Html;
                 <?php $projects = \backend\logic\ThirdLogic::instance()->getUserProjects(Yii::$app->user->id); ?>
                 <?php foreach ($projects as $project): ?>
                     <li <?= (stristr($project['name'], '用户中心') === false) ? '' : 'class="active"'; ?>>
-                        <a href="<?= $project['url'] ?>" target="_blank"><?= $project['name'] ?></a>
+                        <a href="<?= $project['url'] ?>"><?= $project['name'] ?></a>
                     </li>
                 <?php endforeach; ?>
             </ul>
