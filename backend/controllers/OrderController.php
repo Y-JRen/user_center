@@ -12,6 +12,7 @@ use Yii;
 use backend\models\search\OrderSearch;
 use yii\base\ErrorException;
 use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -52,18 +53,23 @@ class OrderController extends BaseController
         ]);
     }
 
+    /**
+     * AJAX获取确认充值表单
+     * @param $id
+     * @return string
+     */
     public function actionLineDownForm($id)
     {
-        /**
-         * @var
-         */
         $model = $this->findModel($id);
-        $phone = \common\models\User::findOne($model->uid)->phone;
+        $phone = ArrayHelper::getValue($model->user, 'phone');
 
         return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone]);
-
     }
 
+    /**
+     * 线下充值确认
+     * @return \yii\web\Response
+     */
     public function actionLineDownSave()
     {
         $post = Yii::$app->request->post();
@@ -115,6 +121,10 @@ class OrderController extends BaseController
         return $this->redirect(['line-down']);
     }
 
+    /**
+     * 确认充值失败
+     * @return \yii\web\Response
+     */
     public function actionConfirmFail()
     {
         $id = Yii::$app->request->get('id');
