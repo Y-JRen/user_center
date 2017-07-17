@@ -69,7 +69,7 @@ class UserForm extends Model
     public function scenarios()
     {
         return [
-            self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd', 'verify_code', 'channel', 'is_agreement'],
+            self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd', 'verify_code', 'channel', 'is_agreement', 'client_type'],
             self::SCENARIO_LOGIN => ['user_name', 'passwd', 'uuid', 'img_code', 'img_unique'],
             self::SCENARIO_LOGGED => ['token'],
             self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd', 'verify_code'],
@@ -161,6 +161,7 @@ class UserForm extends Model
         $model->reg_time = time();
         $model->reg_ip = $this->getIp();
         $model->login_time = 0;
+        $model->client_type = Config::getClientType();
         if (!$model->insert()) {
             return ['status' => false, 'msg' => current($model->getErrors())[0]];
         } else {
@@ -326,6 +327,7 @@ class UserForm extends Model
             $model->reg_time = time();
             $model->reg_ip = $this->getIp();
             $model->login_time = 0;
+            $model->client_type = Config::getClientType();
             if ($model->save(false)) {
                 $token = $this->login($model->id);
                 return ['token' => $token, 'uid' => $model->id];

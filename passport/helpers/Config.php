@@ -112,7 +112,7 @@ class Config
      */
     public static function getClientType()
     {
-        return self::getRequestAllParams('client_type');
+        return strtolower(self::getRequestAllParams('client_type'));
     }
 
     /**
