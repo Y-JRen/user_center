@@ -128,4 +128,24 @@ class Config
     {
         return Yii::$app->params['pay']['alipay_old'];
     }
+
+    /**
+     * 获取支付宝的相关配置
+     * @param string $type
+     * @return string
+     */
+    public static function getAliConfig($type = 'default')
+    {
+        switch ($type) {
+            case 'tmall':
+                $config = Yii::$app->params['pay']['alipay_tamll'];
+                break;
+            case 'mobile':
+                $config = self::getAlipayMobileConfig();
+                break;
+            default:
+                $config = self::getAlipayConfig();
+        }
+        return $config;
+    }
 }
