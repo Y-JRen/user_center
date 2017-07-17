@@ -61,7 +61,6 @@ class UserSearch extends User
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
             'phone' => $this->phone,
             'status' => $this->status,
             'client_type' => strtolower($this->reg_source),
