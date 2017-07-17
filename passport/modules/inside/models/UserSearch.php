@@ -19,6 +19,7 @@ class UserSearch extends User
     public $login_start_time;
     public $reg_end_time;
     public $login_end_time;
+    public $reg_source;
 
     /**
      * @inheritdoc
@@ -26,7 +27,7 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'phone', 'status', 'reg_start_time', 'login_start_time', 'reg_end_time', 'login_end_time', 'client_type'], 'safe'],
+            [['id', 'phone', 'status', 'reg_start_time', 'login_start_time', 'reg_end_time', 'login_end_time', 'reg_source'], 'safe'],
         ];
     }
 
@@ -63,7 +64,7 @@ class UserSearch extends User
             'id' => $this->id,
             'phone' => $this->phone,
             'status' => $this->status,
-            'client_type' => strtolower($this->client_type),
+            'client_type' => strtolower($this->reg_source),
         ]);
 
         // 支持多用户id同时查询
