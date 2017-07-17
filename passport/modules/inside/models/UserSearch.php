@@ -66,6 +66,12 @@ class UserSearch extends User
             'client_type' => strtolower($this->client_type),
         ]);
 
+        // 支持多用户id同时查询
+        if (!empty($this->id)) {
+            $idArr = explode(',', $this->id);
+            $query->andFilterWhere(['id' => $idArr]);
+        }
+
         if (!empty($this->reg_start_time)) {
             $query->andWhere(['>=', 'reg_time', strtotime($this->reg_start_time)]);
         }
