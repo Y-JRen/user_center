@@ -138,7 +138,7 @@ class Config
     {
         switch ($type) {
             case 'tmall':
-                $config = Yii::$app->params['pay']['alipay_tamll'];
+                $config = Yii::$app->params['pay']['alipay_tmall'];
                 break;
             case 'mobile':
                 $config = self::getAlipayMobileConfig();
