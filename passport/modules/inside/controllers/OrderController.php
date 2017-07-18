@@ -9,8 +9,11 @@
 namespace passport\modules\inside\controllers;
 
 use common\jobs\RechargePushJob;
+use common\lib\pay\alipay\PayCore;
+use common\lib\pay\alipay\PayQuery;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
+use passport\helpers\Config;
 use passport\modules\inside\models\Order;
 use Yii;
 use yii\base\Exception;
@@ -129,6 +132,9 @@ class OrderController extends BaseController
 
     /**
      * 天猫走账
+     *
+     * @todo 流水号查询
+     *
      * @return array
      * @throws Exception
      */
@@ -228,5 +234,22 @@ class OrderController extends BaseController
             $transaction->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * tmall 订单号查询
+     * @param $trade_no
+     * @param $out_trade_no
+     * @return bool|\SimpleXMLElement[]|string
+     */
+    public function orderQuery($trade_no, $out_trade_no = '')
+    {
+        $config = Config::getAliConfig('tmall');
+        $pay = new PayCore($config);
+
+        $query = new PayQuery();
+        $query->setTradeNo($trade_no);
+        $query->setOutTradeNo($out_trade_no);
+        return $pay->query($query);
     }
 }

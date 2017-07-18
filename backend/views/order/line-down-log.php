@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => '用户',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $phone = \common\models\User::findOne($model->uid)->phone;
+                    $phone = ArrayHelper::getValue($model->user, 'phone');
                     return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
                 }
             ],
@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'status',
                 'value' => function ($model) {
-                    return \backend\models\Order::getStatus($model->status);
+                    return Order::getStatus($model->status);
                 },
                 'filter' => Order::getStatusName()
             ],
@@ -62,14 +62,14 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'platform',
                 'value' => function ($model) {
-                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                    return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
                 },
             ],
             [
                 'label' => '操作',
                 'format' => 'raw',
                 'value' => function ($data) {
-                    return Html::a('查看', ['/order/view-line-down', 'id' => $data->id]);
+                    return Html::a('查看', ['/order/view', 'id' => $data->id]);
                 }
             ],
         ],
