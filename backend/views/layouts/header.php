@@ -12,6 +12,7 @@ use yii\helpers\Html;
                     <img src="/img/status_avatar.png" alt=""><span><?php echo Yii::$app->user->identity->name; ?></span>
                 </a>
                 <ul id="change_exit">
+                    <li class="changepwd"><a href="<?=Yii::$app->params['power']['loginUrl']?>/profile/password.php"><img src="img/edit.png" alt="">修改密码</a></li>
                     <li class="exit"><a href="/site/logout" data-method="post"><img src="/img/loginout.png" alt="">退出</a></li>
                 </ul>
             </li>
