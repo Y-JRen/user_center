@@ -16,6 +16,17 @@ use Yii;
  */
 class UserOauth extends \yii\db\ActiveRecord
 {
+    // 登录类型设置
+    const LOGIN_TYPE_QQ = 1;//QQ
+    const LOGIN_TYPE_WX = 2;//微信
+    const LOGIN_TYPE_WB = 3;//微博
+
+    public static $loginArray = [
+        self::LOGIN_TYPE_QQ => 'QQ',
+        self::LOGIN_TYPE_WX => '微信',
+        self::LOGIN_TYPE_WB => '微博',
+    ];
+
     /**
      * @inheritdoc
      */
