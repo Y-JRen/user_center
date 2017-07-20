@@ -55,6 +55,7 @@ class Order extends BaseModel
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理
     const STATUS_TRANSFER = 5;// 出纳已转账
+    const STATUS_CLOSE = 6;// 关闭；允许第三方充值异步回调
 
     /**
      * 充值子类型
@@ -220,6 +221,16 @@ class Order extends BaseModel
     }
 
     /**
+     * 关闭订单
+     * @return bool
+     */
+    public function setOrderClose()
+    {
+        $this->status = self::STATUS_CLOSE;
+        return $this->save();
+    }
+
+    /**
      * 判断订单是否处理成功
      * @return bool
      */
@@ -281,6 +292,8 @@ class Order extends BaseModel
             self::STATUS_SUCCESSFUL => '处理成功',
             self::STATUS_FAILED => '处理不成功',
             self::STATUS_PENDING => '待处理',
+            self::STATUS_TRANSFER => '已打款',
+            self::STATUS_CLOSE => '已关闭',
         ];
 
         return is_null($key) ? $data : ArrayHelper::getValue($data, $key);

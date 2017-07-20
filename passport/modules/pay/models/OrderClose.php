@@ -9,12 +9,13 @@
 namespace passport\modules\pay\models;
 
 
+use common\lib\pay\wechat\PayCore;
 use common\logic\AlipayBaseLogic;
 use passport\models\Order;
 
 class OrderClose extends Order
 {
-    // 允许关闭的子类型
+    // 允许关闭的订单子类型
     public static $allowCloseSubtype = [
         self::SUB_TYPE_ALIPAY_MOBILE,
         self::SUB_TYPE_ALIPAY_PC,
@@ -26,13 +27,12 @@ class OrderClose extends Order
     ];
 
     /**
-     * 1、关闭第三方的订单
+     * 1、关闭第三方的订单,记录日志，不管返回值
      * 2、关闭用户中心的订单
      * @return bool
      */
     public function close()
     {
-        $status = true;
         switch ($this->order_subtype) {
             case self::SUB_TYPE_ALIPAY_APP:
             case self::SUB_TYPE_ALIPAY_PC:
@@ -42,10 +42,11 @@ class OrderClose extends Order
                 break;
             case self::SUB_TYPE_WECHAT_CODE:
             case self::SUB_TYPE_WECHAT_JSAPI:
-                // @todo 调用微信关闭接口
+                $data = ['out_trade_no' => $this->order_id];
+                PayCore::instance()->close($data);
                 break;
         }
 
-        return true;
+        return $this->setOrderClose();
     }
 }
