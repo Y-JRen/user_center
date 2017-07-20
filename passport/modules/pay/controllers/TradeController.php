@@ -9,8 +9,8 @@
 namespace passport\modules\pay\controllers;
 
 
+use passport\modules\pay\models\OrderForm;
 use Yii;
-use common\models\Order;
 use passport\controllers\AuthController;
 use passport\helpers\Config;
 use yii\data\ActiveDataProvider;
@@ -40,7 +40,7 @@ class TradeController extends AuthController
      */
     public function actionList()
     {
-        $query = Order::find()->where([
+        $query = OrderForm::find()->where([
             'platform' => Config::getPlatform(),
             'uid' => Yii::$app->user->getId()
         ])->orderBy('id desc');
@@ -77,7 +77,7 @@ class TradeController extends AuthController
      */
     public function actionInfo($order_id)
     {
-        $result = Order::find()->where(['order_id' => $order_id, 'uid' => Yii::$app->user->id])->one();
+        $result = OrderForm::find()->where(['order_id' => $order_id, 'uid' => Yii::$app->user->id])->one();
         return $this->_return($result);
     }
 }

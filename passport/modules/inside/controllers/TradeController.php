@@ -76,6 +76,7 @@ class TradeController extends BaseController
      */
     public function actionSearch($key)
     {
+        $key = strtoupper($key);
         $sort = Yii::$app->request->get('sort', 'DESC');
 
         if (!in_array(strtoupper($sort), ['ASC', 'DESC'])) {
@@ -83,32 +84,31 @@ class TradeController extends BaseController
         }
 
         $query = Order::find()->orderBy("id {$sort}");
-        if (strlen($key) > 11)// 订单号
-        {
-            $query->where(['order_id' => $key]);
-        } else {// 手机号
-            $user = User::find()->where(['phone' => $key])->asArray()->one();
-            if ($user) {
-                $query->where(['uid' => $user['id']]);
-            } else {
-                return $this->_return(null, 0, '暂无相关数据');
-            }
+        $length = strlen($key);
+        switch ($length) {
+            case 11://手机号
+                $user = User::find()->where(['phone' => $key])->asArray()->one();
+                if ($user) {
+                    $query->where(['uid' => $user['id']]);
+                } else {
+                    return $this->_return(null, 0, '暂无相关数据');
+                }
+                break;
+            case 19://用户中心单号
+                $query->where(['order_id' => $key]);
+                break;
+            case 18://电商订单号
+                $query->where(['platform_order_id' => $key]);
+                break;
+            default:
+                return $this->_return(null, 0, '传递的查询单号不正确');
         }
 
-        $type = Yii::$app->request->get('type');
-        if (!empty($type)) {
-            $query->andFilterWhere(['order_type' => $type]);
-        }
-
-        $subtype = Yii::$app->request->get('subtype');
-        if (!empty($subtype)) {
-            $query->andFilterWhere(['order_subtype' => $subtype]);
-        }
-
-        $status = Yii::$app->request->get('status');
-        if (!empty($status)) {
-            $query->andFilterWhere(['status' => $status]);
-        }
+        $query->andFilterWhere([
+            'order_type' => Yii::$app->request->get('type'),
+            'order_subtype' => Yii::$app->request->get('subtype'),
+            'status' => Yii::$app->request->get('status')
+        ]);
 
         $data = new ActiveDataProvider([
             'query' => $query,

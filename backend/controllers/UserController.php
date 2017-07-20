@@ -56,7 +56,7 @@ class UserController extends BaseController
     {
         $user = $this->findModel($uid);
         $queryParams['OrderSearch'] = [
-            'status' => Order::STATUS_SUCCESSFUL,
+            'status' => [Order::STATUS_SUCCESSFUL,Order::STATUS_TRANSFER],
             'uid' => $uid
         ];
         $searchModel = new OrderSearch();

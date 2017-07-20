@@ -123,6 +123,7 @@ class Order extends \passport\models\Order
         if (in_array($controllerAction, ['trade/info', 'trade/search'])) {// 针对pos机的请求返回
             return [
                 'order_id',
+                'platform_order_id',
                 'phone' => function ($model) {
                     return ArrayHelper::getValue($model->user, 'phone');
                 },

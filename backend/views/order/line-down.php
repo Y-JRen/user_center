@@ -1,6 +1,7 @@
 <?php
 
 use backend\models\Order;
+use common\helpers\JsonHelper;
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -36,7 +37,6 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
                         return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
                     }
                 ],
-                'platform_order_id',
                 'order_id',
                 [
                     'attribute' => 'order_type',
@@ -51,10 +51,29 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
                         return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
                     },
                 ],
-                'amount:currency',
-                'counter_fee:currency',
-                'discount_amount:currency',
-                'receipt_amount:currency',
+                [
+                    'label' => '充值金额',
+                    'attribute' => 'receipt_amount',
+                    'format' => 'currency'
+                ],
+                [
+                    'label' => '银行名称',
+                    'value' => function ($model) {
+                        return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
+                    },
+                ],
+                [
+                    'label' => '姓名',
+                    'value' => function ($model) {
+                        return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'accountName'), 'value');
+                    },
+                ],
+                [
+                    'label' => '流水单号',
+                    'value' => function ($model) {
+                        return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
+                    },
+                ],
                 [
                     'attribute' => 'status',
                     'value' => function ($model) {
@@ -63,13 +82,6 @@ $this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['de
                     'filter' => Order::getStatusName()
                 ],
                 'created_at:datetime',
-                'updated_at:datetime',
-                [
-                    'attribute' => 'platform',
-                    'value' => function ($model) {
-                        return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-                    },
-                ],
                 [
                     'label' => '操作',
                     'format' => 'raw',
