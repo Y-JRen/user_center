@@ -22,6 +22,7 @@ class UserController extends BaseController
         return [
             'reg' => ['POST'],
             'check' => ['GET'],
+            'list' => ['GET'],
         ];
     }
 
