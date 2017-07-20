@@ -88,12 +88,13 @@ class Config
 
     /**
      * 生成订单ID
+     * @todo inside/trade/search 会用到单号的位数
      *
      * @return string
      */
     public static function createOrderId()
     {
-        return date('YmdHis') . static::getPlatform() . rand(100, 999);
+        return 'U' . date('YmdHis') . static::getPlatform() . rand(100, 999);
     }
 
     /**
