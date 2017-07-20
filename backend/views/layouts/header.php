@@ -73,8 +73,8 @@ use yii\helpers\Html;
         transition: transform .3s ease-in-out,padding-left .3s ease-in;
     }
     .nav-right .Infrastructure{float: left; cursor: pointer; }
-    .nav-right .Infrastructure a{ display: block; width: 60px; height: 48px; background:url(img/Infrastructure.png) 0 0 no-repeat; }
-    .nav-right .Infrastructure a:hover{ background-image: url(img/menu_hover.png);}
+    .nav-right .Infrastructure a{ display: block; width: 60px; height: 48px; background:url(/img/Infrastructure.png) 0 0 no-repeat; }
+    .nav-right .Infrastructure a:hover{ background-image: url(/img/menu_hover.png);}
     .nav-right img{ vertical-align: top;}
     .navigation ul{ margin: 0;}
     .navigation ul li{ float: left; list-style: none; }
