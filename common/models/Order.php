@@ -227,7 +227,12 @@ class Order extends BaseModel
     public function setOrderClose()
     {
         $this->status = self::STATUS_CLOSE;
-        return $this->save();
+        if ($this->save()) {
+            return true;
+        } else {
+            Yii::error(var_export($this->errors, true), 'orderClose');
+            return false;
+        }
     }
 
     /**

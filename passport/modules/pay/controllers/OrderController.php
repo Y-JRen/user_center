@@ -175,11 +175,13 @@ class OrderController extends AuthController
                 return $this->_error(2501, '该充值类型不支持关闭');
             }
 
-            $order->close();
-
-            return $this->_return('ok');
+            if ($order->close()) {
+                return $this->_return(null);
+            } else {
+                return $this->_error(2501, '更新订单状态失败');
+            }
         } else {
-            return $this->_error(2501);
+            return $this->_error(2501, '订单不存在');
         }
     }
 
