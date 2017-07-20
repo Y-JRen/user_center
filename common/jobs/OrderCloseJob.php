@@ -22,7 +22,7 @@ class OrderCloseJob extends Object implements Job
         /* @var $order OrderClose */
         $order = OrderClose::find()->where(['order_id' => $this->order_id])->one();
         if ($order) {
-            if (($order->status == OrderClose::STATUS_PROCESSING)) {
+            if (($order->status == OrderClose::STATUS_PENDING)) {
                 $order->close();
             } else {
                 echo "[{$order->order_id}] order close fail, status {$order->status}";
