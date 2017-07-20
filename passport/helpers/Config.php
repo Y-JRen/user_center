@@ -88,12 +88,13 @@ class Config
 
     /**
      * 生成订单ID
+     * @todo inside/trade/search 会用到单号的位数
      *
      * @return string
      */
     public static function createOrderId()
     {
-        return date('YmdHis') . static::getPlatform() . rand(100, 999);
+        return 'U' . date('YmdHis') . static::getPlatform() . rand(100, 999);
     }
 
     /**
@@ -112,7 +113,7 @@ class Config
      */
     public static function getClientType()
     {
-        return self::getRequestAllParams('client_type');
+        return strtolower(self::getRequestAllParams('client_type'));
     }
 
     /**
@@ -127,5 +128,25 @@ class Config
     public static function getAlipayMobileConfig()
     {
         return Yii::$app->params['pay']['alipay_old'];
+    }
+
+    /**
+     * 获取支付宝的相关配置
+     * @param string $type
+     * @return string
+     */
+    public static function getAliConfig($type = 'default')
+    {
+        switch ($type) {
+            case 'tmall':
+                $config = Yii::$app->params['pay']['alipay_tmall'];
+                break;
+            case 'mobile':
+                $config = self::getAlipayMobileConfig();
+                break;
+            default:
+                $config = self::getAlipayConfig();
+        }
+        return $config;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use backend\models\Order;
+use common\helpers\JsonHelper;
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -27,11 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => '用户',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $phone = \common\models\User::findOne($model->uid)->phone;
+                    $phone = ArrayHelper::getValue($model->user, 'phone');
                     return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
                 }
             ],
-            'platform_order_id',
             'order_id',
             [
                 'attribute' => 'order_type',
@@ -46,30 +46,47 @@ $this->params['breadcrumbs'][] = $this->title;
                     return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
                 },
             ],
-            'amount:currency',
-            'counter_fee:currency',
-            'discount_amount:currency',
-            'receipt_amount:currency',
+            [
+                'label' => '充值金额',
+                'attribute' => 'receipt_amount',
+                'format' => 'currency'
+            ],
+            [
+                'label' => '银行名称',
+                'value' => function ($model) {
+                    return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
+                },
+            ],
+            [
+                'label' => '姓名',
+                'value' => function ($model) {
+                    return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'accountName'), 'value');
+                },
+            ],
+            [
+                'label' => '流水单号',
+                'value' => function ($model) {
+                    return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
+                },
+            ],
             [
                 'attribute' => 'status',
                 'value' => function ($model) {
-                    return \backend\models\Order::getStatus($model->status);
+                    return Order::getStatus($model->status);
                 },
                 'filter' => Order::getStatusName()
             ],
             'created_at:datetime',
-            'updated_at:datetime',
             [
-                'attribute' => 'platform',
-                'value' => function ($model) {
-                    return \yii\helpers\ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-                },
+                'label' => '审核时间',
+                'attribute' => 'updated_at',
+                'format' => 'datetime'
             ],
             [
                 'label' => '操作',
                 'format' => 'raw',
                 'value' => function ($data) {
-                    return Html::a('查看', ['/order/view-line-down', 'id' => $data->id]);
+                    return Html::a('查看', ['/order/view', 'id' => $data->id], ['class' => 'btn btn-primary modalClass btn-xs']);
                 }
             ],
         ],

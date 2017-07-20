@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform),
                 ],
                 'from_channel',
+                'client_type',
                 'reg_time:datetime',
                 'reg_ip',
                 'login_time:datetime',

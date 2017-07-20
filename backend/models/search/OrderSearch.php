@@ -6,7 +6,7 @@ use passport\modules\sso\models\User;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Order;
+use backend\models\Order;
 
 /**
  * OrderrSearch represents the model behind the search form about `common\models\Order`.

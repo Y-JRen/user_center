@@ -64,4 +64,33 @@ class SystemController extends BaseController
 
         return $this->render('rate', ['info' => $info, 'defaultChecked' => $defaultChecked, 'isModify' => $isModify]);
     }
+
+    /**
+     * 设置基本参数
+     * @return string
+     */
+    public function actionBase()
+    {
+        $configArr = SystemConf::find()->where(['is_show' => 1])->all();
+        $post = Yii::$app->request->post();
+        if ($post) {
+            $errorArr = [];
+            foreach ($configArr as $config) {
+                /* @var $config SystemConf */
+                $config->value = $post['value'][$config->key];
+                if (!$config->save()) {
+                    $errorArr[] = $config->label . '提交失败；失败原因：' . $config->getFirstError('value');
+                }
+            }
+            if ($errorArr) {
+                Yii::$app->session->setFlash('error', join("<br>", $errorArr));
+            } else {
+                Yii::$app->session->setFlash('success', '提交成功');
+                return $this->redirect(['base']);
+            }
+        }
+        return $this->render('base', [
+            'data' => $configArr
+        ]);
+    }
 }

@@ -26,7 +26,7 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['login', 'error', 'sso-login'],
                         'allow' => true,
                     ],
                     [
@@ -129,5 +129,18 @@ class SiteController extends Controller
         Yii::$app->user->logout();
         Yii::$app->session->destroy();
         return $this->redirect(Yii::$app->params['power']['loginUrl'].'/logout.php');
+    }
+
+    /**
+     * 防止用户跳转到其他平台时，有切换用户操作，故每次进入平台先执行退出操作
+     *
+     * @return \yii\web\Response
+     */
+    public function actionSsoLogin()
+    {
+        Yii::$app->user->logout();
+        Yii::$app->session->destroy();
+
+        return $this->redirect(['/site/login']);
     }
 }

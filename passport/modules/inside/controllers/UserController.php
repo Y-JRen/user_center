@@ -9,6 +9,7 @@
 namespace passport\modules\inside\controllers;
 
 
+use passport\modules\inside\models\UserSearch;
 use Yii;
 use passport\modules\inside\models\User;
 use passport\helpers\Config;
@@ -21,6 +22,7 @@ class UserController extends BaseController
         return [
             'reg' => ['POST'],
             'check' => ['GET'],
+            'list' => ['GET'],
         ];
     }
 
@@ -45,6 +47,7 @@ class UserController extends BaseController
             $model->reg_ip = Yii::$app->request->getUserIp();
             $model->login_time = 0;
             $model->status = 1;
+            $model->client_type = Config::getClientType();
             if ($model->save()) {
                 return $this->_return(['uid' => $model->id]);
             } else {
@@ -63,5 +66,25 @@ class UserController extends BaseController
         $result = User::find()->select('phone')->where(['id' => $uid])->asArray()->one();
         $data = ['status' => !empty($result), 'phone' => ArrayHelper::getValue($result, 'phone')];
         return $this->_return($data);
+    }
+
+    /**
+     * 获取用户列表
+     */
+    public function actionList()
+    {
+        $searchModel = new UserSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->get());
+        $pagination = $dataProvider->getPagination();
+
+        return $this->_return([
+            'list' => $dataProvider->getModels(),
+            'pages' => [
+                'totalCount' => intval($pagination->totalCount),
+                'pageCount' => $pagination->getPageCount(),
+                'currentPage' => $pagination->getPage() + 1,
+                'perPage' => $pagination->getPageSize(),
+            ]
+        ]);
     }
 }

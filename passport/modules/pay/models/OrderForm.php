@@ -263,15 +263,19 @@ class OrderForm extends Order
 
     /**
      * 查看该电商订单号是否有过退款操作
+     * 为true时可以退款
+     *
      * @return bool
      */
     public function refundCheck()
     {
-        return Order::find()->where([
-                'platform_order_id' => $this->platform_order_id,
-                'status' => self::STATUS_SUCCESSFUL,
-            ]
-        )->exists();
+        $count = Order::find()->where([
+            'order_type' => self::TYPE_REFUND,
+            'platform_order_id' => $this->platform_order_id,
+            'status' => self::STATUS_SUCCESSFUL,
+        ])->count();
+
+        return empty($count);
     }
 
     /**
