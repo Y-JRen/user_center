@@ -10,6 +10,8 @@ namespace passport\modules\pay\controllers;
 
 
 use common\helpers\JsonHelper;
+use common\jobs\OrderCloseJob;
+use common\models\SystemConf;
 use passport\controllers\AuthController;
 use passport\modules\pay\models\OrderClose;
 use passport\modules\sso\models\UserInfo;
@@ -34,6 +36,7 @@ class OrderController extends AuthController
             'consume' => ['POST'],
             'refund' => ['POST'],
             'cash' => ['POST'],
+            'close' => ['POST'],
         ];
     }
 
@@ -52,6 +55,11 @@ class OrderController extends AuthController
         $model = new OrderForm();
         $param['notice_status'] = 1;
         if ($model->load($param, '') && $model->save()) {// 创建充值订单
+            // 添加关闭任务
+            Yii::$app->queue_second->later(new OrderCloseJob([
+                'order_id' => $model->order_id
+            ]), SystemConf::getValue('recharge_order_valid_time') * 60);
+
             $result = PayLogic::instance()->pay($model);
 
             $status = ArrayHelper::getValue($result, 'status', 0);
