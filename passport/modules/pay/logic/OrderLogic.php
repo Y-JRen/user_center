@@ -12,12 +12,9 @@ namespace passport\modules\pay\logic;
 use common\jobs\OrderCallbackJob;
 use common\jobs\RechargePushJob;
 use common\models\PoolBalance;
-use common\models\RechargeConfirm;
 use passport\modules\pay\models\OrderForm;
 use Yii;
 use common\logic\Logic;
-use common\models\Order;
-use common\models\UserBalance;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 
@@ -331,13 +328,16 @@ class OrderLogic extends Logic
 
     /**
      * 获取订单信息，并检测订单状态
+     * 过期关闭的订单，允许充值
+     *
      * @param $orderId
      * @return array|bool|null|OrderForm
      */
     protected function findOrder($orderId)
     {
+        /* @var $model OrderForm */
         $model = OrderForm::find()->where(['order_id' => $orderId])->one();
-        if ($model && $model->status == OrderForm::STATUS_PENDING) {
+        if ($model && in_array($model->status, [OrderForm::STATUS_PENDING, OrderForm::STATUS_CLOSE])) {
             return $model;
         } else {
             return false;
