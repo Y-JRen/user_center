@@ -2,7 +2,9 @@
 
 namespace passport\modules\inside\models;
 
+use passport\helpers\Config;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "user".
@@ -46,10 +48,23 @@ class User extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * 格式化client_type
+     *
+     * @return array
+     */
     public function fields()
     {
         $data = parent::fields();
         unset($data['passwd']);
+        $data['client_type'] = function ($model) {
+            $platform = ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
+            if (empty($model->client_type)) {
+                return $platform;
+            } else {
+                return $platform . '--' . strtoupper($model->client_type);
+            }
+        };
         return $data;
     }
 }
