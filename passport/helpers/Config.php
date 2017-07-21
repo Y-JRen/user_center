@@ -86,6 +86,12 @@ class Config
         ];
     }
 
+    public static $platformArray = [
+        1 => '电商',
+        2 => 'CRM',
+        3 => 'ERP'
+    ];
+
     /**
      * 生成订单ID
      * @todo inside/trade/search 会用到单号的位数
