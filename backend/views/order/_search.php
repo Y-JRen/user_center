@@ -1,6 +1,5 @@
 <?php
 
-use backend\models\Order;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -8,59 +7,52 @@ use yii\widgets\ActiveForm;
 /* @var $model backend\models\search\OrderSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-    <blockquote>
-        <div class="order-search row">
+    <div class="box advanced-search-form mb-lg">
 
-            <?php $form = ActiveForm::begin([
-                'action' => ['index'],
-                'method' => 'get',
-                'options' => ['class' => 'form-inline']
-            ]); ?>
-
-            <?= $form->field($model, 'phone', ['options' => ['class' => 'col-sm-4']])->label('用户手机') ?>
-
-            <?= $form->field($model, 'platform_order_id', ['options' => ['class' => 'col-sm-4']])->label('电商订单') ?>
-
-            <?= $form->field($model, 'order_id', ['options' => ['class' => 'col-sm-4']])->label('用户中心订单号') ?>
-
-            <?= $form->field($model, 'order_type', ['options' => ['class' => 'col-sm-2']])->dropDownList(Order::getTypeName(), ['prompt' => '']) ?>
-
-            <?= $form->field($model, 'order_subtype', ['options' => ['class' => 'col-sm-2']])->dropDownList(['alipay' => '支付宝', 'wechat' => '微信', 'lakala' => 'POS机', 'line_down' => '线下充值'], ['prompt' => '']) ?>
-
-            <?= $form->field($model, 'status', ['options' => ['class' => 'col-sm-2']])->dropDownList(Order::getStatusName(), ['prompt' => ''])->label('订单状态') ?>
-
-
-            <?= $form->field($model, 'created_at', ['options' => ['id' => 'mark_create_time', 'class' => 'col-sm-3']]) ?>
-
-            <div class="form-group">
-                <?= Html::submitButton('Search', ['class' => 'btn btn-success']) ?>
-                <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
+        <?php $form = ActiveForm::begin([
+            'action' => ['index'],
+            'method' => 'get',
+        ]); ?>
+        <div class="row">
+            <div class="form-group col-lg-4 col-md-6">
+                <label for="" class="control-label col-sm-3 t-r">关 键 字：</label>
+                <div class="col-sm-9 col-md-9">
+                    <input class="form-control" type="text" name="key" value="<?=Yii::$app->request->get('key')?>" placeholder="手机号码/会员中心单号">
+                </div>
             </div>
-
-            <?php ActiveForm::end(); ?>
-
+            <div class="form-group col-lg-4 col-md-4">
+                <label for="" class="control-label col-sm-3 t-r">创建时间：</label>
+                <div class="col-sm-9 col-md-9">
+                    <div class="calender-picker double-time" style="height:34px;padding:5px 15px;">
+                        <div class="timeinputbox">
+                            <input type="text" id="created_at" name="created_at" value="<?=Yii::$app->request->get('created_at')?>" placeholder="请输入时间" style="width:100%;padding-left:0;">
+                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-lg-4 col-md-4">
+                <label for="" class="control-label col-sm-3 t-r">处理时间：</label>
+                <div class="col-sm-9 col-md-9">
+                    <div class="calender-picker double-time" style="height:34px;padding:5px 15px;">
+                        <div class="timeinputbox">
+                            <input type="text" id="updated_at" name="updated_at" value="<?=Yii::$app->request->get('updated_at')?>" placeholder="请输入时间" style="width:100%;padding-left:0;">
+                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </blockquote>
 
-<?php
-$js = <<<JS
-        $(function () {
-            $('#mark_create_time').daterangepicker({
-                autoUpdateInput:false,
-                opens: "left",
-                locale: {
-                    format: 'YYYY-MM-DD',
-                    cancelLabel: 'Clear'
-                }
-            });
-              $('#mark_create_time').on('apply.daterangepicker', function(ev, picker) {
-                  $("#ordersearch-created_at").val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-              });
-            
-              $('#mark_create_time').on('cancel.daterangepicker', function(ev, picker) {
-                  $("#ordersearch-created_at").val('');
-              });
-        });
-JS;
+        <div class="row">
+            <div class="form-group col-md-12">
+                <div class="pull-right mr-15">
+                    <?= Html::submitButton('查询', ['class' => 'btn btn-primary btn-sm pull-left mr-15']) ?>
+                    <?= Html::resetButton('清除', ['class' => 'btn btn-default btn-sm pull-left']) ?>
+                </div>
+            </div>
+        </div>
+        <?php ActiveForm::end(); ?>
+    </div>
 
-$this->registerJs($js, $this::POS_END);
+

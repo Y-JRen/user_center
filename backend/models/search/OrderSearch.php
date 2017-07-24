@@ -7,6 +7,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\Order;
+use yii\db\Query;
 
 /**
  * OrderrSearch represents the model behind the search form about `common\models\Order`.
@@ -14,6 +15,7 @@ use backend\models\Order;
 class OrderSearch extends Order
 {
     public $phone;
+    public $key;
 
     /**
      * @inheritdoc
@@ -21,9 +23,8 @@ class OrderSearch extends Order
     public function rules()
     {
         return [
-            [['id', 'uid', 'order_type', 'notice_status', 'updated_at', 'platform'], 'integer'],
-            [['platform_order_id', 'order_id', 'order_subtype', 'desc', 'created_at', 'notice_platform_param', 'remark', 'status', 'phone'], 'safe'],
-            [['amount'], 'number'],
+            [['id', 'uid', 'order_type', 'notice_status', 'platform'], 'integer'],
+            [['created_at', 'updated_at', 'notice_platform_param', 'status', 'key'], 'trim'],
         ];
     }
 
@@ -56,23 +57,23 @@ class OrderSearch extends Order
             ]
         ]);
 
-        $this->load($params);
+        $this->load($params, '');
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'order_type' => $this->order_type,
-            'amount' => $this->amount,
-            'uid' => $this->uid
         ]);
 
-        if (!empty($this->phone)) {
-            $query->andFilterWhere(['in', 'uid', User::find()->select('id')->where(['like', 'phone', $this->phone])]);
+        if (!empty($this->key)) {
+            $query->andFilterWhere([
+                'OR',
+                ['LIKE', 'order_id', "%{$this->key}", false],
+                ['IN', 'uid', (new Query())->select('id')->from(User::tableName())->where(['LIKE', 'phone', "{$this->key}%", false])]
+            ]);
         }
 
         if (!empty($this->status)) {
@@ -81,9 +82,16 @@ class OrderSearch extends Order
 
         if (!empty($this->created_at)) {
             $startTime = strtotime(substr($this->created_at, 0, 10));
-            $endTime = strtotime(substr($this->created_at, -10));
+            $endTime = strtotime(substr($this->created_at, -10)) + 86400;
             $query->andFilterWhere(['>=', 'created_at', $startTime])
                 ->andFilterWhere(['<', 'created_at', $endTime]);
+        }
+
+        if (!empty($this->updated_at)) {
+            $startTime = strtotime(substr($this->updated_at, 0, 10));
+            $endTime = strtotime(substr($this->updated_at, -10)) + 86400;
+            $query->andFilterWhere(['>=', 'updated_at', $startTime])
+                ->andFilterWhere(['<', 'updated_at', $endTime]);
         }
 
         if (!empty($this->order_subtype)) {

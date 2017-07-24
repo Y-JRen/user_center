@@ -25,9 +25,13 @@ if (Yii::$app->controller->action->id === 'login') {
         backend\assets\AppAsset::register($this);
     }
 
-    dmstr\web\AdminLteAsset::register($this);
+    backend\assets\AdminLteAsset::register($this);
 
-    $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
+    $this->registerJsFile('/dist/plugins/dropdown-autocomplate/dropdown-autocomplate-plugin.js', [
+        'depends' => ['backend\assets\AdminLteAsset']
+    ]);
+
+    $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@webroot/dist');
 
     ?>
     <?php $this->beginPage() ?>
@@ -38,6 +42,15 @@ if (Yii::$app->controller->action->id === 'login') {
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
+        <link rel="stylesheet" href="/dist/plugins/daterangepicker/daterangepicker.css">
+        <link rel="stylesheet" href="/dist/plugins/treeview/jquery.treeview.css">
+        <link rel="stylesheet" href="/dist/css/style.css">
+        <!--script src="/dist/js/ie-emulation-modes-warning.js"></script-->
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script src="/dist/js/html5shiv.min.js"></script>
+        <script src="/dist/js/respond.min.js"></script>
+        <![endif]-->
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
     <?php $this->beginBody() ?>
@@ -62,7 +75,8 @@ if (Yii::$app->controller->action->id === 'login') {
     </div>
 
     <?php $this->endBody() ?>
+    <?= $this->blocks['javascript'] ?>
     </body>
     </html>
     <?php $this->endPage() ?>
-<?php }?>
+<?php } ?>
