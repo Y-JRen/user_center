@@ -56,9 +56,9 @@ class OrderController extends AuthController
         $param['notice_status'] = 1;
         if ($model->load($param, '') && $model->save()) {// 创建充值订单
             // 添加关闭任务
-            Yii::$app->queue_second->later(new OrderCloseJob([
+            Yii::$app->queue_second->delay(SystemConf::getValue('recharge_order_valid_time') * 60)->push(new OrderCloseJob([
                 'order_id' => $model->order_id
-            ]), SystemConf::getValue('recharge_order_valid_time') * 60);
+            ]));
 
             $result = PayLogic::instance()->pay($model);
 
