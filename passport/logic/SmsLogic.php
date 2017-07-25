@@ -15,7 +15,7 @@ use common\logic\HttpLogic;
 class SmsLogic extends Logic
 {
     /**
-     * 短信相关的配置
+     * 短信相关的配置 - 快通平台
      */
     private static $url = 'http://139.196.250.134:8090/smsApi!mt';//接口地址
     private static $user = '17798999998';//接口账号
@@ -23,16 +23,35 @@ class SmsLogic extends Logic
     private static $extCode = '362928';//扩展码
 
     /**
-     * 语音短信相关的配置
+     * 语音短信相关的配置 - 快通平台
      */
     private static $yy_url = 'http://139.224.34.60:8099/api/playSoundMsg';
     private static $yy_appId = '4e1dfdf2a9c2459e9c5d0b3e8c0b85ef';
     private static $yy_apptoken = 'e6cd6def0fcf4c71942c810aff1561ef';
 
+    /**
+     * 短信模板  - 快通平台
+     */
     protected $sms_tpl = [
         '1' => '【车城】您好，您的验证码是%s。退订回T',//注册短信
         '2' => '【车城】您好，您的验证码是%s。退订回T',//注册短信
     ];
+
+    private $sms_service = [
+        'luosimao',//螺丝帽平台
+        'kuaitong',//快通平台
+    ];
+
+    /**
+     * luosimao 平台的相关配置
+     */
+    private static $luosimao_url = 'http://sms-api.luosimao.com/v1/send.json';
+    private static $luosimao_api_key = 'aeb02e2eecec5183085837c2d1162758';
+    protected $luosimao_sms_tpl = [
+        '1' => '您好，您的验证码是%s。【车城】',//注册短信
+        '2' => '您好，您的验证码是%s。【车城】',//注册短信
+    ];
+
 
     /**
      * 发送短信
@@ -42,19 +61,27 @@ class SmsLogic extends Logic
      *
      * @return boolean
      */
-    public function send($tpl_index, $phone, $code = null)
+    public function send($tpl_index, $phone, $code = null, $sms_service_type = 'luosimao')
     {
         if (!$this->_frequencyLimit($phone)) {
             return false;
         }
 
-        if (!array_key_exists($tpl_index, $this->sms_tpl)) {
-            return false;
+        if ($sms_service_type == 'luosimao') { //luosimao 平台
+            if (!array_key_exists($tpl_index, $this->sms_tpl)) {
+                return false;
+            }
+            yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
+            $strContent = sprintf($this->luosimao_sms_tpl[$tpl_index], $code);
+            return $this->sendLuosimaoSms($phone, $strContent);
+        } else { // 快通平台
+            if (!array_key_exists($tpl_index, $this->sms_tpl)) {
+                return false;
+            }
+            yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
+            $strContent = sprintf($this->sms_tpl[$tpl_index], $code);
+            return $this->sendSms($phone, $strContent);
         }
-
-        yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
-        $strContent = sprintf($this->sms_tpl[$tpl_index], $code);
-        return $this->sendSms($phone, $strContent);
     }
 
     /**
@@ -98,6 +125,33 @@ class SmsLogic extends Logic
         $arrRes = json_decode($jsonRes, true);
         $this->saveSmsLogs($strPhone, $strContent, $arrRes['respCode'] == 200 ? 1 : 0, $arrRes['respMsg']);
         return ($arrRes['respCode'] == 200 ? true : false);
+    }
+
+    /**
+     * 螺丝帽平台短信发送
+     * @param string $strPhone
+     * @param string $strContent
+     * @return boolean
+     */
+    private function sendLuosimaoSms($strPhone, $strContent)
+    {
+        $arrPost = [
+            'mobile' => $strPhone,
+            'message' => $strContent
+        ];
+
+        HttpLogic::instance()->setopt_param = [
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_0,
+            CURLOPT_HEADER => FALSE,
+            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+            CURLOPT_USERPWD => 'api:key-' . self::$luosimao_api_key,
+        ];
+        $jsonRes = HttpLogic::instance()->http(self::$luosimao_url, 'POST', $arrPost);
+        $this->_frequencyRecode($strPhone);
+
+        $arrRes = json_decode($jsonRes, true);
+        $this->saveSmsLogs($strPhone, $strContent, $arrRes['error'] == 0 ? 1 : 0, $arrRes['msg'] . ' 【luosimao_】');
+        return ($arrRes['error'] == 0 ? true : false);
     }
 
 
