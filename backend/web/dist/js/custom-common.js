@@ -30,18 +30,12 @@
 
     /*筛选*/
     $("body").delegate(".lte-table-filter-dropdown .lte-table-filter-dropdown-btns .confirm","click",function(){
-          if($(this).parents(".lte-table-filter-dropdown").find(":checked").length > 0){
-            $(".lte-filterbox .fa-filter").addClass("c-blue");
-          }else{
-            $(".lte-filterbox .fa-filter").removeClass("c-blue");
-          }
-          $(this).parents(".lte-table-filter-dropdown").addClass("none");
+          $("form").submit();
     });
 
     $("body").delegate(".lte-table-filter-dropdown .lte-table-filter-dropdown-btns .clean","click",function(){
         $(this).parents(".lte-table-filter-dropdown").find(":checkbox").prop("checked",false);
         $(".lte-filterbox .fa-filter").removeClass("c-blue");
-        $(this).parents(".lte-table-filter-dropdown").addClass("none");
     });
 
     $("body").delegate(".lte-filterbox .fa-filter","click",function(){

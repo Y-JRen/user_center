@@ -9,10 +9,7 @@ use yii\widgets\ActiveForm;
 ?>
     <div class="box advanced-search-form mb-lg">
 
-        <?php $form = ActiveForm::begin([
-            'action' => ['index'],
-            'method' => 'get',
-        ]); ?>
+
         <div class="row">
             <div class="form-group col-lg-4 col-md-6">
                 <label for="" class="control-label col-sm-3 t-r">关 键 字：</label>
@@ -52,7 +49,7 @@ use yii\widgets\ActiveForm;
                 </div>
             </div>
         </div>
-        <?php ActiveForm::end(); ?>
+
     </div>
 
 

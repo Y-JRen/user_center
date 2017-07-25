@@ -14,7 +14,6 @@ use yii\db\Query;
  */
 class OrderSearch extends Order
 {
-    public $phone;
     public $key;
 
     /**
@@ -23,8 +22,8 @@ class OrderSearch extends Order
     public function rules()
     {
         return [
-            [['id', 'uid', 'order_type', 'notice_status', 'platform'], 'integer'],
             [['created_at', 'updated_at', 'notice_platform_param', 'status', 'key'], 'trim'],
+            [['order_type','platform', 'order_subtype'], 'safe'],
         ];
     }
 
@@ -66,6 +65,8 @@ class OrderSearch extends Order
         // grid filtering conditions
         $query->andFilterWhere([
             'order_type' => $this->order_type,
+            'order_subtype' => $this->order_subtype,
+            'platform' => $this->platform,
         ]);
 
         if (!empty($this->key)) {
