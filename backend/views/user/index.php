@@ -24,7 +24,7 @@ $this->registerCssFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterange
         <?= Html::a('导出', '', ['class' => 'btn btn-primary', 'data-method' => 'HEAD']) ?>
     </p>
 
-    <?php Pjax::begin(); ?>    <?= GridView::widget([
+    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -73,7 +73,7 @@ $this->registerCssFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterange
             ],
         ],
     ]); ?>
-    <?php Pjax::end(); ?></div>
+    </div>
 <?php
 $js = <<<JS
         $(function () {
