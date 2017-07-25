@@ -43,6 +43,9 @@ class UserController extends BaseController
                     'reg_time:datetime:注册时间',
 
                 ],
+                'headers' => [
+                    'created_at' => 'Date Created Content',
+                ],
                 'fileName' => '注册用户'
             ]);
         }
