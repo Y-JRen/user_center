@@ -13,6 +13,10 @@ use yii\widgets\Pjax;
 
 $this->title = '用户管理';
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJsFile('//cdn.jsdelivr.net/momentjs/latest/moment.min.js', ['depends' => 'yii\web\JqueryAsset']);
+$this->registerJsFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js', ['depends' => 'yii\web\JqueryAsset']);
+$this->registerCssFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css', ['depends' => 'yii\bootstrap\BootstrapAsset']);
 ?>
 <div class="user-index">
 
@@ -70,3 +74,26 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
     <?php Pjax::end(); ?></div>
+<?php
+$js = <<<JS
+        $(function () {
+            $('input[name="UserSearch[reg_time]"]').daterangepicker({
+                autoApply:true,
+                autoUpdateInput:false,
+                opens: "left",
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    cancelLabel: 'Clear'
+                }
+            });
+              $('input[name="UserSearch[reg_time]"]').on('apply.daterangepicker', function(ev, picker) {
+                  $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+              });
+            
+              $('input[name="UserSearch[reg_time]"]').on('cancel.daterangepicker', function(ev, picker) {
+                  $(this).val('');
+              });
+        });
+JS;
+
+$this->registerJs($js, $this::POS_END);

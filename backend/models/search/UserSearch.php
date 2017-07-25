@@ -65,8 +65,10 @@ class UserSearch extends User
         ]);
 
         if (!empty($this->reg_time)) {
-            $reg_time = strtotime($this->reg_time);
-            $query->andFilterWhere(['AND', ['>=', 'reg_time', $reg_time], ['<', 'reg_time', $reg_time + 86400]]);
+            $startTime = strtotime(substr($this->reg_time, 0, 10));
+            $endTime = strtotime(substr($this->reg_time, -10)) + 86400;
+            $query->andFilterWhere(['>=', 'reg_time', $startTime])
+                ->andFilterWhere(['<', 'reg_time', $endTime]);
         }
 
         $query->andFilterWhere(['like', 'phone', $this->phone]);
