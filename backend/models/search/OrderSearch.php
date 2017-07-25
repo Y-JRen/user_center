@@ -81,7 +81,7 @@ class OrderSearch extends Order
 
         if (!empty($this->created_at)) {
             $startTime = strtotime(substr($this->created_at, 0, 10));
-            $endTime = strtotime(substr($this->created_at, -10));
+            $endTime = strtotime(substr($this->created_at, -10)) + 86400;
             $query->andFilterWhere(['>=', 'created_at', $startTime])
                 ->andFilterWhere(['<', 'created_at', $endTime]);
         }
