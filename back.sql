@@ -20,3 +20,15 @@ INSERT INTO `ucenter`.`order` (`id`, `uid`, `platform_order_id`, `order_id`, `or
 
 INSERT INTO `ucenter`.`pool_balance` (`id`, `uid`, `order_id`, `amount`, `desc`, `before_amount`, `after_amount`, `remark`, `created_at`) VALUES ('392', '101114', 'U201707211702551318', '8747.58', '充值', '0.00', '8747.58', '', '1500627911');
 INSERT INTO `ucenter`.`pool_balance` (`id`, `uid`, `order_id`, `amount`, `desc`, `before_amount`, `after_amount`, `remark`, `created_at`) VALUES ('393', '101114', 'U201707211701571544', '34701.00', '充值', '8747.58', '43448.58', '', '1500627945');
+
+
+用户快捷支付了两次
+INSERT INTO `ucenter`.`order` (`uid`, `platform_order_id`, `order_id`, `order_type`, `order_subtype`, `amount`, `status`, `desc`, `notice_status`, `notice_platform_param`, `created_at`, `updated_at`, `remark`, `platform`, `quick_pay`, `receipt_amount`, `counter_fee`, `discount_amount`) VALUES ('115107', '', 'U201707071100321338', '4', 'alipay', '11999.00', '5', '用户提现', '4', '', '1499396400', '1499396400', '{"account":"sheqin461sina.com","amount":11999,"bank_name":"支付宝","real_name":"佘钦"}', '1', '0', '11999.00', '0.00', '0.00');
+INSERT INTO `ucenter`.`pool_balance` (`uid`, `order_id`, `amount`, `desc`, `before_amount`, `after_amount`, `remark`, `created_at`) VALUES ('115107', 'U201707071100321338', '11999.00', '提现', '11999.00', '0.00', '核销', '1499396400');
+
+
+用户自己贷款，平台又走了一笔贷款入账
+INSERT INTO `ucenter`.`order` (`id`, `uid`, `platform_order_id`, `order_id`, `order_type`, `order_subtype`, `amount`, `status`, `desc`, `notice_status`, `notice_platform_param`, `created_at`, `updated_at`, `remark`, `platform`, `quick_pay`, `receipt_amount`, `counter_fee`, `discount_amount`) VALUES ('1548', '113681', '', 'U201707221316241376', '1', 'line_down', '55110.74', '2', '用户：136xxxx8589充值', '1', '{\"orderPayType\":3}', '1500700584', '1500700758', '{\"accountName\":\"林凤营\",\"bankName\":\"建设银行\",\"payType\":3,\"referenceImg\":[\"http://img.che.com/che/170722/3f846d95f7f746e1a2319fe5a07b68ae.png\"],\"referenceNumber\":\"00000000\",\"transferDate\":\"2017-07-22\"}', '1', '0', '55110.74', '0.00', '0.00');
+INSERT INTO `ucenter`.`user_balance` (`uid`, `amount`, `updated_at`) VALUES ('113681', '55110.74', '1500861184');
+
+
