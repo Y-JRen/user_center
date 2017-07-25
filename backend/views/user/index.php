@@ -4,6 +4,7 @@ use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -15,6 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-index">
 
+    <p>
+        <?= Html::a('导出', '', ['class' => 'btn btn-primary', 'data-method' => 'HEAD']) ?>
+    </p>
 
     <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,

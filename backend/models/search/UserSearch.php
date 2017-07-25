@@ -18,8 +18,7 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'reg_time', 'login_time'], 'integer'],
-            [['phone', 'user_name', 'from_channel', 'reg_ip'], 'safe'],
+            [['phone', 'from_channel', 'reg_time'], 'safe'],
         ];
     }
 
@@ -62,19 +61,15 @@ class UserSearch extends User
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'status' => $this->status,
             'from_platform' => $this->from_platform,
-            'reg_time' => $this->reg_time,
-            'login_time' => $this->login_time,
         ]);
 
-        $query->andFilterWhere(['like', 'phone', $this->phone])
-            ->andFilterWhere(['like', 'user_name', $this->user_name])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'passwd', $this->passwd])
-            ->andFilterWhere(['like', 'from_channel', $this->from_channel])
-            ->andFilterWhere(['like', 'reg_ip', $this->reg_ip]);
+        if (!empty($this->reg_time)) {
+            $reg_time = strtotime($this->reg_time);
+            $query->andFilterWhere(['AND', ['>=', 'reg_time', $reg_time], ['<', 'reg_time', $reg_time + 86400]]);
+        }
+
+        $query->andFilterWhere(['like', 'phone', $this->phone]);
 
         return $dataProvider;
     }
