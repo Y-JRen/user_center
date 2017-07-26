@@ -18,6 +18,12 @@ class BaseController extends \passport\controllers\BaseController
                     'application/json' => Response::FORMAT_JSON
                 ],
             ],
+            'corsFilter' => [
+                'class' => \yii\filters\Cors::className(),
+                'cors' => [
+                    'Origin' => ['http://user.admin.che.com'],
+                ]
+            ],
             'verbFilter' => [
                 'class' => VerbFilter::className(),
                 'actions' => $this->verbs(),
