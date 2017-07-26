@@ -2,7 +2,7 @@
 
 namespace passport\modules\sso\controllers;
 
-use passport\modules\sso\models\UserOauth;
+use common\models\UserOauth;
 use Yii;
 use yii\helpers\ArrayHelper;
 use passport\helpers\Token;
@@ -46,6 +46,7 @@ class UserOauthController extends BaseController
             return $this->_error(1007, '用户token无效');
         }
 
+        /* @var $user_info UserOauth */
         $user_info = UserOauth::find()->where(['open_id' => $open_id, 'type' => $type])->one();
         if ($user_info) {
             if ($user_info->uid != $uid) {
