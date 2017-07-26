@@ -39,22 +39,16 @@ class UserOauthController extends BaseController
         $data = Yii::$app->request->post();
         $open_id = ArrayHelper::getValue($data, 'open_id');
         $type = ArrayHelper::getValue($data, 'type');
-        $token = ArrayHelper::getValue($data, 'token');
-
-        $uid = Token::getUid($token);
-        if (empty($uid)) {
-            return $this->_error(1007, '用户token无效');
-        }
 
         /* @var $user_info UserOauth */
         $user_info = UserOauth::find()->where(['open_id' => $open_id, 'type' => $type])->one();
         if ($user_info) {
-            if ($user_info->uid != $uid) {
+            if ($user_info->uid != Yii::$app->user->id) {
                 return $this->_error(1007, '该账号已绑定其他用户');
             }
         } else {
             $model = new UserOauth();
-            $model->uid = $uid;
+            $model->uid = Yii::$app->user->id;
             $model->open_id = $open_id;
             $model->type = $type;
             $model->created_at = time();
