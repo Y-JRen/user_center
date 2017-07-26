@@ -22,6 +22,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $insurance_end_date
  * @property string $insurance_price
  * @property integer $status
+ * @property integer $platform
  * @property integer $created_at
  * @property integer $updated_at
  */
@@ -45,11 +46,12 @@ class CarManagement extends BaseModel
     {
         return [
             [['uid', 'plate_number', 'frame_number', 'engine_number', 'car_brand_son_type_name', 'car_brand_son_type_id', 'car_brand_type_name', 'car_brand_type_id', 'brand_name', 'brand_id', 'insurance_end_date', 'insurance_price', 'status'], 'required'],
-            [['uid', 'car_brand_son_type_id', 'car_brand_type_id', 'brand_id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['uid', 'car_brand_son_type_id', 'car_brand_type_id', 'brand_id', 'status', 'platform', 'created_at', 'updated_at'], 'integer'],
             [['insurance_end_date'], 'safe'],
             [['plate_number'], 'string', 'max' => 10],
             [['frame_number', 'engine_number', 'car_brand_son_type_name', 'car_brand_type_name', 'brand_name'], 'string', 'max' => 100],
             [['insurance_price'], 'string', 'max' => 30],
+            [['plate_number'], 'unique'],
         ];
     }
 
@@ -73,6 +75,7 @@ class CarManagement extends BaseModel
             'insurance_end_date' => '保险到期时间',
             'insurance_price' => '保险价格区间',
             'status' => '状态',
+            'platform' => '车辆来源',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
         ];
