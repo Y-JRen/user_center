@@ -167,7 +167,7 @@ class OrderController extends AuthController
      */
     public function actionClose()
     {
-        $orderId = Yii::$app->request->get('order_id');
+        $orderId = Yii::$app->request->post('order_id');
         /* @var $order OrderClose */
         $order = OrderClose::find()->where(['order_id' => $orderId])->one();
         if ($order) {
