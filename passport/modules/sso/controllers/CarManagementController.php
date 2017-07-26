@@ -3,6 +3,7 @@
 namespace passport\modules\sso\controllers;
 
 use passport\controllers\AuthController;
+use passport\helpers\Config;
 use passport\modules\sso\models\CarManagement;
 use Yii;
 use yii\base\InvalidParamException;
@@ -62,6 +63,7 @@ class CarManagementController extends AuthController
         $model = new CarManagement();
         $model->status = CarManagement::STATUS_SHOW;
         $model->uid = Yii::$app->user->id;
+        $model->platform = Config::getPlatform();
 
         if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             return $this->_return('添加成功');
