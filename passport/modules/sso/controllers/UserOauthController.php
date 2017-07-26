@@ -24,12 +24,9 @@ class UserOauthController extends BaseController
 
         if ($user_info) {
             $uid = ArrayHelper::getValue($user_info, 'uid');
-
-            $about_token = new Token();
-            return $this->_return(['token' => $about_token->createToken($uid), 'uid' => ArrayHelper::getValue($user_info, 'uid')]);
+            return $this->_return(['token' => Token::createToken($uid), 'uid' => $uid]);
         } else {
-            $info = ['info' => '用户不存在'];
-            return $this->_return($info);
+            return $this->_error(1004, '账号未绑定');
         }
     }
 
@@ -44,27 +41,28 @@ class UserOauthController extends BaseController
         $type = ArrayHelper::getValue($data, 'type');
         $token = ArrayHelper::getValue($data, 'token');
 
-        $user_info = UserOauth::find()->where(['open_id' => $open_id, 'type' => $type])->exists();
+        $uid = Token::getUid($token);
+        if (empty($uid)) {
+            return $this->_error(1007, '用户token无效');
+        }
+
+        $user_info = UserOauth::find()->where(['open_id' => $open_id, 'type' => $type])->one();
         if ($user_info) {
-            $data = ['info' => '账号已绑定'];
-            return $this->_return($data);
+            if ($user_info->uid != $uid) {
+                return $this->_error(1007, '该账号已绑定其他用户');
+            }
         } else {
             $model = new UserOauth();
+            $model->uid = $uid;
+            $model->open_id = $open_id;
+            $model->type = $type;
+            $model->created_at = time();
 
-            if(Token::getToken($token)){
-                $model->uid = Token::getUid($token);
-                $model->open_id = $open_id;
-                $model->type = $type;
-
-                if ($model->save()) {
-                    return $this->_return(['info' => '账号绑定成功']);
-                } else {
-                    return $this->_return(['info' => '账号绑定失败']);
-                }
-            }else{
-                return $this->_return(['info' => '获取用户信息失败']);
+            if (!$model->save()) {
+                return $this->_error(1007, current($model->getFirstErrors()));
             }
         }
+        return $this->_return('账号绑定成功');
     }
 }
 

@@ -45,6 +45,7 @@ class UserOauth extends \yii\db\ActiveRecord
             [['type', 'uid', 'created_at'], 'integer'],
             [['open_id'], 'string', 'max' => 32],
             [['info'], 'string', 'max' => 255],
+            ['type', 'in', 'range' => self::$loginArray],
         ];
     }
 
@@ -56,8 +57,8 @@ class UserOauth extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'open_id' => 'Open ID',
-            'type' => 'Type',
-            'uid' => 'Uid',
+            'type' => '类型',
+            'uid' => '用户id',
             'info' => 'Info',
             'created_at' => 'Created At',
         ];
