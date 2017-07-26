@@ -45,12 +45,6 @@ class BaseController extends Controller
         $requestIp = Yii::$app->request->getUserIP();
         $params = array_merge($get, $post);
 
-        // 支持ajax跨域请求
-        if (array_key_exists('callback', $params) && array_key_exists('_', $params)) {
-            unset($params['callback']);
-            unset($params['_']);
-        }
-
         if (!YII_ENV_DEV) {
             $domain = ArrayHelper::getValue($params, 'domain');
             if (empty($domain)) {
