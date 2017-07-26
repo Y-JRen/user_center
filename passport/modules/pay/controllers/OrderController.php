@@ -167,10 +167,14 @@ class OrderController extends AuthController
      */
     public function actionClose()
     {
-        $orderId = Yii::$app->request->get('orderId');
+        $orderId = Yii::$app->request->get('order_id');
         /* @var $order OrderClose */
         $order = OrderClose::find()->where(['order_id' => $orderId])->one();
         if ($order) {
+            if ($order->uid != Yii::$app->user->id) {
+                return $this->_error(2501, '当前用户无权关闭该订单');
+            }
+
             if ($order->order_type != OrderClose::TYPE_RECHARGE) {
                 return $this->_error(2501, '不支持该类型的订单关闭');
             }
