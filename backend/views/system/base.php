@@ -26,10 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="form-group">
                     <label class="col-sm-2 control-label"><?= $value->label; ?>：</label>
 
-                    <div class="col-sm-8">
+                    <div class="col-sm-6">
                         <?= Html::textInput("value[$value->key]", $value->value, ['class' => 'form-control']) ?>
                     </div>
-                    <div class="col-sm-2 text-left">调用参数【<?= $value->key; ?>】</div>
+                    <div class="col-sm-4 text-left">调用参数【<?= $value->key; ?>】</div>
                 </div>
             </div>
         <?php endforeach; ?>
