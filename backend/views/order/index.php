@@ -62,7 +62,7 @@ $this->registerCssFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterange
                 [
                     'attribute' => 'status',
                     'value' => function ($model) {
-                        return Order::getStatus($model->status);
+                        return $model->orderStatus;
                     },
                 ],
                 [
