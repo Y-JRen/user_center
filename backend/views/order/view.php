@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'uid',
+            'user.phone',
             'platform_order_id',
             'order_id',
             'type',
@@ -36,7 +36,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'desc',
             'notice_status',
             'notice_platform_param',
-            'platform',
             [
                 'attribute' => 'platform',
                 'value' => ArrayHelper::getValue(Config::getPlatformArray(), $model->platform)

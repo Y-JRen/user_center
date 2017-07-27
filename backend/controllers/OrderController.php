@@ -185,9 +185,15 @@ class OrderController extends BaseController
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->request->isAjax) {
+            return $this->renderPartial('view', [
+                'model' => $this->findModel($id),
+            ]);
+        } else {
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }
     }
 
     /**
@@ -196,9 +202,15 @@ class OrderController extends BaseController
      */
     public function actionDetail($orderId)
     {
-        return $this->render('view', [
-            'model' => $this->findModelByOrderId($orderId),
-        ]);
+        if (Yii::$app->request->isAjax) {
+            return $this->renderPartial('view', [
+                'model' => $this->findModelByOrderId($orderId),
+            ]);
+        } else {
+            return $this->render('view', [
+                'model' => $this->findModelByOrderId($orderId),
+            ]);
+        }
     }
 
     /**

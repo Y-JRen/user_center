@@ -28,7 +28,6 @@ class AdminLteAsset extends \dmstr\web\AdminLteAsset
         'plugins/layer/layer.js'
     ];
     public $depends = [
-        /*'rmrevin\yii\fontawesome\AssetBundle',*/
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
         'yii\bootstrap\BootstrapPluginAsset',

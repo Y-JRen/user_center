@@ -58,7 +58,16 @@ $this->registerJsFile('/dist/js/user/date.js', [
             'filterArray' => Config::getPlatformArray()
         ],
         'platform_order_id',
-        'order_id',
+        [
+            'attribute' => 'order_id',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::a($model->order_id, 'javascript:void(0)', [
+                    'data-url' => \yii\helpers\Url::to(['/order/view', 'id' => $model->id]),
+                    'class' => 'markOrder'
+                ]);
+            }
+        ],
         [
             'class' => FilterColumn::className(),
             'attribute' => 'order_type',
@@ -98,3 +107,21 @@ $this->registerJsFile('/dist/js/user/date.js', [
 ]); ?>
 <?php ActiveForm::end(); ?>
 <?php Pjax::end() ?>
+
+<?php $this->beginBlock('javascript') ?>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".markOrder").click(function () {
+                var url = $(this).attr('data-url');
+                $.get(url, function (html) {
+                    layer.open({
+                        title: '交易单详情',
+                        area: '600px',
+                        shadeClose: true,
+                        content: html
+                    });
+                })
+            });
+        })
+    </script>
+<?php $this->endBlock() ?>
