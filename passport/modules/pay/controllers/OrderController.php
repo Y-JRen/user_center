@@ -10,7 +10,10 @@ namespace passport\modules\pay\controllers;
 
 
 use common\helpers\JsonHelper;
+use common\jobs\OrderCloseJob;
+use common\models\SystemConf;
 use passport\controllers\AuthController;
+use passport\modules\pay\models\OrderClose;
 use passport\modules\sso\models\UserInfo;
 use Yii;
 use passport\modules\pay\models\OrderForm;
@@ -33,6 +36,7 @@ class OrderController extends AuthController
             'consume' => ['POST'],
             'refund' => ['POST'],
             'cash' => ['POST'],
+            'close' => ['POST'],
         ];
     }
 
@@ -51,6 +55,11 @@ class OrderController extends AuthController
         $model = new OrderForm();
         $param['notice_status'] = 1;
         if ($model->load($param, '') && $model->save()) {// 创建充值订单
+            // 添加关闭任务
+            Yii::$app->queue_second->delay(SystemConf::getValue('recharge_order_valid_time') * 60)->push(new OrderCloseJob([
+                'order_id' => $model->order_id
+            ]));
+
             $result = PayLogic::instance()->pay($model);
 
             $status = ArrayHelper::getValue($result, 'status', 0);
@@ -149,6 +158,42 @@ class OrderController extends AuthController
             return $this->_return($data);
         } else {
             return $this->_error(2301, $model->errors);
+        }
+    }
+
+    /**
+     * 订单关闭接口
+     * 目前只针对充值待处理状态订单
+     */
+    public function actionClose()
+    {
+        $orderId = Yii::$app->request->post('order_id');
+        /* @var $order OrderClose */
+        $order = OrderClose::find()->where(['order_id' => $orderId])->one();
+        if ($order) {
+            if ($order->uid != Yii::$app->user->id) {
+                return $this->_error(2501, '当前用户无权关闭该订单');
+            }
+
+            if ($order->order_type != OrderClose::TYPE_RECHARGE) {
+                return $this->_error(2501, '不支持该类型的订单关闭');
+            }
+
+            if ($order->status != OrderClose::STATUS_PENDING) {
+                return $this->_error(2501, '该订单状态无法关闭');
+            }
+
+            if (!in_array($order->order_subtype, OrderClose::$allowCloseSubtype)) {
+                return $this->_error(2501, '该充值类型不支持关闭');
+            }
+
+            if ($order->close()) {
+                return $this->_return(null);
+            } else {
+                return $this->_error(2501, '更新订单状态失败');
+            }
+        } else {
+            return $this->_error(2501, '订单不存在');
         }
     }
 

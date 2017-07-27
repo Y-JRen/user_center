@@ -37,7 +37,7 @@ use yii\helpers\ArrayHelper;
  * @property bool $isSuccessful
  * @property bool $isEdit
  */
-class Order extends \yii\db\ActiveRecord
+class Order extends BaseModel
 {
     /**
      * 订单处理类型
@@ -55,6 +55,20 @@ class Order extends \yii\db\ActiveRecord
     const STATUS_FAILED = 3;// 处理失败
     const STATUS_PENDING = 4;// 待处理
     const STATUS_TRANSFER = 5;// 出纳已转账
+    const STATUS_CLOSE = 6;// 关闭；允许第三方充值异步回调
+
+    /**
+     * 充值子类型
+     */
+    const SUB_TYPE_WECHAT_CODE = 'wechat_code';
+    const SUB_TYPE_WECHAT_JSAPI = 'wechat_jsapi';
+    const SUB_TYPE_ALIPAY_PC = 'alipay_pc';
+    const SUB_TYPE_ALIPAY_WAP = 'alipay_wap';
+    const SUB_TYPE_ALIPAY_APP = 'alipay_app';
+    const SUB_TYPE_ALIPAY_MOBILE = 'alipay_mobile';
+    const SUB_TYPE_LINE_DOWN = 'line_down';
+    const SUB_TYPE_LAKALA = 'lakala';
+    const SUB_TYPE_TMALL = 'tmall';
 
     /**
      * 消费子类型
@@ -78,7 +92,7 @@ class Order extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uid', 'platform_order_id', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
+            [['uid', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
@@ -207,6 +221,21 @@ class Order extends \yii\db\ActiveRecord
     }
 
     /**
+     * 关闭订单
+     * @return bool
+     */
+    public function setOrderClose()
+    {
+        $this->status = self::STATUS_CLOSE;
+        if ($this->save()) {
+            return true;
+        } else {
+            Yii::error(var_export($this->errors, true), 'orderClose');
+            return false;
+        }
+    }
+
+    /**
      * 判断订单是否处理成功
      * @return bool
      */
@@ -255,7 +284,7 @@ class Order extends \yii\db\ActiveRecord
     }
 
     /**
-     * 获取订单状态名称
+     * 获取订单所有状态名称
      * 静态方法
      *
      * @param $key
@@ -268,10 +297,42 @@ class Order extends \yii\db\ActiveRecord
             self::STATUS_SUCCESSFUL => '处理成功',
             self::STATUS_FAILED => '处理不成功',
             self::STATUS_PENDING => '待处理',
+            self::STATUS_TRANSFER => '已打款',
+            self::STATUS_CLOSE => '已关闭',
         ];
 
         return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
     }
+
+    public static $rechargeStatusArray = [
+        self::STATUS_PROCESSING => '充值中',
+        self::STATUS_SUCCESSFUL => '充值成功',
+        self::STATUS_FAILED => '充值失败',
+        self::STATUS_PENDING => '待处理',
+        self::STATUS_CLOSE => '已关闭',
+    ];
+
+    public static $consumeStatusArray = [
+        self::STATUS_PROCESSING => '消费中',
+        self::STATUS_SUCCESSFUL => '消费成功',
+        self::STATUS_FAILED => '消费失败',
+        self::STATUS_PENDING => '待处理',
+    ];
+
+    public static $refundStatusArray = [
+        self::STATUS_PROCESSING => '退款处理中',
+        self::STATUS_SUCCESSFUL => '退款成功',
+        self::STATUS_FAILED => '退款失败',
+        self::STATUS_PENDING => '待处理',
+    ];
+
+    public static $cashStatusArray = [
+        self::STATUS_PROCESSING => '提现申请中',
+        self::STATUS_SUCCESSFUL => '提现成功',
+        self::STATUS_FAILED => '提现失败',
+        self::STATUS_PENDING => '待处理',
+        self::STATUS_TRANSFER => '提现成功',
+    ];
 
     /**
      * 获取订单状态名称
@@ -281,7 +342,24 @@ class Order extends \yii\db\ActiveRecord
      */
     public function getOrderStatus()
     {
-        return self::getStatusName($this->status);
+
+        switch ($this->order_type) {
+            case self::TYPE_RECHARGE:
+                $array = self::$rechargeStatusArray;
+                break;
+            case self::TYPE_CONSUME:
+                $array = self::$consumeStatusArray;
+                break;
+            case self::TYPE_REFUND:
+                $array = self::$refundStatusArray;
+                break;
+            case self::TYPE_CASH:
+                $array = self::$cashStatusArray;
+                break;
+            default:
+                $array = self::getStatusName();
+        }
+        return ArrayHelper::getValue($array, $this->status);
     }
 
     /**

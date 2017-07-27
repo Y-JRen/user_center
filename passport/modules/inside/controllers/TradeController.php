@@ -10,6 +10,7 @@ namespace passport\modules\inside\controllers;
 
 
 use passport\modules\inside\models\User;
+use passport\modules\pay\models\OrderForm;
 use Yii;
 use passport\controllers\BaseController;
 use passport\modules\inside\models\Order;
@@ -27,18 +28,20 @@ class TradeController extends BaseController
     {
         $query = Order::find()->where([
             'uid' => $uid
-        ])->orderBy('id desc');
+        ]);
 
         $orderType = Yii::$app->request->get('order_type');
-        if ($orderType) {
-            $query->andWhere(['order_type' => $orderType]);
-        }
-        $status = Yii::$app->request->get('status');
-        if ($status) {
-            $query->andWhere(['status' => $status]);
-        }
+        $status = Yii::$app->request->get('status', Order::$defaultSearchStatus);
+
+        $query->andFilterWhere([
+            'order_type' => $orderType,
+            'status' => $status
+        ]);
         $data = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ]
         ]);
         $pagination = new Pagination(['totalCount' => $query->count()]);
 

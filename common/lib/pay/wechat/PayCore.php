@@ -76,6 +76,21 @@ class PayCore extends Logic
     }
 
     /**
+     * 关闭订单
+     * @param $data
+     * @return bool|mixed
+     */
+    public function close($data)
+    {
+        $data['appid'] = $this->weChatConfig['appid'];
+        $data['mch_id'] = $this->weChatConfig['mch_id'];
+        $data['nonce_str'] = $this->nonceStr();
+        $data['sign'] = $this->sign($data);
+        $dataXml = $this->buildXml($data);
+        return $this->http(static::CLOSE_ORDER, $dataXml);
+    }
+
+    /**
      * 转换短链接
      * @param $longUrl
      * @return bool|mixed

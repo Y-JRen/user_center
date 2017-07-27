@@ -54,4 +54,12 @@ class Order extends \common\models\Order
         }
         return parent::beforeSave($insert);
     }
+
+    // 交易记录默认搜索的状态
+    public static $defaultSearchStatus = [
+        self::STATUS_PROCESSING,
+        self::STATUS_SUCCESSFUL,
+        self::STATUS_FAILED,
+        self::STATUS_TRANSFER,
+    ];
 }
