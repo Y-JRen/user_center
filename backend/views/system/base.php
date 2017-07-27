@@ -29,7 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div class="col-sm-6">
                         <?= Html::textInput("value[$value->key]", $value->value, ['class' => 'form-control']) ?>
                     </div>
-                    <div class="col-sm-4 text-left">调用参数【<?= $value->key; ?>】</div>
+                    <div class="col-sm-4 text-left">
+                        <div class="hint-block">
+                            调用参数【<?= $value->key; ?>】
+                        </div>
+                    </div>
                 </div>
             </div>
         <?php endforeach; ?>
