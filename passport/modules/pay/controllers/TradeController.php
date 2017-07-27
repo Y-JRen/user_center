@@ -46,13 +46,7 @@ class TradeController extends AuthController
         ]);
 
         $orderType = Yii::$app->request->get('order_type');
-        $defaultStatus = [
-            OrderForm::STATUS_PROCESSING,
-            OrderForm::STATUS_SUCCESSFUL,
-            OrderForm::STATUS_FAILED,
-            OrderForm::STATUS_TRANSFER,
-        ];
-        $status = Yii::$app->request->get('status', $defaultStatus);
+        $status = Yii::$app->request->get('status', OrderForm::$defaultSearchStatus);
 
         $query->andFilterWhere([
             'order_type' => $orderType,
