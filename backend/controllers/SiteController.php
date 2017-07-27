@@ -109,6 +109,9 @@ class SiteController extends Controller
             // 获取用户的项目
             ThirdLogic::instance()->getRemoteUserProjects(Yii::$app->user->id);
 
+            // 更新用户菜单缓存
+            \backend\logic\MenuLogic::instance(['roleId' => Yii::$app->session->get('ROLE_ID')])->getTree(true);
+
             return $this->redirect(Yii::$app->homeUrl);
         } catch (NotAttachedException $e) {
             header('Location: ' . $_SERVER['REQUEST_URI']);

@@ -11,6 +11,7 @@ namespace backend\logic;
 
 use common\logic\Logic;
 use common\models\AdminRole;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -28,13 +29,24 @@ class MenuLogic extends Logic
 
     /**
      * 获取所有菜单
-     *
+     * @param boolean $forced
      * @return array
      */
-    public function getTree()
+    public function getTree($forced = false)
     {
-        $allMenu = ThirdLogic::instance()->getPermissionTree();
-        return $this->getMenuList($allMenu);
+        $cacheKey = "MenuLogic_getTree_{$this->roleId}";
+        /* @var $redis yii\redis\Connection */
+        $redis = Yii::$app->redis;
+        $data = json_decode($redis->get($cacheKey), true);
+
+        if ($forced || empty($data)) {
+            $allMenu = ThirdLogic::instance()->getPermissionTree();
+            $data = $this->getMenuList($allMenu);
+            $redis->set($cacheKey, json_encode($data));
+            $redis->expire($cacheKey, 86400);
+        }
+
+        return $data;
     }
 
     /**
