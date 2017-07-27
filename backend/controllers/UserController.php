@@ -6,10 +6,12 @@ use backend\models\Order;
 use backend\models\search\OrderSearch;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
+use common\models\UserInfo;
 use Yii;
 use common\models\User;
 use backend\models\search\UserSearch;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -36,14 +38,19 @@ class UserController extends BaseController
     }
 
     /**
-     * Displays a single User model.
-     * @param integer $id
-     * @return mixed
+     * 展示资金明细
+     *
+     * @param $uid
+     * @return string
      */
-    public function actionView($id)
+    public function actionFundRecord($uid)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $dataProvider = new ActiveDataProvider(['query' => Order::find()->where(['uid' => $uid])]);
+        $data = Order::find()->where(['uid' => $uid])->all();
+        return $this->render('fund-record', [
+            'dataProvider' => $dataProvider,
+            'uid' => $uid,
+            'data' => $data,
         ]);
     }
 
@@ -52,18 +59,22 @@ class UserController extends BaseController
      * @param $uid
      * @return string
      */
-    public function actionOrder($uid)
+    public function actionView($uid)
     {
         $user = $this->findModel($uid);
         $queryParams['OrderSearch'] = [
-            'status' => [Order::STATUS_SUCCESSFUL,Order::STATUS_TRANSFER],
+            'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_TRANSFER],
             'uid' => $uid
         ];
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
-        return $this->render('order', [
+
+        $data = UserInfo::find()->where(['uid' => $uid])->one();
+
+        return $this->render('view', [
             'dataProvider' => $dataProvider,
-            'userModel' => $user
+            'userModel' => $user,
+            'data' => $data,
         ]);
     }
 

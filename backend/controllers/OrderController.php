@@ -8,6 +8,7 @@ use common\models\CompanyAccount;
 use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
+use common\models\User;
 use Yii;
 use backend\models\search\OrderSearch;
 use yii\base\ErrorException;
@@ -39,17 +40,31 @@ class OrderController extends BaseController
      * 线下充值待确认
      * @return mixed
      */
-    public function actionLineDown()
+    public function actionLineDown_0()
     {
         $queryParams['OrderSearch'] = [
             'order_type' => Order::TYPE_RECHARGE,
             'order_subtype' => 'line_down',
-            'status' => Order::STATUS_PENDING
+            'status' => Order::STATUS_PENDING,
+//            'created_at' => Yii::$app->request->get('created_at'),
+//            'key' => Yii::$app->request->get('key'),
         ];
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
         return $this->render('line-down', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+        ]);
+    }
+
+    //重写linedown方法
+    public function actionLineDown()
+    {
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('line-down', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 
@@ -60,6 +75,7 @@ class OrderController extends BaseController
      */
     public function actionLineDownForm($id)
     {
+
         $model = $this->findModel($id);
         $phone = ArrayHelper::getValue($model->user, 'phone');
 
@@ -95,7 +111,7 @@ class OrderController extends BaseController
             $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
             if (!$recharge->save()) {
-                throw new Exception('确认失败，保存充值信息失败'.json_encode($recharge->errors));
+                throw new Exception('确认失败，保存充值信息失败' . json_encode($recharge->errors));
             }
 
             if (!$model->userBalance->plus($model->amount)) {
@@ -210,7 +226,7 @@ class OrderController extends BaseController
      */
     protected function findModelByOrderId($orderId)
     {
-        if (($model = Order::find()->where(['order_id'=>$orderId])->one()) !== null) {
+        if (($model = Order::find()->where(['order_id' => $orderId])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

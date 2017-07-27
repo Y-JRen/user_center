@@ -111,4 +111,30 @@ class Order extends \common\models\Order
         'bank' => '银行',
         'lakala' => '拉卡拉POS机'
     ];
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'uid' => 'Uid',
+            'platform_order_id' => '平台订单号',
+            'order_id' => '会员中心单号',
+            'order_type' => '交易类型',
+            'type' => '订单类型',
+            'order_subtype' => '支付方式',
+            'amount' => '金额',
+            'status' => '状态',
+            'desc' => '订单描述',
+            'notice_status' => '通知平台状态',
+            'notice_platform_param' => '通知平台时所带参数',
+            'created_at' => '时间',
+            'updated_at' => '最后一次更新时间',
+            'remark' => '备注',
+            'platform' => '平台',
+            'quick_pay' => '快捷支付',
+            'receipt_amount' => '实际金额',
+            'counter_fee' => '服务费',
+            'discount_amount' => '优惠金额',
+        ];
+    }
 }
