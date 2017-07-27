@@ -81,8 +81,10 @@ class MenuLogic extends Logic
                 'label' => $menu['name'],
                 'url' => [$menu['url']],
                 'icon' => $menu['slug'],
-                'active' => is_null($menu['parent_id']),
             ];
+
+            is_null($menu['parent_id']) ? $items[$k]['active'] = true : null;
+
             if ($menu['children']) {
                 $child = $this->getMenuList($menu['children']);
                 $items[$k]['items'] = $child;
