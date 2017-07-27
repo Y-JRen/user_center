@@ -136,7 +136,7 @@ class DefaultController extends Controller
 
         $post = Yii::$app->request->post();
 
-        ApiLogsLogic::instance()->addLogs('lakala.data', json_encode($post));
+        ApiLogsLogic::instance()->addLogs('lakala.data', $post);
 
         $lakala = new LakalaCore(['publicKeyPath' => Yii::$app->params['pay']['lakala']['public_key']]);
         $result = $lakala->verifyNotify();

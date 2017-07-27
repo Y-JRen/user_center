@@ -67,18 +67,20 @@ class PayCore extends Object
      * @param $notify_url
      * @return mixed
      */
-    public function pagePay($builder,$return_url,$notify_url) {
+    public function pagePay($builder, $return_url, $notify_url)
+    {
 
-        $biz_content=$builder->getBizContent();
+        $biz_content = $builder->getBizContent();
 
         $request = new \AlipayTradePagePayRequest();
 
         $request->setNotifyUrl($notify_url);
         $request->setReturnUrl($return_url);
-        $request->setBizContent ( $biz_content );
+        $request->setBizContent($biz_content);
 
         // 首先调用支付api
-        $response = $this->aopClientRequestExecute ($request,true);
+        $response = $this->aopClientRequestExecute($request, true);
+
         return $response;
     }
 
@@ -89,9 +91,9 @@ class PayCore extends Object
      * @param $notify_url string 异步通知地址，公网可以访问
      * @return $response 支付宝返回的信息
      */
-    public function wapPay($builder,$return_url,$notify_url) {
-
-        $biz_content=$builder->getBizContent();
+    public function wapPay($builder, $return_url, $notify_url)
+    {
+        $biz_content = $builder->getBizContent();
         //打印业务参数
 //		$this->writeLog($biz_content);
 
@@ -99,10 +101,10 @@ class PayCore extends Object
 
         $request->setNotifyUrl($notify_url);
         $request->setReturnUrl($return_url);
-        $request->setBizContent ( $biz_content );
+        $request->setBizContent($biz_content);
 
         // 首先调用支付api
-        $response = $this->aopClientRequestExecute ($request,true);
+        $response = $this->aopClientRequestExecute($request, true);
         // $response = $response->alipay_trade_wap_pay_response;
         return $response;
     }
@@ -145,14 +147,29 @@ class PayCore extends Object
     }
 
     /**
+     * alipay.trade.close (统一收单交易关闭接口)
+     * @param $builder PayClose 业务参数，使用buildmodel中的对象生成。
+     * @return $response 支付宝返回的信息
+     */
+    public function close($builder)
+    {
+        $biz_content = $builder->getBizContent();
+        $request = new \AlipayTradeCloseRequest();
+        $request->setBizContent($biz_content);
+
+        $response = $this->aopclientRequestExecute($request);
+        $response = $response->alipay_trade_close_response;
+        return $response;
+    }
+
+    /**
      * sdkClient
-     * @param $request \AlipayTradePagePayRequest | \AlipayTradeWapPayRequest | \AlipayTradeQueryRequest 接口请求参数对象。
+     * @param $request \AlipayTradePagePayRequest | \AlipayTradeWapPayRequest | \AlipayTradeQueryRequest | \AlipayTradeCloseRequest 接口请求参数对象。
      * @param $ispage bool 是否是页面接口，电脑网站支付是页面表单接口。
      * @return $response 支付宝返回的信息
      */
     public function aopClientRequestExecute($request, $ispage = false)
     {
-
         $aop = new \AopClient ();
         $aop->gatewayUrl = $this->gateway_url;
         $aop->appId = $this->appid;
@@ -209,7 +226,8 @@ class PayCore extends Object
      * @param array $arr 验签支付宝返回的信息，使用支付宝公钥。
      * @return boolean
      */
-    public function check($arr){
+    public function check($arr)
+    {
         $aop = new \AopClient();
         $aop->alipayrsaPublicKey = $this->alipay_public_key;
         $result = $aop->rsaCheckV1($arr, $this->alipay_public_key, $this->signtype);

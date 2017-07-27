@@ -54,4 +54,16 @@ class SystemConf extends BaseModel
             'is_show' => 'Is Show',
         ];
     }
+
+    /**
+     * 通过key获取配置值
+     * @todo 可优化使用redis缓存
+     *
+     * @param $key
+     * @return false|null|string
+     */
+    public static function getValue($key)
+    {
+        return self::find()->select('value')->where(['key' => $key])->asArray()->scalar();
+    }
 }
