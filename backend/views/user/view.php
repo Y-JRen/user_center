@@ -1,75 +1,67 @@
 <?php
 
-use common\models\UserInfo;
-use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\widgets\DetailView;
+use yii\helpers\Url;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\User */
-
-$this->title = $model->phone;
-$this->params['breadcrumbs'][] = ['label' => '用户管理', 'url' => ['index']];
+$this->title = '会员详情';
 $this->params['breadcrumbs'][] = $this->title;
+
+$balance = ArrayHelper::getValue($userModel->balance, 'amount', 0);
+$freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
 ?>
-<div class="box box-primary">
-    <div class="box-header with-border">
-        <h3 class="box-title">基本登录信息</h3>
+<div class="row mb-md">
+    <div class="col-sm-12 col-xs-12 nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="<?= Url::to(['user/view', 'uid' => $userModel->id]) ?>">客户信息</a></li>
+            <li><a href="<?= Url::to(['user/fund-record', 'uid' => $userModel->id]) ?>">资金明细</a></li>
+            <li><a href="<?= Url::to(['', 'uid' => '']) ?>">订单记录</a></li>
+        </ul>
     </div>
-    <div class="box-body">
-        <?= DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                'id',
-                'phone',
-                'user_name',
-                'email:email',
-                [
-                    'attribute' => 'status',
-                    'value' => $model->status == 1 ? '正常' : '禁用',
-                ],
-                [
-                    'attribute' => 'from_platform',
-                    'value' => ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform),
-                ],
-                'from_channel',
-                'client_type',
-                'reg_time:datetime',
-                'reg_ip',
-                'login_time:datetime',
-            ],
-        ]) ?>
-    </div>
-    <?php if ($model->userInfo): ?>
-        <div class="box-header with-border">
-            <h3 class="box-title">用户扩展信息</h3>
-        </div>
-        <div class="box-body">
-            <?= DetailView::widget([
-                'model' => $model->userInfo,
-                'attributes' => [
-                    'real_name',
-                    'card_number',
-                    'birthday',
-                    [
-                        'attribute' => 'sex',
-                        'value' => ArrayHelper::getValue(UserInfo::$sexArr, $model->userInfo->sex),
-                    ],
-                    [
-                        'attribute' => 'is_real',
-                        'value' => ArrayHelper::getValue(UserInfo::$realArr, $model->userInfo->is_real),
-                    ],
-                    'area',
-                    'city',
-                    'county',
-                    [
-                        'attribute' => 'funds_status',
-                        'value' => ArrayHelper::getValue(UserInfo::$fundsArr, $model->userInfo->funds_status),
-                    ],
-                ],
-            ]) ?>
-        </div>
-    <?php endif; ?>
 </div>
 
+<div class="order-index">
+    <div class="box-body no-padding" style="background-color: #fff;">
+        <table class="table" style="border-bottom: 1px solid #ddd">
+            <tbody>
+            <tr>
+                <td>用户ID：</td>
+                <td><?= $userModel->id ?></td>
+                <td>会员昵称：</td>
+                <td>--</td>
+                <td>用户手机：</td>
+                <td><?= $userModel->phone ?></td>
+            </tr>
+            <tr>
+                <td>实名认证：</td>
+                <td>
+                    <?php if (is_object($data)) {
+                        if($data->is_real==1){
+                            echo '认证';
+                        };
+                    } else {
+                        echo '--';
+                    } ?>
+                </td>
+                <td>用户名：</td>
+                <td><?= $userModel->user_name ?></td>
+                <td>身份证号码：</td>
+                <td>
+                    <?php if (is_object($data)) {
+                        echo $data->card_number;
+                    } else {
+                        echo '--';
+                    } ?>
+                </td>
+            </tr>
+            <tr>
+                <td>资产总额：</td>
+                <td><?= Yii::$app->formatter->asCurrency($balance + $freeze)?></td>
+                <td>可用余额：</td>
+                <td><?= Yii::$app->formatter->asCurrency($balance) ?></td>
+                <td>冻结金额：</td>
+                <td><?= Yii::$app->formatter->asCurrency($freeze) ?></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
