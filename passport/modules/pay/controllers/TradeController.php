@@ -43,19 +43,23 @@ class TradeController extends AuthController
         $query = OrderForm::find()->where([
             'platform' => Config::getPlatform(),
             'uid' => Yii::$app->user->getId()
-        ])->orderBy('id desc');
+        ]);
 
-        $orderType = \Yii::$app->request->get('order_type');
-        if ($orderType) {
-            $query->andWhere(['order_type' => $orderType]);
-        }
-        $status = \Yii::$app->request->get('status');
-        if ($status) {
-            $query->andWhere(['status' => $status]);
-        }
+        $orderType = Yii::$app->request->get('order_type');
+        $status = Yii::$app->request->get('status', OrderForm::$defaultSearchStatus);
+
+        $query->andFilterWhere([
+            'order_type' => $orderType,
+            'status' => $status
+        ]);
+
         $data = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ]
         ]);
+
         $pagination = new Pagination(['totalCount' => $query->count()]);
 
         return $this->_return([

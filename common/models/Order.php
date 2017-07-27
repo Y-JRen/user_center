@@ -92,7 +92,7 @@ class Order extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'platform_order_id', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
+            [['uid', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
@@ -284,7 +284,7 @@ class Order extends BaseModel
     }
 
     /**
-     * 获取订单状态名称
+     * 获取订单所有状态名称
      * 静态方法
      *
      * @param $key
@@ -304,6 +304,36 @@ class Order extends BaseModel
         return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
     }
 
+    public static $rechargeStatusArray = [
+        self::STATUS_PROCESSING => '充值中',
+        self::STATUS_SUCCESSFUL => '充值成功',
+        self::STATUS_FAILED => '充值失败',
+        self::STATUS_PENDING => '待处理',
+        self::STATUS_CLOSE => '已关闭',
+    ];
+
+    public static $consumeStatusArray = [
+        self::STATUS_PROCESSING => '消费中',
+        self::STATUS_SUCCESSFUL => '消费成功',
+        self::STATUS_FAILED => '消费失败',
+        self::STATUS_PENDING => '待处理',
+    ];
+
+    public static $refundStatusArray = [
+        self::STATUS_PROCESSING => '退款处理中',
+        self::STATUS_SUCCESSFUL => '退款成功',
+        self::STATUS_FAILED => '退款失败',
+        self::STATUS_PENDING => '待处理',
+    ];
+
+    public static $cashStatusArray = [
+        self::STATUS_PROCESSING => '提现申请中',
+        self::STATUS_SUCCESSFUL => '提现成功',
+        self::STATUS_FAILED => '提现失败',
+        self::STATUS_PENDING => '待处理',
+        self::STATUS_TRANSFER => '提现成功',
+    ];
+
     /**
      * 获取订单状态名称
      * 对象方法
@@ -312,7 +342,24 @@ class Order extends BaseModel
      */
     public function getOrderStatus()
     {
-        return self::getStatusName($this->status);
+
+        switch ($this->order_type) {
+            case self::TYPE_RECHARGE:
+                $array = self::$rechargeStatusArray;
+                break;
+            case self::TYPE_CONSUME:
+                $array = self::$consumeStatusArray;
+                break;
+            case self::TYPE_REFUND:
+                $array = self::$refundStatusArray;
+                break;
+            case self::TYPE_CASH:
+                $array = self::$cashStatusArray;
+                break;
+            default:
+                $array = self::getStatusName();
+        }
+        return ArrayHelper::getValue($array, $this->status);
     }
 
     /**
