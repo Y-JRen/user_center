@@ -4,6 +4,7 @@ use backend\grid\FilterColumn;
 use backend\grid\GridView;
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
 use backend\models\Order;
@@ -42,10 +43,10 @@ $this->registerJsFile('/dist/js/user/date.js', [
             'header' => '序号'
         ],
         [
-            'attribute' => 'uid',
-            'label' => '用户手机号',
+            'attribute' => 'user.phone',
+            'format' => 'raw',
             'value' => function ($model) {
-                return \common\models\User::findOne($model->uid)->phone;
+                return Html::a(ArrayHelper::getValue($model->user, 'phone'), ['/user/view', 'uid' => $model->uid]);
             }
         ],
         [
@@ -57,10 +58,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
             'filterArray' => Config::getPlatformArray()
         ],
         'platform_order_id',
-        [
-            'attribute' => 'order_id',
-            'label' => '用户中心订单号',
-        ],
+        'order_id',
         [
             'class' => FilterColumn::className(),
             'attribute' => 'order_type',
@@ -85,7 +83,6 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         [
             'attribute' => 'updated_at',
-            'label' => '处理时间',
             'format' => 'datetime',
             'enableSorting' => true
         ],
@@ -93,7 +90,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
             'class' => FilterColumn::className(),
             'attribute' => 'status',
             'value' => function ($model) {
-                return Order::getStatus($model->status);
+                return $model->orderStatus;
             },
             'filterArray' => Order::getStatus()
         ],

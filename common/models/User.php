@@ -67,7 +67,7 @@ class User extends BaseModel implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'phone' => '手机号',
+            'phone' => '手机号码',
             'user_name' => '用户名',
             'email' => '邮箱',
             'passwd' => 'Passwd',
