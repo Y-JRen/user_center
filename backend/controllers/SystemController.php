@@ -37,7 +37,8 @@ class SystemController extends BaseController
                     'label' => $post['label'][$key],
                     'ratio' => $post['ratio'][$key],
                     'capped' => $capped,
-                    'is_show' => $post['is_show'][$key],
+                    'is_show' => current($post['is_show'][$key]),
+                    'is_modify_rate' => current($post['is_modify_rate'][$key]),
                 ];
             }
 
