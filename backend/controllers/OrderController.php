@@ -3,15 +3,12 @@
 namespace backend\controllers;
 
 use backend\models\Order;
-use common\logic\FinanceLogic;
-use common\models\CompanyAccount;
-use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
-use common\models\User;
+use moonland\phpexcel\Excel;
+use passport\helpers\Config;
 use Yii;
 use backend\models\search\OrderSearch;
-use yii\base\ErrorException;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -29,6 +26,41 @@ class OrderController extends BaseController
     {
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        if (Yii::$app->request->isPost) {
+            Excel::export([
+                'models' => $dataProvider->query->limit(10000)->all(),
+                'mode' => 'export',
+                'columns' => [
+                    'user.phone',
+                    [
+                        'attribute' => 'platform',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                        },
+                    ],
+                    'platform_order_id',
+                    'order_id',
+                    'type',
+                    [
+                        'attribute' => 'order_subtype',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                        },
+                    ],
+                    'receipt_amount:currency',
+                    'created_at:datetime',
+                    'updated_at:datetime',
+                    'orderStatus'
+                ],
+                'headers' => [
+                    'created_at' => 'Date Created Content',
+                ],
+                'fileName' => '订单信息'
+            ]);
+
+            return $this->refresh();
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,

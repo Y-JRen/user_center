@@ -45,7 +45,7 @@ use yii\widgets\ActiveForm;
             <div class="form-group col-md-12">
                 <div class="pull-right mr-15">
                     <?= Html::submitButton('查询', ['class' => 'btn btn-primary btn-sm pull-left mr-15']) ?>
-                    <?= Html::resetButton('清除', ['class' => 'btn btn-default btn-sm pull-left']) ?>
+                    <?= Html::resetButton('清除', ['class' => 'btn btn-default btn-sm pull-left mark-clear']) ?>
                 </div>
             </div>
         </div>

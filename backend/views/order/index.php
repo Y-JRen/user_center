@@ -26,15 +26,19 @@ $this->registerJsFile('/dist/js/user/date.js', [
 ]);
 ?>
 
-<?php Pjax::begin() ?>
 
 <?php $form = ActiveForm::begin([
     'action' => ['index'],
     'method' => 'get',
-]); ?>
-
+]);
+?>
 <?= $this->render('_search', ['model' => $searchModel]) ?>
-
+    <div class="mb-md clearfix">
+        <?= Html::a('导出列表', Yii::$app->request->getUrl(), [
+            'class' => 'btn btn-primary btn-sm mr-md pull-left',
+            'data-method' => 'post']) ?>
+    </div>
+<?php Pjax::begin() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
@@ -97,16 +101,13 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         [
             'class' => FilterColumn::className(),
-            'attribute' => 'status',
-            'value' => function ($model) {
-                return $model->orderStatus;
-            },
+            'attribute' => 'orderStatus',
             'filterArray' => Order::getStatus()
         ],
     ],
 ]); ?>
-<?php ActiveForm::end(); ?>
 <?php Pjax::end() ?>
+<?php ActiveForm::end(); ?>
 
 <?php $this->beginBlock('javascript') ?>
     <script type="text/javascript">

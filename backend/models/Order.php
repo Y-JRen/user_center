@@ -124,6 +124,7 @@ class Order extends \common\models\Order
             'order_subtype' => '交易方式',
             'amount' => '金额',
             'status' => '状态',
+            'orderStatus' => '状态',
             'desc' => '订单描述',
             'notice_status' => '通知平台状态',
             'notice_platform_param' => '通知平台时所带参数',
