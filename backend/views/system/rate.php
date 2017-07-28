@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -26,6 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th class="text-center">中文释义</th>
                 <th class="text-center">费率</th>
                 <th class="text-center">封顶上线</th>
+                <th class="text-center">是否允许修改手续费</th>
                 <th class="text-center">是否显示</th>
             </tr>
             </thead>
@@ -45,10 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             </div>
                             <label class="col-sm-2 control-label">%</label>
                         </div>
-
                     </td>
                     <td class="text-center">
                         <?= Html::textInput('capped[]', $value['capped'], ['class' => 'form-control']) ?>
+                    </td>
+                    <td class="text-center">
+                        <?= Html::radioList("is_modify_rate[{$key}][]", ArrayHelper::getValue($value,'is_modify_rate'), [1 => ' 是', 0 => '否']) ?>
                     </td>
                     <td class="text-center">
                         <?= Html::radioList("is_show[{$key}][]", $value['is_show'], [1 => ' 是', 0 => '否']) ?>
@@ -73,6 +77,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 </td>
                 <td class="text-center">
                     <?= Html::textInput('capped[]', '', ['class' => 'form-control']) ?>
+                </td>
+                <td class="text-center">
+                    <?php $key = count($info);
+                    echo Html::radioList("is_modify_rate[{$key}][]", 1, [1 => ' 是', 0 => '否']) ?>
                 </td>
                 <td class="text-center">
                     <?php $key = count($info);

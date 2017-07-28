@@ -33,8 +33,8 @@ class RateController extends BaseController
 
         $infoArr = [];
         foreach ($info as $key => $value) {
-            $isShow = ArrayHelper::getValue($value, 'is_show');
-            if (current($isShow)) {
+            $value['is_modify_rate'] = (bool)ArrayHelper::getValue($value, 'is_modify_rate');
+            if (ArrayHelper::getValue($value, 'is_show')) {
                 unset($value['is_show']);
                 $infoArr[] = $value;
             }
