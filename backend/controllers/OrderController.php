@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Order;
+use common\logic\HttpLogic;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
 use moonland\phpexcel\Excel;
@@ -229,6 +230,8 @@ class OrderController extends BaseController
     }
 
     /**
+     * 通过会员中心单号获取订单详情
+     *
      * @param $orderId
      * @return string
      */
@@ -243,6 +246,18 @@ class OrderController extends BaseController
                 'model' => $this->findModelByOrderId($orderId),
             ]);
         }
+    }
+
+    public function actionPlatform($platform_order_id)
+    {
+        if (Yii::$app->request->isAjax && !empty($platform_order_id)) {
+            $path = Yii::$app->params['projects']['erp']['apiDomain'] . 'api/sale/detail';
+            $params = ['onlineSaleNo' => $platform_order_id];
+            $result = HttpLogic::instance()->http($path . '?' . http_build_query($params), 'GET');
+            return $result;
+        }
+
+        return '请求方式有误\参数有误';
     }
 
     /**

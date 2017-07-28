@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = '会员详情';
@@ -14,7 +15,7 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
         <ul class="nav nav-tabs">
             <li class="active"><a href="<?= Url::to(['user/view', 'uid' => $userModel->id]) ?>">客户信息</a></li>
             <li><a href="<?= Url::to(['user/fund-record', 'uid' => $userModel->id]) ?>">资金明细</a></li>
-            <li><a href="<?= Url::to(['', 'uid' => '']) ?>">订单记录</a></li>
+            <li><?= Html::a('订单记录', ['order', 'uid' => $userModel->id]) ?></li>
         </ul>
     </div>
 </div>

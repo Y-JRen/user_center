@@ -1,75 +1,73 @@
 <?php
 
-use backend\models\Order;
-use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\widgets\LinkPager;
 
 
-$this->title = '账户资金';
-$this->params['breadcrumbs'][] = $this->title;
-
-$balance = ArrayHelper::getValue($userModel->balance, 'amount', 0);
-$freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
+$this->title = '会员详情';
 ?>
-<div class="order-index">
-    <div class="box-body no-padding" style="background-color: #fff;">
-        <table class="table">
-            <tbody>
-            <tr>
-                <td>用户ID</td>
-                <td><?= $userModel->id ?></td>
-                <td>用户手机</td>
-                <td><?= $userModel->phone ?></td>
-                <td>资金账户状态</td>
-                <td>正常</td>
-            </tr>
-            <tr>
-                <td>总余额</td>
-                <td><?= $balance + $freeze ?></td>
-                <td>可用余额</td>
-                <td><?= $balance ?></td>
-                <td>冻结金额</td>
-                <td><?= $freeze ?></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row mb-md">
+        <div class="col-sm-12 col-xs-12 nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li><?= Html::a('客户信息', ['view', 'uid' => Yii::$app->request->get('uid')]) ?></li>
+                <li><?= Html::a('资金明细', ['fund-record', 'uid' => Yii::$app->request->get('uid')]) ?></li>
+                <li class="active"><?= Html::a('订单记录', ['order', 'uid' => Yii::$app->request->get('uid')]) ?></li>
+            </ul>
+        </div>
     </div>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => isset($searchModel) ? $searchModel : null,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            [
-                'attribute' => 'updated_at',
-                'label' => '时间',
-                'value' => function ($model) {
-                    return date('Y-m-d H:i:s', $model->updated_at);
-                }
-            ],
-            [
-                'attribute' => 'order_id',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return \yii\helpers\Html::a($model->order_id, ['/order/view', 'id' => $model->id]);
-                }
-            ],
-            [
-                'attribute' => 'order_type',
-                'value' => function ($model) {
-                    return $model->type;
-                },
-                'filter' => Order::getTypeName()
-            ],
-            [
-                'attribute' => 'order_subtype',
-                'value' => function ($model) {
-                    return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
-                },
-            ],
-            'amount:currency',
-            'counter_fee:currency',
-            'discount_amount:currency',
-            'receipt_amount:currency',
-        ],
-    ]); ?>
-</div>
+
+    <div class="grid-view">
+        <table class="table table-bordered table-hover" style="margin-bottom: 20px;">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>订单时间</th>
+                <th>平台</th>
+                <th>平台订单号</th>
+                <th>商品类型</th>
+                <th>商品名称</th>
+                <th>订单状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($orderList as $key => $value): ?>
+                <tr>
+                    <td><?= $key + 1 ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'insertTime') ?></td>
+                    <td>电商</td>
+                    <td><?= $orderNo = ArrayHelper::getValue($value, 'orderNo') ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'typeName') ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'name') ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'statusName') ?></td>
+                    <td><?= Html::a('查看详情', 'javascript:void(0)', [
+                            'data-url' => Url::to(['/order/platform', 'platform_order_id' => $orderNo]),
+                            'class' => 'markOrder']) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+
+        </table>
+        <div class="row text-right">
+            <div class="col-xs-12"><?= LinkPager::widget(['pagination' => $pagination]); ?></div>
+        </div>
+    </div>
+<?php $this->beginBlock('javascript') ?>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".markOrder").click(function () {
+                var url = $(this).attr('data-url');
+                $.get(url, function (html) {
+                    layer.open({
+                        title: '销售订单详情',
+                        area: '800px',
+                        shadeClose: true,
+                        content: html
+                    });
+                })
+            });
+        })
+    </script>
+<?php $this->endBlock() ?>

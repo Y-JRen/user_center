@@ -2,6 +2,7 @@
 
 use backend\grid\GridView;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <ul class="nav nav-tabs">
                 <li><a href="<?= Url::to(['user/view', 'uid' => $uid]) ?>">客户信息</a></li>
                 <li class="active"><a href="<?= Url::to(['user/fund-record', 'uid' => $uid]) ?>">资金明细</a></li>
-                <li><a href="<?= Url::to(['', 'uid' => '']) ?>">订单记录</a></li>
+                <li><?= Html::a('订单记录', ['order', 'uid' => $uid]) ?></li>
             </ul>
         </div>
     </div>

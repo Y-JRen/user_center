@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Order;
 use backend\models\search\OrderSearch;
+use common\logic\HttpLogic;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use common\models\UserInfo;
@@ -13,6 +14,7 @@ use backend\models\search\UserSearch;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -95,6 +97,27 @@ class UserController extends BaseController
             'freezeProvider' => $freezeProvider,
             'userModel' => $user
         ]);
+    }
+
+    /**
+     * 用户订单详情
+     *
+     * @param $uid
+     * @return string
+     */
+    public function actionOrder($uid)
+    {
+        $path = Yii::$app->params['projects']['che.com']['apiDomain'] . 'api/account/order';
+        $params = ['accountId' => $uid, 'pageIndex' => Yii::$app->request->get('page', 1), 'pagesize' => 20];
+
+        $result = json_decode(HttpLogic::instance()->http($path . '?' . http_build_query($params), 'GET'), true);
+
+        $detail = ArrayHelper::getValue($result, 'detail', []);
+        $orderList = ArrayHelper::getValue($detail, 'orderList', []);
+
+        $pagination = new Pagination(['totalCount' => ArrayHelper::getValue($detail, 'totalCount', 0)]);
+
+        return $this->render('order', ['orderList' => $orderList, 'pagination' => $pagination]);
     }
 
     /**
