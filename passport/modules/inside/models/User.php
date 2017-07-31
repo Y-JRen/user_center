@@ -2,6 +2,7 @@
 
 namespace passport\modules\inside\models;
 
+use common\models\UserInfo;
 use function foo\func;
 use passport\helpers\Config;
 use Yii;
@@ -57,7 +58,9 @@ class User extends \common\models\User
     public function fields()
     {
         $data = parent::fields();
+        // 删除密码
         unset($data['passwd']);
+        // 格式化客户端类型
         $data['client_type'] = function ($model) {
             $platform = ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
             if (empty($model->client_type)) {
@@ -67,6 +70,7 @@ class User extends \common\models\User
             }
         };
 
+        // 获取用户扩展信息【金额、实名认证】
         $controllerAction = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
         if (in_array($controllerAction, ['user/info'])) {
             $data['user_balance'] = function ($model) {
@@ -75,6 +79,18 @@ class User extends \common\models\User
 
             $data['user_freeze'] = function ($model) {
                 return (float)ArrayHelper::getValue($model->freeze, 'amount', 0);
+            };
+
+            $data['is_real'] = function ($model) {
+                return ($model->userInfo && $model->userInfo->verifyReal()) ? '已认证' : '未认证';
+            };
+
+            $data['real_name'] = function ($model) {
+                return ($model->userInfo && $model->userInfo->verifyReal()) ? $model->userInfo->real_name : '';
+            };
+            
+            $data['card_number'] = function ($model) {
+                return ($model->userInfo && $model->userInfo->verifyReal()) ? $model->userInfo->card_number : '';
             };
         }
 
