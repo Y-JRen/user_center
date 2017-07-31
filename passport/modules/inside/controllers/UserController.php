@@ -87,4 +87,15 @@ class UserController extends BaseController
             ]
         ]);
     }
+
+    public function actionInfo($uid)
+    {
+        if (empty($uid)) {
+            return $this->_error(1001, 'uid不能为空');
+        }
+
+        $result = User::find()->where(['id' => $uid])->one();
+
+        return $this->_return($result);
+    }
 }

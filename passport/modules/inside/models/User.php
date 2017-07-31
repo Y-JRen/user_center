@@ -2,6 +2,7 @@
 
 namespace passport\modules\inside\models;
 
+use function foo\func;
 use passport\helpers\Config;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -22,7 +23,7 @@ use yii\helpers\ArrayHelper;
  * @property integer $login_time
  * @property string $client_type
  */
-class User extends \yii\db\ActiveRecord
+class User extends \common\models\User
 {
     /**
      * @inheritdoc
@@ -65,6 +66,18 @@ class User extends \yii\db\ActiveRecord
                 return $platform . '--' . strtoupper($model->client_type);
             }
         };
+
+        $controllerAction = Yii::$app->controller->id . '/' . Yii::$app->controller->action->id;
+        if (in_array($controllerAction, ['user/info'])) {
+            $data['user_balance'] = function ($model) {
+                return (float)ArrayHelper::getValue($model->balance, 'amount', 0);
+            };
+
+            $data['user_freeze'] = function ($model) {
+                return (float)ArrayHelper::getValue($model->freeze, 'amount', 0);
+            };
+        }
+
         return $data;
     }
 }
