@@ -12,14 +12,16 @@ use common\models\User;
  */
 class UserSearch extends User
 {
+    public $key;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['id', 'reg_time', 'login_time'], 'integer'],
-            [['phone', 'user_name', 'from_channel', 'reg_ip'], 'safe'],
+            [['reg_time', 'login_time', 'key'], 'trim'],
+            [['from_platform', 'reg_ip', 'status'], 'safe'],
         ];
     }
 
@@ -52,7 +54,7 @@ class UserSearch extends User
             ]
         ]);
 
-        $this->load($params);
+        $this->load($params, '');
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
@@ -62,19 +64,31 @@ class UserSearch extends User
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'status' => $this->status,
             'from_platform' => $this->from_platform,
-            'reg_time' => $this->reg_time,
-            'login_time' => $this->login_time,
         ]);
 
-        $query->andFilterWhere(['like', 'phone', $this->phone])
-            ->andFilterWhere(['like', 'user_name', $this->user_name])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'passwd', $this->passwd])
-            ->andFilterWhere(['like', 'from_channel', $this->from_channel])
-            ->andFilterWhere(['like', 'reg_ip', $this->reg_ip]);
+        if (!empty($this->key)) {
+            $query->andFilterWhere([
+                'OR',
+                ['reg_ip' => $this->key],
+                ['LIKE', 'phone', "{$this->key}%", false]
+            ]);
+        }
+
+        if (!empty($this->reg_time)) {
+            $startTime = strtotime(substr($this->reg_time, 0, 10));
+            $endTime = strtotime(substr($this->reg_time, -10)) + 86400;
+            $query->andFilterWhere(['>=', 'reg_time', $startTime])
+                ->andFilterWhere(['<', 'reg_time', $endTime]);
+        }
+
+        if (!empty($this->login_time)) {
+            $startTime = strtotime(substr($this->login_time, 0, 10));
+            $endTime = strtotime(substr($this->login_time, -10)) + 86400;
+            $query->andFilterWhere(['>=', 'login_time', $startTime])
+                ->andFilterWhere(['<', 'login_time', $endTime]);
+        }
 
         return $dataProvider;
     }

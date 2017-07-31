@@ -7,17 +7,18 @@ use backend\models\search\OrderSearch;
 use common\logic\HttpLogic;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
+use common\models\UserBalance;
+use common\models\UserFreeze;
 use common\models\UserInfo;
+use moonland\phpexcel\Excel;
+use passport\helpers\Config;
 use Yii;
 use common\models\User;
 use backend\models\search\UserSearch;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
-use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -33,9 +34,47 @@ class UserController extends BaseController
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        if (Yii::$app->request->isPost) {
+            Excel::export([
+                'models' => $dataProvider->query->limit(10000)->all(),
+                'mode' => 'export',
+                'columns' => [
+                    'phone',
+                    [
+                        'attribute' => 'from_platform',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
+                        },
+                    ],
+                    'reg_time:datetime',
+                    'login_time:datetime',
+                    'reg_ip',
+                    [
+                        'attribute' => 'status',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(User::$statusArray, $model->status);
+                        },
+                    ],
+                ],
+                'headers' => [
+                    'created_at' => 'Date Created Content',
+                ],
+                'fileName' => '用户信息'
+            ]);
+
+            return $this->refresh();
+        }
+
+        /* @var $query yii\db\ActiveQuery */
+        $query = $dataProvider->query;
+        $totalBalance = $query->innerJoin(UserBalance::tableName(), 'user.id=user_balance.uid')->sum('user_balance.amount');
+        $totalFreeze = $query->innerJoin(UserFreeze::tableName(), 'user.id=user_freeze.uid')->sum('user_freeze.amount');
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'totalBalance' => $totalBalance,
+            'totalFreeze' => $totalFreeze,
         ]);
     }
 
