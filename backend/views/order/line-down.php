@@ -1,11 +1,11 @@
 <?php
 
+use backend\grid\GridView;
 use backend\models\Order;
 use common\helpers\JsonHelper;
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\grid\GridView;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
@@ -28,6 +28,15 @@ $this->registerJsFile('/dist/plugins/daterangepicker/daterangepicker.js', [
 $this->registerJsFile('/dist/js/user/date.js', [
     'depends' => ['backend\assets\AdminLteAsset']
 ]);
+$this->registerJsFile('/dist/js/web.js', [
+    'depends' => ['yii\web\JqueryAsset']
+]);
+$this->registerCssFile('/dist/plugins/datetimepicker/css/bootstrap-datetimepicker.min.css', [
+    'depends' => ['yii\bootstrap\BootstrapAsset']
+]);
+$this->registerJsFile('/dist/plugins/datetimepicker/js/bootstrap-datetimepicker.min.js', [
+    'depends' => ['yii\bootstrap\BootstrapAsset']
+]);
 ?>
 <?php Pjax::begin() ?>
 
@@ -35,29 +44,22 @@ $this->registerJsFile('/dist/js/user/date.js', [
     'action' => ['line-down'],
     'method' => 'get',
 ]); ?>
-<?= $this->render('_search2', ['model' => $searchModel]) ?>
+
+<?= $this->render('_search_recharge', ['model' => $searchModel]) ?>
 
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
-        ['class' => 'yii\grid\SerialColumn'],
-
         [
-            'attribute' => 'uid',
-            'label' => '用户',
+            'class' => 'yii\grid\SerialColumn',
+            'header' => '序号'
+        ],
+        [
+            'attribute' => 'user.phone',
             'format' => 'raw',
             'value' => function ($model) {
-                $phone = \common\models\User::findOne($model->uid)->phone;
-                return Html::a($phone, ['/user/view', 'uid' => $model->uid]);
+                return Html::a(ArrayHelper::getValue($model->user, 'phone'), ['/user/view', 'uid' => $model->uid]);
             }
-        ],
-        'order_id',
-        [
-            'attribute' => 'order_type',
-            'value' => function ($model) {
-                return $model->type;
-            },
-            'filter' => Order::getTypeName()
         ],
         [
             'class' => FilterColumn::className(),
@@ -66,19 +68,6 @@ $this->registerJsFile('/dist/js/user/date.js', [
                 return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
             },
             'filterArray' => Config::getPlatformArray(),
-        ],
-        [
-            'class' => FilterColumn::className(),
-            'attribute' => 'order_subtype',
-            'value' => function ($model) {
-                return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
-            },
-            'filterArray' => Order::$subTypeName,
-        ],
-        [
-            'label' => '充值金额',
-            'attribute' => 'receipt_amount',
-            'format' => 'currency'
         ],
         [
             'label' => '银行名称',
@@ -100,6 +89,19 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         [
             'class' => FilterColumn::className(),
+            'attribute' => 'order_subtype',
+            'value' => function ($model) {
+                return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+            },
+            'filterArray' => Order::$subTypeName
+        ],
+        [
+            'label' => '充值金额',
+            'attribute' => 'receipt_amount',
+            'format' => 'currency'
+        ],
+        [
+            'class' => FilterColumn::className(),
             'attribute' => 'status',
             'value' => function ($model) {
                 return Order::getStatus($model->status);
@@ -108,48 +110,80 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         'created_at:datetime',
         [
-            'label' => '操作',
-            'format' => 'raw',
-            'value' => function ($data) {
-                return Html::button('确认充值', [
-                    'data-toggle' => "modal",
-                    'data-target' => "#modal",
-                    'class' => 'btn btn-success modalClass btn-xs',
-                    'url' => Url::to(['/order/line-down-form', 'id' => $data->id])
-                ])
-                . '&nbsp;&nbsp;' .
-                Html::a('充值失败',
-                    ['/order/confirm-fail', 'id' => $data->id],
-                    ['class' => 'btn btn-primary btn-xs', 'data-confirm' => '确定要设置为充值失败吗？', 'data-method' => 'post']
-                );
-            }
-        ]
+            'class' => 'yii\grid\ActionColumn',
+            'header' => '操作',
+            'template' => '{pass} {fail} {reason} {empty}',
+            'buttons' => [
+                'pass' => function ($url, $model, $key) {
+                    return $model->status == Order::STATUS_PENDING ? Html::a('确认收款', 'JavaScript:void(0);', [
+                        'class' => 'markPass',
+                        'data-url' => Url::to(['/order/line-down-pass', 'id' => $model->id])
+                    ]) : null;
+                },
+                'fail' => function ($url, $model, $key) {
+                    return $model->status == Order::STATUS_PENDING ? Html::a('未收到款', 'JavaScript:void(0);', [
+                        'class' => 'markFail',
+                        'data-url' => Url::to(['/order/line-down-fail', 'id' => $model->id])
+                    ]) : null;
+                },
+                'reason' => function ($url, $model, $key) {
+                    return $model->status == Order::STATUS_FAILED ? Html::a('查看原因', 'JavaScript:void(0);', [
+                        'class' => 'markReason',
+                        'data-url' => Url::to(['/log-review/fail', 'orderId' => $model->id])
+                    ]) : null;
+                },
+                'empty' => function ($url, $model, $key) {
+                    return $model->status == Order::STATUS_SUCCESSFUL ? '--' : null;
+                }
+            ]
+        ],
     ],
 ]); ?>
 <?php ActiveForm::end(); ?>
 <?php Pjax::end() ?>
 
+<?php $this->beginBlock('javascript') ?>
+<script type="text/javascript">
+    var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
+    var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';
 
-    <div class="modal fade" id="modal-default">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    <script>
-        var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
-        var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';
-    </script>
-<?php
-
-$js = <<<_SCRIPT
-    $('.modalClass').click(function () {
-        $.get($(this).attr('url'),function (html) {
-            $('.modal-content').html(html);
-            $('#modal-default').modal('show')
+    $(document).ready(function () {
+        $(".markPass").click(function () {
+            var url = $(this).attr('data-url');
+            $.get(url, function (html) {
+                layer.open({
+                    type: 1,
+                    title: '收款确认',
+                    area: '600px',
+                    shadeClose: true,
+                    content: html
+                });
+            })
         });
-    });
-_SCRIPT;
-$this->registerJs($js);
+
+        $(".markFail").click(function () {
+            var url = $(this).attr('data-url');
+            $.get(url, function (html) {
+                layer.open({
+                    type: 1,
+                    title: '未到账确认',
+                    area: '600px',
+                    shadeClose: true,
+                    content: html
+                });
+            })
+        });
+
+        $(".markReason").click(function () {
+            var url = $(this).attr('data-url');
+            $.get(url, function (html) {
+                layer.open({
+                    title: '原因',
+                    shadeClose: true,
+                    content: html
+                });
+            })
+        });
+    })
+</script>
+<?php $this->endBlock() ?>

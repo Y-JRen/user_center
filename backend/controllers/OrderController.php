@@ -3,7 +3,9 @@
 namespace backend\controllers;
 
 use backend\models\Order;
+use backend\models\search\OrderLineSearch;
 use common\logic\HttpLogic;
+use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
 use moonland\phpexcel\Excel;
@@ -73,28 +75,24 @@ class OrderController extends BaseController
      * 线下充值待确认
      * @return mixed
      */
-    public function actionLineDown_0()
-    {
-        $queryParams['OrderSearch'] = [
-            'order_type' => Order::TYPE_RECHARGE,
-            'order_subtype' => 'line_down',
-            'status' => Order::STATUS_PENDING,
-//            'created_at' => Yii::$app->request->get('created_at'),
-//            'key' => Yii::$app->request->get('key'),
-        ];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-        return $this->render('line-down', [
-            'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel,
-        ]);
-    }
-
-    //重写linedown方法
     public function actionLineDown()
     {
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $history = Yii::$app->request->get('history');
+
+        $defaultParams = [
+            'order_type' => Order::TYPE_RECHARGE,
+            'order_subtype' => 'line_down',
+        ];
+
+        if (!$history) {
+            $defaultParams['status'] = Order::STATUS_PENDING;
+        }
+
+        $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
+
+        $searchModel = new OrderLineSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
         return $this->render('line-down', [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
@@ -102,24 +100,30 @@ class OrderController extends BaseController
     }
 
     /**
-     * AJAX获取确认充值表单
+     * 获取线下充值通过form
      * @param $id
      * @return string
      */
-    public function actionLineDownForm($id)
+    public function actionLineDownPass($id)
     {
+        return $this->renderPartial('_pass', ['model' => $this->findModel($id)]);
+    }
 
-        $model = $this->findModel($id);
-        $phone = ArrayHelper::getValue($model->user, 'phone');
-
-        return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone]);
+    /**
+     * 获取线下充值不通过form
+     * @param $id
+     * @return string
+     */
+    public function actionLineDownFail($id)
+    {
+        return $this->renderPartial('_fail', ['id' => $id]);
     }
 
     /**
      * 线下充值确认
      * @return \yii\web\Response
      */
-    public function actionLineDownSave()
+    public function actionConfirmPass()
     {
         $post = Yii::$app->request->post();
         $model = $this->findModel($post['id']);
@@ -171,22 +175,38 @@ class OrderController extends BaseController
     }
 
     /**
-     * 确认充值失败
+     * 线下充值，未到账确认
      * @return \yii\web\Response
      */
     public function actionConfirmFail()
     {
-        $id = Yii::$app->request->get('id');
-        $model = $this->findModel($id);
-        if ($model->status !== $model::STATUS_PENDING) {
-            Yii::$app->session->setFlash('error', '错误请求');
-            return $this->redirect(['line-down']);
-        }
+        $id = Yii::$app->request->post('id');
+        $remark = Yii::$app->request->post('remark');
+        $db = Yii::$app->db->beginTransaction();
 
-        if ($model->setOrderFail()) {
+        try {
+            if (empty($remark)) {
+                throw new Exception('备注不能为空');
+            }
+
+            $model = $this->findModel($id);
+            if ($model->status !== $model::STATUS_PENDING) {
+                throw new Exception('订单状态不允许执行此操作');
+            }
+
+            if (!$model->setOrderFail()) {
+                throw new Exception(current($model->getFirstErrors()));
+            }
+
+            if (!$model->addLogReview($remark)) {
+                throw new Exception('添加财务操作日志失败，请重试');
+            }
+
+            $db->commit();
             Yii::$app->session->setFlash('success', '操作成功');
-        } else {
-            Yii::$app->session->setFlash('success', '操作失败' . json_encode($model->errors));
+        } catch (Exception $e) {
+            $db->rollBack();
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
 
         return $this->redirect(['line-down']);

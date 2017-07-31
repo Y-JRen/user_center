@@ -138,4 +138,19 @@ class Order extends \common\models\Order
             'discount_amount' => '优惠金额',
         ];
     }
+
+    /**
+     * 添加财务失败的操作日志
+     *
+     * @param $remark
+     * @return bool
+     */
+    public function addLogReview($remark)
+    {
+        $model = new LogReview();
+        $model->order_id = $this->id;
+        $model->order_status = $this->status;
+        $model->remark = $remark;
+        return $model->save();
+    }
 }

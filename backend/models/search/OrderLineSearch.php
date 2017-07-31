@@ -10,11 +10,12 @@ use backend\models\Order;
 use yii\db\Query;
 
 /**
- * OrderSearch represents the model behind the search form about `common\models\Order`.
+ * OrderLineSearch represents the model behind the search form about `common\models\Order`.
  */
-class OrderSearch extends Order
+class OrderLineSearch extends Order
 {
     public $key;
+    public $history;
 
     /**
      * @inheritdoc
@@ -22,8 +23,8 @@ class OrderSearch extends Order
     public function rules()
     {
         return [
-            [['created_at', 'updated_at', 'notice_platform_param', 'status', 'key'], 'trim'],
-            [['order_type','platform', 'order_subtype'], 'safe'],
+            [['created_at', 'status', 'key'], 'trim'],
+            [['order_type', 'platform', 'order_subtype', 'history'], 'safe'],
         ];
     }
 
@@ -70,11 +71,9 @@ class OrderSearch extends Order
         ]);
 
         if (!empty($this->key)) {
-            $query->andFilterWhere([
-                'OR',
-                ['LIKE', 'order_id', "%{$this->key}", false],
+            $query->andFilterWhere(
                 ['IN', 'uid', (new Query())->select('id')->from(User::tableName())->where(['LIKE', 'phone', "{$this->key}%", false])]
-            ]);
+            );
         }
 
         if (!empty($this->status)) {
@@ -87,20 +86,6 @@ class OrderSearch extends Order
             $query->andFilterWhere(['>=', 'created_at', $startTime])
                 ->andFilterWhere(['<', 'created_at', $endTime]);
         }
-
-        if (!empty($this->updated_at)) {
-            $startTime = strtotime(substr($this->updated_at, 0, 10));
-            $endTime = strtotime(substr($this->updated_at, -10)) + 86400;
-            $query->andFilterWhere(['>=', 'updated_at', $startTime])
-                ->andFilterWhere(['<', 'updated_at', $endTime]);
-        }
-
-        if (!empty($this->order_subtype)) {
-            $query->andFilterWhere(['like', 'order_subtype', $this->order_subtype]);
-        }
-
-        $query->andFilterWhere(['like', 'platform_order_id', $this->platform_order_id])
-            ->andFilterWhere(['like', 'order_id', $this->order_id]);
 
         return $dataProvider;
     }
