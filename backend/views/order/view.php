@@ -27,12 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'counter_fee:currency',
             'discount_amount:currency',
             'receipt_amount:currency',
-            [
-                'attribute' => 'status',
-                'value' => function ($model) {
-                    return Order::getStatus($model->status);
-                }
-            ],
+            'orderStatus',
             'desc',
             'notice_status',
             'notice_platform_param',

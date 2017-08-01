@@ -102,7 +102,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
         [
             'class' => FilterColumn::className(),
             'attribute' => 'orderStatus',
-            'filterArray' => Order::getStatus()
+            'filterArray' => Order::getStatusName()
         ],
     ],
 ]); ?>

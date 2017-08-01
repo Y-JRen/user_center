@@ -43,28 +43,6 @@ class Order extends \common\models\Order
     }
 
     /**
-     * 获取订单状态
-     * @param null $key
-     * @return array|mixed
-     */
-    public static function getStatus($key = null)
-    {
-        $data = [
-            self::STATUS_PROCESSING => '处理中',
-            self::STATUS_SUCCESSFUL => '处理通过',
-            self::STATUS_FAILED => '处理不通过',
-            self::STATUS_PENDING => '待处理',
-            self::STATUS_TRANSFER => '已转账',
-        ];
-
-        if (is_null($key)) {
-            return $data;
-        } else {
-            return ArrayHelper::getValue($data, $key);
-        }
-    }
-
-    /**
      * @return \yii\db\ActiveQuery
      */
     public function getUser()
