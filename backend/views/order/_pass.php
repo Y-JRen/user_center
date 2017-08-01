@@ -12,7 +12,9 @@ $remarkArr = JsonHelper::BankHelper($model->remark);
 /* @var $model \backend\models\Order */
 ?>
 <style type="text/css">
-    .hint-block{margin-top: 8px;}
+    .hint-block {
+        margin-top: 8px;
+    }
 </style>
 <form class="form-horizontal" action="<?= Url::to(['/order/confirm-pass']) ?>" method="post" id="mark_form">
     <div class="form-group">
@@ -39,7 +41,7 @@ $remarkArr = JsonHelper::BankHelper($model->remark);
            value="<?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceNumber'), 'value') ?>">
 
     <div class="form-group">
-        <input type="hidden" name="org" id="org" value="<?= $organizations[0]['name'] ?>">
+        <input type="hidden" name="org" id="org" value="<?= ArrayHelper::getValue(current($organizations), 'name') ?>">
         <label class="col-sm-2 control-label"><span>*</span>公司部门:</label>
         <div class="col-sm-10">
             <select class="form-control" onchange="createAccounts()" name="org_id" id="org_id">

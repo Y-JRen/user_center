@@ -153,4 +153,19 @@ class Order extends \common\models\Order
         $model->remark = $remark;
         return $model->save();
     }
+    
+    /**
+     * 获取提现审批用户
+     * @return string
+     */
+    public function getCashUser()
+    {
+        if ($this->order_type == self::TYPE_CASH && in_array($this->status, [self::STATUS_SUCCESSFUL, self::STATUS_FAILED, self::STATUS_TRANSFER])) {
+            $model = LogReview::find()->where(['order_id' => $this->id, 'order_status' => self::STATUS_SUCCESSFUL])->one();
+            if (isset($model->admin)) {
+                return ArrayHelper::getValue($model->admin, 'name');
+            }
+        }
+        return '';
+    }
 }

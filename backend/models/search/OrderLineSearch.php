@@ -16,6 +16,7 @@ class OrderLineSearch extends Order
 {
     public $key;
     public $history;
+    public $orderStatus;
 
     /**
      * @inheritdoc
@@ -24,7 +25,7 @@ class OrderLineSearch extends Order
     {
         return [
             [['created_at', 'status', 'key'], 'trim'],
-            [['order_type', 'platform', 'order_subtype', 'history'], 'safe'],
+            [['order_type', 'platform', 'order_subtype', 'history', 'orderStatus'], 'safe'],
         ];
     }
 
@@ -74,6 +75,10 @@ class OrderLineSearch extends Order
             $query->andFilterWhere(
                 ['IN', 'uid', (new Query())->select('id')->from(User::tableName())->where(['LIKE', 'phone', "{$this->key}%", false])]
             );
+        }
+
+        if (!empty($this->orderStatus)) {
+            $this->status = $this->orderStatus;
         }
 
         if (!empty($this->status)) {
