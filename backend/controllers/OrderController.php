@@ -3,14 +3,16 @@
 namespace backend\controllers;
 
 use backend\models\Order;
-use common\logic\FinanceLogic;
-use common\models\CompanyAccount;
+use backend\models\search\OrderLineSearch;
+use common\helpers\JsonHelper;
+use common\logic\HttpLogic;
 use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
+use moonland\phpexcel\Excel;
+use passport\helpers\Config;
 use Yii;
 use backend\models\search\OrderSearch;
-use yii\base\ErrorException;
 use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -20,6 +22,8 @@ use yii\web\NotFoundHttpException;
  */
 class OrderController extends BaseController
 {
+    public $history;
+
     /**
      * Lists all Order models.
      * @return mixed
@@ -28,6 +32,41 @@ class OrderController extends BaseController
     {
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        if (Yii::$app->request->isPost) {
+            Excel::export([
+                'models' => $dataProvider->query->limit(10000)->all(),
+                'mode' => 'export',
+                'columns' => [
+                    'user.phone',
+                    [
+                        'attribute' => 'platform',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                        },
+                    ],
+                    'platform_order_id',
+                    'order_id',
+                    'type',
+                    [
+                        'attribute' => 'order_subtype',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                        },
+                    ],
+                    'receipt_amount:currency',
+                    'created_at:datetime',
+                    'updated_at:datetime',
+                    'orderStatus'
+                ],
+                'headers' => [
+                    'created_at' => 'Date Created Content',
+                ],
+                'fileName' => '订单信息'
+            ]);
+
+            return $this->refresh();
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -41,36 +80,101 @@ class OrderController extends BaseController
      */
     public function actionLineDown()
     {
-        $queryParams['OrderSearch'] = [
+        $history = $this->history = $this->getShowHistory('recharge');
+        $defaultParams = [
             'order_type' => Order::TYPE_RECHARGE,
             'order_subtype' => 'line_down',
-            'status' => Order::STATUS_PENDING
         ];
-        $searchModel = new OrderSearch();
+        if (!$history) {
+            $defaultParams['status'] = Order::STATUS_PENDING;
+        }
+        $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
+
+        $searchModel = new OrderLineSearch();
         $dataProvider = $searchModel->search($queryParams);
+
+
+        if (Yii::$app->request->isPost) {
+            Excel::export([
+                'models' => $dataProvider->query->limit(10000)->all(),
+                'mode' => 'export',
+                'columns' => [
+                    'user.phone',
+                    [
+                        'attribute' => 'platform',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                        },
+                    ],
+                    [
+                        'attribute' => '银行名称',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => '姓名',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'accountName'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => '流水单号',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => 'order_subtype',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                        },
+                    ],
+                    'receipt_amount:currency',
+                    'created_at:datetime:申请时间',
+                    'orderStatus'
+                ],
+                'headers' => [
+                    'created_at' => 'Date Created Content',
+                ],
+                'fileName' => '打款确认'
+            ]);
+
+            return $this->refresh();
+        }
+
+
         return $this->render('line-down', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 
     /**
-     * AJAX获取确认充值表单
+     * 获取线下充值通过form
      * @param $id
      * @return string
      */
-    public function actionLineDownForm($id)
+    public function actionLineDownPass($id)
     {
-        $model = $this->findModel($id);
-        $phone = ArrayHelper::getValue($model->user, 'phone');
+        return $this->renderPartial('_pass', ['model' => $this->findModel($id)]);
+    }
 
-        return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone]);
+    /**
+     * 获取线下充值不通过form
+     * @param $id
+     * @return string
+     */
+    public function actionLineDownFail($id)
+    {
+        return $this->renderPartial('_fail', ['id' => $id]);
     }
 
     /**
      * 线下充值确认
      * @return \yii\web\Response
      */
-    public function actionLineDownSave()
+    public function actionConfirmPass()
     {
         $post = Yii::$app->request->post();
         $model = $this->findModel($post['id']);
@@ -95,7 +199,7 @@ class OrderController extends BaseController
             $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
             if (!$recharge->save()) {
-                throw new Exception('确认失败，保存充值信息失败'.json_encode($recharge->errors));
+                throw new Exception('确认失败，保存充值信息失败' . json_encode($recharge->errors));
             }
 
             if (!$model->userBalance->plus($model->amount)) {
@@ -122,44 +226,41 @@ class OrderController extends BaseController
     }
 
     /**
-     * 确认充值失败
+     * 线下充值，未到账确认
      * @return \yii\web\Response
      */
     public function actionConfirmFail()
     {
-        $id = Yii::$app->request->get('id');
-        $model = $this->findModel($id);
-        if ($model->status !== $model::STATUS_PENDING) {
-            Yii::$app->session->setFlash('error', '错误请求');
-            return $this->redirect(['line-down']);
-        }
+        $id = Yii::$app->request->post('id');
+        $remark = Yii::$app->request->post('remark');
+        $db = Yii::$app->db->beginTransaction();
 
-        if ($model->setOrderFail()) {
+        try {
+            if (empty($remark)) {
+                throw new Exception('备注不能为空');
+            }
+
+            $model = $this->findModel($id);
+            if ($model->status !== $model::STATUS_PENDING) {
+                throw new Exception('订单状态不允许执行此操作');
+            }
+
+            if (!$model->setOrderFail()) {
+                throw new Exception(current($model->getFirstErrors()));
+            }
+
+            if (!$model->addLogReview($remark)) {
+                throw new Exception('添加财务操作日志失败，请重试');
+            }
+
+            $db->commit();
             Yii::$app->session->setFlash('success', '操作成功');
-        } else {
-            Yii::$app->session->setFlash('success', '操作失败' . json_encode($model->errors));
+        } catch (Exception $e) {
+            $db->rollBack();
+            Yii::$app->session->setFlash('error', $e->getMessage());
         }
 
         return $this->redirect(['line-down']);
-    }
-
-    /**
-     * 线下充值确认历史
-     * @return mixed
-     */
-    public function actionLineDownLog()
-    {
-        $queryParams['OrderSearch'] = [
-            'order_type' => Order::TYPE_RECHARGE,
-            'order_subtype' => "line_down",
-            'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_FAILED]
-        ];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-
-        return $this->render('line-down-log', [
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
@@ -169,20 +270,46 @@ class OrderController extends BaseController
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if (Yii::$app->request->isAjax) {
+            return $this->renderPartial('view', [
+                'model' => $this->findModel($id),
+            ]);
+        } else {
+            return $this->render('view', [
+                'model' => $this->findModel($id),
+            ]);
+        }
     }
 
     /**
+     * 通过会员中心单号获取订单详情
+     *
      * @param $orderId
      * @return string
      */
     public function actionDetail($orderId)
     {
-        return $this->render('view', [
-            'model' => $this->findModelByOrderId($orderId),
-        ]);
+        if (Yii::$app->request->isAjax) {
+            return $this->renderPartial('view', [
+                'model' => $this->findModelByOrderId($orderId),
+            ]);
+        } else {
+            return $this->render('view', [
+                'model' => $this->findModelByOrderId($orderId),
+            ]);
+        }
+    }
+
+    public function actionPlatform($platform_order_id)
+    {
+        if (Yii::$app->request->isAjax && !empty($platform_order_id)) {
+            $path = Yii::$app->params['projects']['erp']['apiDomain'] . 'api/sale/detail';
+            $params = ['onlineSaleNo' => $platform_order_id];
+            $result = HttpLogic::instance()->http($path . '?' . http_build_query($params), 'GET');
+            return $result;
+        }
+
+        return '请求方式有误\参数有误';
     }
 
     /**
@@ -210,7 +337,7 @@ class OrderController extends BaseController
      */
     protected function findModelByOrderId($orderId)
     {
-        if (($model = Order::find()->where(['order_id'=>$orderId])->one()) !== null) {
+        if (($model = Order::find()->where(['order_id' => $orderId])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

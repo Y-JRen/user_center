@@ -74,8 +74,7 @@ class LogReview extends BaseModel
     public function beforeSave($insert)
     {
         if ($this->isNewRecord) {
-            //            $this->admin_id = Yii::$app->user->id;
-            $this->admin_id = 1;
+            $this->admin_id = Yii::$app->user->id;
             $this->created_at = date('Y-m-d H:i:s', time());
         }
         return parent::beforeSave($insert);

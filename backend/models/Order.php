@@ -111,4 +111,61 @@ class Order extends \common\models\Order
         'bank' => '银行',
         'lakala' => '拉卡拉POS机'
     ];
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'uid' => '手机号',
+            'platform_order_id' => '平台订单号',
+            'order_id' => '会员中心单号',
+            'order_type' => '交易类型',
+            'type' => '交易类型',
+            'order_subtype' => '交易方式',
+            'amount' => '金额',
+            'status' => '状态',
+            'orderStatus' => '状态',
+            'desc' => '订单描述',
+            'notice_status' => '通知平台状态',
+            'notice_platform_param' => '通知平台时所带参数',
+            'created_at' => '创建时间',
+            'updated_at' => '处理时间',
+            'remark' => '备注',
+            'platform' => '平台',
+            'quick_pay' => '快捷支付',
+            'receipt_amount' => '实际交易金额',
+            'counter_fee' => '服务费',
+            'discount_amount' => '优惠金额',
+        ];
+    }
+
+    /**
+     * 添加财务失败的操作日志
+     *
+     * @param $remark
+     * @return bool
+     */
+    public function addLogReview($remark = '')
+    {
+        $model = new LogReview();
+        $model->order_id = $this->id;
+        $model->order_status = $this->status;
+        $model->remark = $remark;
+        return $model->save();
+    }
+    
+    /**
+     * 获取提现审批用户
+     * @return string
+     */
+    public function getCashUser()
+    {
+        if ($this->order_type == self::TYPE_CASH && in_array($this->status, [self::STATUS_SUCCESSFUL, self::STATUS_FAILED, self::STATUS_TRANSFER])) {
+            $model = LogReview::find()->where(['order_id' => $this->id, 'order_status' => self::STATUS_SUCCESSFUL])->one();
+            if (isset($model->admin)) {
+                return ArrayHelper::getValue($model->admin, 'name');
+            }
+        }
+        return '';
+    }
 }

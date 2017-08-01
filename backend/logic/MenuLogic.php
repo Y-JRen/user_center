@@ -11,6 +11,7 @@ namespace backend\logic;
 
 use common\logic\Logic;
 use common\models\AdminRole;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -25,18 +26,29 @@ class MenuLogic extends Logic
      * @var
      */
     public $roleId;
-    
+
     /**
      * 获取所有菜单
-     *
+     * @param boolean $forced
      * @return array
      */
-    public function getTree()
+    public function getTree($forced = false)
     {
-        $allMenu = ThirdLogic::instance()->getPermissionTree();
-        return $this->getMenuList($allMenu);
+        $cacheKey = "MenuLogic_getTree_{$this->roleId}";
+        /* @var $redis yii\redis\Connection */
+        $redis = Yii::$app->redis;
+        $data = json_decode($redis->get($cacheKey), true);
+
+        if ($forced || empty($data)) {
+            $allMenu = ThirdLogic::instance()->getPermissionTree();
+            $data = $this->getMenuList($allMenu);
+            $redis->set($cacheKey, json_encode($data));
+            $redis->expire($cacheKey, 86400);
+        }
+
+        return $data;
     }
-    
+
     /**
      * 获取用户菜单
      *
@@ -45,13 +57,13 @@ class MenuLogic extends Logic
     private function getUserMenu()
     {
         $adminRole = AdminRole::findOne($this->roleId);
-        if($adminRole) {
+        if ($adminRole) {
             $menu = json_decode($adminRole->permissions);
             return ArrayHelper::getColumn($menu, 'id');
         }
         return false;
     }
-    
+
     /**
      * 菜单（左侧菜单）
      *
@@ -61,20 +73,25 @@ class MenuLogic extends Logic
      */
     private function getMenuList($allMenu, $items = [])
     {
-        foreach ($allMenu as $k => $menu){
-            if(!empty($this->getUserMenu()) && !in_array($menu['id'], $this->getUserMenu())) {
+        foreach ($allMenu as $k => $menu) {
+            if (!empty($this->getUserMenu()) && !in_array($menu['id'], $this->getUserMenu())) {
                 continue;
             }
             $items[$k] = [
                 'label' => $menu['name'],
                 'url' => [$menu['url']],
-                //'active' => true,
+                'icon' => $menu['slug'],
             ];
-            if($menu['children']) {
+
+            is_null($menu['parent_id']) ? $items[$k]['active'] = true : null;
+
+            if ($menu['children']) {
                 $child = $this->getMenuList($menu['children']);
                 $items[$k]['items'] = $child;
             }
         }
+
+
         return $items;
     }
 }
