@@ -145,7 +145,7 @@ class Order extends \common\models\Order
      * @param $remark
      * @return bool
      */
-    public function addLogReview($remark)
+    public function addLogReview($remark = '')
     {
         $model = new LogReview();
         $model->order_id = $this->id;

@@ -10,13 +10,13 @@ namespace backend\controllers;
 
 
 use backend\models\Order;
-use backend\models\search\OrderSearch;
+use backend\models\search\OrderLineSearch;
 use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
-use common\models\User;
+use Exception;
 use Yii;
-use yii\base\ErrorException;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 class CashController extends BaseController
@@ -27,9 +27,8 @@ class CashController extends BaseController
     {
         return [
             'index' => 'GET',
-            'confirm' => 'GET',
-            'confirm-success' => 'POST',
-            'confirm-fail' => 'POST',
+            'pass' => 'POST',
+            'fail' => 'POST',
         ];
     }
 
@@ -39,79 +38,72 @@ class CashController extends BaseController
      */
     public function actionIndex()
     {
-        $queryParams = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_PROCESSING];
-        $searchModel = new OrderSearch();
+        $history = $this->history = $this->getShowHistory('cash');
+
+        $defaultParams = ['order_type' => Order::TYPE_CASH];
+        if (!$history) {
+            $defaultParams['status'] = Order::STATUS_PROCESSING;
+        }
+        $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
+
+        $searchModel = new OrderLineSearch();
         $dataProvider = $searchModel->search($queryParams);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * 财务确认
-     */
-    public function actionConfirm($id)
-    {
-        $model = $this->findModel($id);
-
-        $user = User::findOne($model->uid);
-        $queryParams['OrderSearch'] = [
-            'status' => Order::STATUS_SUCCESSFUL,
-            'uid' => $model->uid
-        ];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-
-
-        return $this->render('confirm', [
-            'model' => $model,
-            'dataProvider' => $dataProvider,
-            'userModel' => $user
+            'searchModel' => $searchModel,
         ]);
     }
 
     /**
      * 财务审批通过
+     *
      * @param $id
      * @return \yii\web\Response
-     * @throws ErrorException
+     * @throws Exception
      */
-    public function actionConfirmSuccess($id)
+    public function actionPass($id)
     {
         $model = $this->findModel($id);
 
         if ($model->getFinanceConfirmCash()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                $logModel = new LogReview(['order_id' => $id, 'order_status' => Order::STATUS_SUCCESSFUL]);
-                $logModel->load(Yii::$app->request->post());
-                if (!$logModel->save()) {
-                    throw new ErrorException(print_r($logModel->errors, true));
-                }
-
                 if (!$model->setOrderSuccess()) {
-                    throw new ErrorException('更新订单状态失败');
+                    throw new Exception('更新订单状态失败');
                 }
 
                 if (!$model->userFreeze->less($model->amount)) {
-                    throw new ErrorException('更新用户冻结余额失败');
+                    throw new Exception('更新用户冻结余额失败');
                 }
 
                 if (!$model->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
-                    throw new ErrorException('添加冻结资金流水记录失败');
+                    throw new Exception('添加冻结资金流水记录失败');
+                }
+
+                if (!$model->addLogReview()) {
+                    throw new Exception('添加财务操作日志失败，请重试');
                 }
 
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', '处理成功');
-            } catch (ErrorException $e) {
-                Yii::$app->session->setFlash('error', '处理失败');
+            } catch (Exception $e) {
                 $transaction->rollBack();
-                throw $e;
+                Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * 获取审批不通过的form表单
+     * @param $id
+     * @return string
+     */
+    public function actionFailForm($id)
+    {
+        return $this->renderPartial('_fail', ['id' => $id]);
     }
 
     /**
@@ -120,47 +112,44 @@ class CashController extends BaseController
      * 审批不通过，冻结金额返回到可用余额
      * @param $id
      * @return \yii\web\Response
-     * @throws ErrorException
+     * @throws Exception
      */
-    public function actionConfirmFail($id)
+    public function actionFail($id)
     {
         $model = $this->findModel($id);
 
         if ($model->getFinanceConfirmCash()) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-                $logModel = new LogReview(['order_id' => $id, 'order_status' => Order::STATUS_FAILED]);
-                $logModel->load(Yii::$app->request->post());
-                if (!$logModel->save()) {
-                    throw new ErrorException(print_r($logModel->errors, true));
-                }
-
                 if (!$model->setOrderFail()) {
-                    throw new ErrorException('更新订单状态失败');
+                    throw new Exception('更新订单状态失败');
                 }
 
                 if (!$model->userFreeze->less($model->amount)) {
-                    throw new ErrorException('更新用户冻结余额失败');
+                    throw new Exception('更新用户冻结余额失败');
                 }
 
                 if (!$model->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
-                    throw new ErrorException('添加冻结资金流水记录失败');
+                    throw new Exception('添加冻结资金流水记录失败');
                 }
 
                 if (!$model->userBalance->plus($model->amount)) {
-                    throw new ErrorException('更新用户可用余额失败');
+                    throw new Exception('更新用户可用余额失败');
                 }
 
                 if (!$model->addPoolBalance(PoolBalance::STYLE_PLUS)) {
-                    throw new ErrorException('添加资金流水记录失败');
+                    throw new Exception('添加资金流水记录失败');
+                }
+
+                if (!$model->addLogReview(Yii::$app->request->post('remark'))) {
+                    throw new Exception('添加财务操作日志失败，请重试');
                 }
 
                 $transaction->commit();
                 Yii::$app->session->setFlash('success', '处理成功');
-            } catch (ErrorException $e) {
-                Yii::$app->session->setFlash('error', '处理失败');
+            } catch (Exception $e) {
                 $transaction->rollBack();
-                throw $e;
+                Yii::$app->session->setFlash('error', $e->getMessage());
             }
         }
 
