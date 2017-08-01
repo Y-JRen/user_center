@@ -60,6 +60,7 @@ class Order extends \common\models\Order
         self::STATUS_PROCESSING,
         self::STATUS_SUCCESSFUL,
         self::STATUS_FAILED,
+        self::STATUS_PENDING,
         self::STATUS_TRANSFER,
     ];
 }
