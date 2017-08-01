@@ -264,25 +264,6 @@ class OrderController extends BaseController
     }
 
     /**
-     * 线下充值确认历史
-     * @return mixed
-     */
-    public function actionLineDownLog()
-    {
-        $queryParams['OrderSearch'] = [
-            'order_type' => Order::TYPE_RECHARGE,
-            'order_subtype' => "line_down",
-            'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_FAILED]
-        ];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-
-        return $this->render('line-down-log', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
      * Displays a single Order model.
      * @param integer $id
      * @return mixed

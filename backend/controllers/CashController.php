@@ -21,6 +21,8 @@ use yii\web\NotFoundHttpException;
 
 class CashController extends BaseController
 {
+    public $history;
+
     public function verbs()
     {
         return [
@@ -37,7 +39,7 @@ class CashController extends BaseController
      */
     public function actionIndex()
     {
-        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_PROCESSING];
+        $queryParams = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_PROCESSING];
         $searchModel = new OrderSearch();
         $dataProvider = $searchModel->search($queryParams);
 
@@ -163,24 +165,6 @@ class CashController extends BaseController
         }
 
         return $this->redirect(['index']);
-    }
-
-    /**
-     * 提现确认历史
-     * @return mixed
-     */
-    public function actionHistory()
-    {
-        $queryParams['OrderSearch'] = [
-            'order_type' => Order::TYPE_CASH,
-            'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_FAILED, Order::STATUS_TRANSFER]
-        ];
-        $searchModel = new OrderSearch();
-        $dataProvider = $searchModel->search($queryParams);
-
-        return $this->render('history', [
-            'dataProvider' => $dataProvider,
-        ]);
     }
 
     /**
