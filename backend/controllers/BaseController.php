@@ -87,4 +87,27 @@ class BaseController extends Controller
 
         return true;
     }
+
+    /**
+     * 获取用户在收款确认、提现审批、付款确认是否显示历史
+     *
+     * @param $prefix
+     * @return array|bool|mixed
+     */
+    public function getShowHistory($prefix)
+    {
+        $key = $prefix . '_show_history_' . Yii::$app->user->id;
+        /* @var $redis yii\redis\Connection */
+        $redis = Yii::$app->redis;
+        $history = Yii::$app->request->get('history');
+        if (is_null($history)) {
+            $history = $redis->get($key);
+            is_null($history) ? $history = false : null;
+        } else {
+            $history = (bool)$history;
+            $redis->set($key, $history);
+            $redis->expire($key, 86400 * 3);
+        }
+        return $history;
+    }
 }

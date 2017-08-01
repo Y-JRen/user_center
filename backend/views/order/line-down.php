@@ -37,18 +37,28 @@ $this->registerCssFile('/dist/plugins/datetimepicker/css/bootstrap-datetimepicke
 $this->registerJsFile('/dist/plugins/datetimepicker/js/bootstrap-datetimepicker.min.js', [
     'depends' => ['yii\bootstrap\BootstrapAsset']
 ]);
-?>
-<?php Pjax::begin() ?>
 
-<?php $form = ActiveForm::begin([
-    'action' => ['line-down'],
-    'method' => 'get',
-]); ?>
+
+$statusColumnArray = [
+    'attribute' => 'orderStatus',
+];
+if (ArrayHelper::getValue($this->context, 'history')) {
+    $statusColumnArray['class'] = FilterColumn::className();
+    $statusColumnArray['filterArray'] = Order::getStatusName();
+}
+?>
+
+
+<?php $form = ActiveForm::begin(['action' => ['line-down'], 'method' => 'get']); ?>
 
 <?= $this->render('_search_recharge', ['model' => $searchModel]) ?>
-
-<?= GridView::widget([
-    'dataProvider' => $dataProvider,
+<div class="mb-md clearfix">
+    <?= Html::a('导出列表', Yii::$app->request->getUrl(), [
+        'class' => 'btn btn-primary btn-sm mr-md pull-left',
+        'data-method' => 'post']) ?>
+</div>
+<?php Pjax::begin() ?>
+<?= GridView::widget(['dataProvider' => $dataProvider,
     'columns' => [
         [
             'class' => 'yii\grid\SerialColumn',
@@ -67,25 +77,25 @@ $this->registerJsFile('/dist/plugins/datetimepicker/js/bootstrap-datetimepicker.
             'value' => function ($model) {
                 return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
             },
-            'filterArray' => Config::getPlatformArray(),
+            'filterArray' => Config::getPlatformArray()
         ],
         [
             'label' => '银行名称',
             'value' => function ($model) {
                 return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
-            },
+            }
         ],
         [
             'label' => '姓名',
             'value' => function ($model) {
                 return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'accountName'), 'value');
-            },
+            }
         ],
         [
             'label' => '流水单号',
             'value' => function ($model) {
                 return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
-            },
+            }
         ],
         [
             'class' => FilterColumn::className(),
@@ -100,47 +110,34 @@ $this->registerJsFile('/dist/plugins/datetimepicker/js/bootstrap-datetimepicker.
             'attribute' => 'receipt_amount',
             'format' => 'currency'
         ],
-        [
-            'class' => FilterColumn::className(),
-            'attribute' => 'status',
-            'value' => function ($model) {
-                return Order::getStatus($model->status);
-            },
-            'filterArray' => Order::getStatusName()
-        ],
         'created_at:datetime',
+        $statusColumnArray,
         [
             'class' => 'yii\grid\ActionColumn',
             'header' => '操作',
             'template' => '{pass} {fail} {reason} {empty}',
             'buttons' => [
                 'pass' => function ($url, $model, $key) {
-                    return $model->status == Order::STATUS_PENDING ? Html::a('确认收款', 'JavaScript:void(0);', [
-                        'class' => 'markPass',
-                        'data-url' => Url::to(['/order/line-down-pass', 'id' => $model->id])
-                    ]) : null;
+                    return $model->status == Order::STATUS_PENDING ? Html::a('确认收款', 'JavaScript:void(0);', ['class' => 'markPass',
+                        'data-url' => Url::to(['/order/line-down-pass', 'id' => $model->id])]) : null;
                 },
                 'fail' => function ($url, $model, $key) {
-                    return $model->status == Order::STATUS_PENDING ? Html::a('未收到款', 'JavaScript:void(0);', [
-                        'class' => 'markFail',
-                        'data-url' => Url::to(['/order/line-down-fail', 'id' => $model->id])
-                    ]) : null;
+                    return $model->status == Order::STATUS_PENDING ? Html::a('未收到款', 'JavaScript:void(0);', ['class' => 'markFail',
+                        'data-url' => Url::to(['/order/line-down-fail', 'id' => $model->id])]) : null;
                 },
                 'reason' => function ($url, $model, $key) {
-                    return $model->status == Order::STATUS_FAILED ? Html::a('查看原因', 'JavaScript:void(0);', [
-                        'class' => 'markReason',
-                        'data-url' => Url::to(['/log-review/fail', 'orderId' => $model->id])
-                    ]) : null;
+                    return $model->status == Order::STATUS_FAILED ? Html::a('查看原因', 'JavaScript:void(0);', ['class' => 'markReason',
+                        'data-url' => Url::to(['/log-review/fail', 'orderId' => $model->id])]) : null;
                 },
                 'empty' => function ($url, $model, $key) {
                     return $model->status == Order::STATUS_SUCCESSFUL ? '--' : null;
                 }
             ]
-        ],
-    ],
-]); ?>
-<?php ActiveForm::end(); ?>
+        ]
+    ]]);
+?>
 <?php Pjax::end() ?>
+<?php ActiveForm::end(); ?>
 
 <?php $this->beginBlock('javascript') ?>
 <script type="text/javascript">

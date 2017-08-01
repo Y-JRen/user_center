@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Order;
 use backend\models\search\OrderLineSearch;
+use common\helpers\JsonHelper;
 use common\logic\HttpLogic;
 use common\models\LogReview;
 use common\models\PoolBalance;
@@ -21,6 +22,8 @@ use yii\web\NotFoundHttpException;
  */
 class OrderController extends BaseController
 {
+    public $history;
+
     /**
      * Lists all Order models.
      * @return mixed
@@ -77,21 +80,69 @@ class OrderController extends BaseController
      */
     public function actionLineDown()
     {
-        $history = Yii::$app->request->get('history');
-
+        $history = $this->history = $this->getShowHistory('recharge');
         $defaultParams = [
             'order_type' => Order::TYPE_RECHARGE,
             'order_subtype' => 'line_down',
         ];
-
         if (!$history) {
             $defaultParams['status'] = Order::STATUS_PENDING;
         }
-
         $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
 
         $searchModel = new OrderLineSearch();
         $dataProvider = $searchModel->search($queryParams);
+
+
+        if (Yii::$app->request->isPost) {
+            Excel::export([
+                'models' => $dataProvider->query->limit(10000)->all(),
+                'mode' => 'export',
+                'columns' => [
+                    'user.phone',
+                    [
+                        'attribute' => 'platform',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                        },
+                    ],
+                    [
+                        'attribute' => '银行名称',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => '姓名',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'accountName'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => '流水单号',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => 'order_subtype',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
+                        },
+                    ],
+                    'receipt_amount:currency',
+                    'created_at:datetime:申请时间',
+                    'orderStatus'
+                ],
+                'headers' => [
+                    'created_at' => 'Date Created Content',
+                ],
+                'fileName' => '打款确认'
+            ]);
+
+            return $this->refresh();
+        }
+
 
         return $this->render('line-down', [
             'dataProvider' => $dataProvider,
