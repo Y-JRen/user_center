@@ -84,12 +84,6 @@ if (ArrayHelper::getValue($this->context, 'history')) {
         'created_at:datetime:申请时间',
         'updated_at:datetime',
         [
-            'attribute' => 'platform',
-            'value' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-            },
-        ],
-        [
             'class' => 'yii\grid\ActionColumn',
             'header' => '操作',
             'template' => '{pass} {fail} {reason} {empty}',

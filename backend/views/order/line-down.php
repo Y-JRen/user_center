@@ -73,6 +73,7 @@ if (ArrayHelper::getValue($this->context, 'history')) {
                 return Html::a(ArrayHelper::getValue($model->user, 'phone'), ['/user/view', 'uid' => $model->uid]);
             }
         ],
+        'order_id',
         [
             'class' => FilterColumn::className(),
             'attribute' => 'platform',
