@@ -10,6 +10,9 @@ use yii\helpers\Html;
         width: 90px;
         height: 22px;
         position: relative;
+        float: left;
+        margin-left: 20px;
+        margin-top: -1px;
     }
 
     .btn1 a {
@@ -54,12 +57,18 @@ use yii\helpers\Html;
         outline: none;
     }
 
+    .page-title {
+        padding: 0 0 16px 0;
+        display: block;
+        float: left;
+    }
+
 
 </style>
 <div class="content-wrapper">
     <div class="content">
         <?= Alert::widget() ?>
-        <section class="content-header">
+        <section class="content-header" style="height: 50px;">
             <h1 class="page-title"><?= $this->title ?></h1>
             <?php
             $params = Yii::$app->request->queryParams;
