@@ -48,16 +48,18 @@ if (ArrayHelper::getValue($this->context, 'history')) {
 }
 ?>
 
-
 <?php $form = ActiveForm::begin(['action' => ['line-down'], 'method' => 'get']); ?>
 
 <?= $this->render('_search_recharge', ['model' => $searchModel]) ?>
+
 <div class="mb-md clearfix">
     <?= Html::a('导出列表', Yii::$app->request->getUrl(), [
         'class' => 'btn btn-primary btn-sm mr-md pull-left',
         'data-method' => 'post']) ?>
 </div>
+
 <?php Pjax::begin() ?>
+
 <?= GridView::widget(['dataProvider' => $dataProvider,
     'columns' => [
         [
