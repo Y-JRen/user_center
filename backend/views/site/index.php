@@ -29,19 +29,16 @@ $this->title = '车城网用户中心';
         letter-spacing: 0;
     }
 
-    .user-main {
-
-    }
-
     .mb-md {
         margin-bottom: 16px;
     }
 
-    .user-main .Today {
+    .Today {
         background: #FFFFFF;
         border: 1px solid #DCE0E0;
         Today-shadow: 0 1px 3px 0 rgba(48, 50, 70, 0.20);
         border-radius: 4px;
+        margin-top: 30px;
     }
 
     .Today .Today-title {
@@ -70,7 +67,7 @@ $this->title = '车城网用户中心';
 
     .Today .Today-main {
         padding: 24px 0 0 30px;
-        height: 80px;
+        height: 100px;
     }
 
     .Today .user-new {
@@ -160,7 +157,7 @@ $this->title = '车城网用户中心';
 
     .Today strong {
         font-family: Roboto-Bold;
-        font-size: 28px;
+        font-size: 18px;
         color: #1A1A1A;
         letter-spacing: 0;
         display: block;
@@ -168,7 +165,7 @@ $this->title = '车城网用户中心';
     }
 
     .Yesterday-color {
-        background: #5890FF !important;
+        background: #03A1FF !important;
     }
 </style>
 <?php foreach ($data as $key => $value): ?>
@@ -180,7 +177,7 @@ $this->title = '车城网用户中心';
         <div class="Today-main">
             <div class="user-new">
                 <div class="Today-img <?= ($key == 0) ? '' : 'Yesterday-color' ?>">
-                    <i class="fa fa-user-o"></i>
+                    <img src="/img/status_avatar.png">
                 </div>
 
                 <div class="data">
