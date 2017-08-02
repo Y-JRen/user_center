@@ -13,7 +13,7 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [],
-    'defaultRoute' => 'user/index',
+    'defaultRoute' => 'site/index',
     'components' => [
         'formatter' => [
             'datetimeFormat' => 'php:Y-m-d H:i',
