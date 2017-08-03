@@ -6258,7 +6258,7 @@ textarea {
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 }
 .lte-table-filter-dropdown .lte-dropdown-menu {
-  max-height: 93px;
+  max-height: 310px;
   overflow-y: auto;
   padding-left: 0;
   margin-bottom: 0;
