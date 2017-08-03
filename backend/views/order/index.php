@@ -61,7 +61,17 @@ $this->registerJsFile('/dist/js/user/date.js', [
             },
             'filterArray' => Config::getPlatformArray()
         ],
-        'platform_order_id',
+        [
+            'attribute' => 'platform_order_id',
+            'value' => function ($model) {
+                $platform_order_id = $model->platform_order_id;
+                if (empty($platform_order_id)) {
+                    return '--';
+                }else {
+                    return $platform_order_id;
+                }
+            },
+        ],
         [
             'attribute' => 'order_id',
             'format' => 'raw',
@@ -102,7 +112,10 @@ $this->registerJsFile('/dist/js/user/date.js', [
         [
             'class' => FilterColumn::className(),
             'attribute' => 'orderStatus',
-            'filterArray' => Order::getStatusName()
+            'value' => function ($model) {
+                return ArrayHelper::getValue(Order::getStatusName(), $model->status);
+            },
+            'filterArray' => Order::getStatusName(),
         ],
     ],
 ]); ?>

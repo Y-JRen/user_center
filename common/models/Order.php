@@ -57,6 +57,16 @@ class Order extends BaseModel
     const STATUS_TRANSFER = 5;// 出纳已转账
     const STATUS_CLOSE = 6;// 关闭；允许第三方充值异步回调
 
+    public static $statusArray = [
+        self::STATUS_PROCESSING => '处理中',
+        self::STATUS_PROCESSING => '处理成功',
+        self::STATUS_PROCESSING => '处理不成功',
+        self::STATUS_PROCESSING => '待处理',
+        self::STATUS_PROCESSING => '已打款',
+        self::STATUS_PROCESSING => '已关闭',
+    ];
+
+
     /**
      * 充值子类型
      */
@@ -328,7 +338,7 @@ class Order extends BaseModel
 
     public static $cashStatusArray = [
         self::STATUS_PROCESSING => '提现申请中',
-        self::STATUS_SUCCESSFUL => '提现成功',
+        self::STATUS_SUCCESSFUL => '提现审批通过',
         self::STATUS_FAILED => '提现失败',
         self::STATUS_PENDING => '待处理',
         self::STATUS_TRANSFER => '提现成功',
