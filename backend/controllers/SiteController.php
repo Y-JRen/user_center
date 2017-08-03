@@ -74,35 +74,39 @@ class SiteController extends Controller
         $beginToday = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
         $endToday = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
 
-
-        //今天
-        $todayQuery = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL]);
-
         //充值
-        $today['recharge'] = $todayQuery->andWhere(['order_type' => Order::TYPE_RECHARGE])->sum('amount');
+        $today['recharge'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_RECHARGE])->sum('amount');
+
         //消费
-        $today['consume'] = $todayQuery->andWhere(['order_type' => Order::TYPE_CONSUME])->sum('amount');
+        $today['consume'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_CONSUME])->sum('amount');
+
         //退款
-        $today['refund'] = $todayQuery->andWhere(['order_type' => Order::TYPE_REFUND])->sum('amount');
+        $today['refund'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_REFUND])->sum('amount');
+
         //提现
-        $today['cash'] = $todayQuery->andWhere(['order_type' => Order::TYPE_CASH])->andWhere(['status' => Order::STATUS_TRANSFER])->sum('amount');
+        $today['cash'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_TRANSFER])->andWhere(['order_type' => Order::TYPE_CASH])->sum('amount');
+
+
         //今天的新注册人数
         $today['user'] = User::find()->where(['between', 'reg_time', $beginToday, $endToday])->count();
 
         $redis = Yii::$app->redis;
         $key = 'YESTERDAY' . date('Y-m-d');
+
         $yesterday = json_decode($redis->get($key), true);
         if (empty($yesterday)) {
-            //昨天
-            $yesterdayQuery = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL]);
             //充值
-            $yesterday['recharge'] = $yesterdayQuery->andWhere(['order_type' => Order::TYPE_RECHARGE])->sum('amount');
+            $yesterday['recharge'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_RECHARGE])->sum('amount');
+
             //消费
-            $yesterday['consume'] = $yesterdayQuery->andWhere(['order_type' => Order::TYPE_CONSUME])->sum('amount');
+            $yesterday['consume'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_CONSUME])->sum('amount');
+
             //退款
-            $yesterday['refund'] = $yesterdayQuery->andWhere(['order_type' => Order::TYPE_REFUND])->sum('amount');
+            $yesterday['refund'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_REFUND])->sum('amount');
+
             //提现
-            $yesterday['cash'] = $yesterdayQuery->andWhere(['order_type' => Order::TYPE_CASH])->andWhere(['status' => Order::STATUS_TRANSFER])->sum('amount');
+            $yesterday['cash'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_TRANSFER])->andWhere(['order_type' => Order::TYPE_CASH])->sum('amount');
+
             //昨天的新注册人数
             $yesterday['user'] = User::find()->where(['between', 'reg_time', $beginYesterday, $endYesterday])->count();
 
