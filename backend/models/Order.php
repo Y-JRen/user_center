@@ -87,7 +87,8 @@ class Order extends \common\models\Order
         'alipay_mobile' => '支付宝移动支付',
         'line_down' => '线下充值',
         'bank' => '银行',
-        'lakala' => '拉卡拉POS机'
+        'lakala' => '拉卡拉POS机',
+        self::SUB_TYPE_TMALL => '天猫',
     ];
 
     public function attributeLabels()
@@ -131,7 +132,7 @@ class Order extends \common\models\Order
         $model->remark = $remark;
         return $model->save();
     }
-    
+
     /**
      * 获取提现审批用户
      * @return string
