@@ -122,15 +122,21 @@ class Order extends \common\models\Order
      * 添加财务失败的操作日志
      *
      * @param $remark
-     * @return bool
+     * @return array
      */
     public function addLogReview($remark = '')
     {
+        $result = ['status' => true, 'info' => ''];
         $model = new LogReview();
         $model->order_id = $this->id;
         $model->order_status = $this->status;
         $model->remark = $remark;
-        return $model->save();
+        if (!$model->save()) {
+            $result['status'] = false;
+            $result['info'] = current($model->getFirstErrors());
+        }
+
+        return $result;
     }
 
     /**

@@ -250,8 +250,9 @@ class OrderController extends BaseController
                 throw new Exception(current($model->getFirstErrors()));
             }
 
-            if (!$model->addLogReview($remark)) {
-                throw new Exception('添加财务操作日志失败，请重试');
+            $logReview = $model->addLogReview($remark);
+            if (!$logReview['status']) {
+                throw new Exception('添加财务操作日志失败，' . $logReview['info']);
             }
 
             $db->commit();
