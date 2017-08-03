@@ -62,10 +62,10 @@ class UserController extends BaseController
             return $this->refresh();
         }
 
-        /* @var $query yii\db\ActiveQuery */
-        $query = $dataProvider->query;
-        $totalBalance = $query->innerJoin(UserBalance::tableName(), 'user.id=user_balance.uid')->sum('user_balance.amount');
-        $totalFreeze = $query->innerJoin(UserFreeze::tableName(), 'user.id=user_freeze.uid')->sum('user_freeze.amount');
+        /* @var $cloneQuery yii\db\ActiveQuery */
+        $cloneQuery = clone $dataProvider->query;
+        $totalBalance = $cloneQuery->innerJoin(UserBalance::tableName(), 'user.id=user_balance.uid')->sum('user_balance.amount');
+        $totalFreeze = $cloneQuery->innerJoin(UserFreeze::tableName(), 'user.id=user_freeze.uid')->sum('user_freeze.amount');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
