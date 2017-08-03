@@ -15,7 +15,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '提现审核记录';
+$this->title = '提现审批';
 
 $this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
     'depends' => ['backend\assets\AdminLteAsset']

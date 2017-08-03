@@ -17,7 +17,7 @@ use backend\grid\FilterColumn;
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '打款确认';
+$this->title = '收款确认';
 
 $this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
     'depends' => ['backend\assets\AdminLteAsset']

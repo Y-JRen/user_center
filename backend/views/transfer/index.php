@@ -15,7 +15,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '银行待转账记录';
+$this->title = '付款确认';
 $this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
     'depends' => ['backend\assets\AdminLteAsset']
 ]);
