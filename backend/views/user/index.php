@@ -45,7 +45,10 @@ $this->registerJsFile('/dist/js/user/date.js', [
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
-        ['class' => 'yii\grid\SerialColumn'],
+        [
+            'class' => 'yii\grid\SerialColumn',
+            'header' => '序号',
+        ],
 
         [
             'attribute' => 'phone',
@@ -55,7 +58,16 @@ $this->registerJsFile('/dist/js/user/date.js', [
             }
         ],
         'user_name',
-        'email:email',
+        [
+            'attribute' => 'email',
+            'value' => function ($model) {
+                if($model->email){
+                    return $model->email;
+                }else{
+                    return '--';
+                }
+            },
+        ],
         [
             'class' => FilterColumn::className(),
             'attribute' => 'from_platform',
@@ -100,6 +112,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => '{view} {order_view} {amount_view}',
+            'header' => '操作',
             'buttons' => [
                 'view' => function ($url, $model, $key) {
                     return Html::a('详情', ['user/view', 'uid' => $model->id]);
