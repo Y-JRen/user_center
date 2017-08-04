@@ -10,6 +10,7 @@ namespace backend\models;
 
 
 use common\models\User;
+use common\models\UserBalance;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -164,5 +165,11 @@ class Order extends \common\models\Order
             }
         }
         return '';
+    }
+
+    //用户提现后账户余额
+    public function getBalanceCopy()
+    {
+        return   $this->hasOne(UserBalance::className(), ['uid' => 'uid'])->select('amount')->one()->amount;
     }
 }

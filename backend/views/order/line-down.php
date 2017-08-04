@@ -44,7 +44,7 @@ $statusColumnArray = [
 ];
 if (ArrayHelper::getValue($this->context, 'history')) {
     $statusColumnArray['class'] = FilterColumn::className();
-    $statusColumnArray['filterArray'] = Order::getStatusName();
+    $statusColumnArray['filterArray'] = Order::$rechargeStatusArray;
 }
 ?>
 
