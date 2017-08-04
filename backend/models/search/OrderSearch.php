@@ -46,7 +46,11 @@ class OrderSearch extends Order
      */
     public function search($params)
     {
-        $query = Order::find();
+        if (isset($params['uid'])) {
+            $query = Order::find()->where(['uid' => $params['uid']]);
+        } else {
+            $query = Order::find();
+        }
 
         // add conditions that should always apply here
 
@@ -85,7 +89,7 @@ class OrderSearch extends Order
         }
 
         if (!empty($this->orderStatus)) {
-            $query->andFilterWhere(['status' => $this->orderStatus]);
+            $this->status = $this->orderStatus;
         }
 
         if (!empty($this->created_at)) {

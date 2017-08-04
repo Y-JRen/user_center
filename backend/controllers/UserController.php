@@ -83,12 +83,16 @@ class UserController extends BaseController
      */
     public function actionFundRecord($uid)
     {
-        $dataProvider = new ActiveDataProvider(['query' => Order::find()->where(['uid' => $uid])]);
-        $data = Order::find()->where(['uid' => $uid])->all();
+        $defaultParams = [
+            'uid' => $uid,
+        ];
+        $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
         return $this->render('fund-record', [
             'dataProvider' => $dataProvider,
             'uid' => $uid,
-            'data' => $data,
         ]);
     }
 
