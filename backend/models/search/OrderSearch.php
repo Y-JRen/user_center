@@ -24,7 +24,7 @@ class OrderSearch extends Order
     {
         return [
             [['created_at', 'updated_at', 'notice_platform_param', 'status', 'key'], 'trim'],
-            [['order_type','platform', 'order_subtype', 'orderStatus'], 'safe'],
+            [['order_type','platform', 'order_subtype', 'orderStatus','uid'], 'safe'],
         ];
     }
 
@@ -46,11 +46,7 @@ class OrderSearch extends Order
      */
     public function search($params)
     {
-        if (isset($params['uid'])) {
-            $query = Order::find()->where(['uid' => $params['uid']]);
-        } else {
-            $query = Order::find();
-        }
+        $query = Order::find();
 
         // add conditions that should always apply here
 
@@ -67,10 +63,9 @@ class OrderSearch extends Order
             return $dataProvider;
         }
 
-//        $orderStatus = $this->status;
-
         // grid filtering conditions
         $query->andFilterWhere([
+            'uid' => $this->uid,
             'order_type' => $this->order_type,
             'order_subtype' => $this->order_subtype,
             'platform' => $this->platform,
@@ -84,12 +79,12 @@ class OrderSearch extends Order
             ]);
         }
 
-        if (!empty($this->status)) {
-            $query->andFilterWhere(['status' => $this->status]);
-        }
-
         if (!empty($this->orderStatus)) {
             $this->status = $this->orderStatus;
+        }
+
+        if (!empty($this->status)) {
+            $query->andFilterWhere(['status' => $this->status]);
         }
 
         if (!empty($this->created_at)) {

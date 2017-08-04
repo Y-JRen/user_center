@@ -35,7 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ]); ?>
 
 
-
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
@@ -68,27 +67,13 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             'filterArray' => Order::$subTypeName
         ],
-        [
-            'attribute' => 'amount',
-            'value' => function ($model) {
-                if ($model->order_type == Order::TYPE_RECHARGE) {
-                    return '+ '.Yii::$app->formatter->asCurrency($model->amount);
-                } else {
-                    return '- '.Yii::$app->formatter->asCurrency($model->amount);
-                }
-            }
-        ],
+        'amount:currency',
         [
             'class' => FilterColumn::className(),
-            'attribute' => 'status',
-            'value' => function ($model) {
-                return ArrayHelper::getValue($model->statusnamecopy, $model->status);
-            },
+            'attribute' => 'orderStatus',
             'filterArray' => Order::getStatusNameCopy(),
         ],
-        [
-            'attribute' => 'desc',
-        ],
+        'desc',
 
     ],
 ]); ?>
