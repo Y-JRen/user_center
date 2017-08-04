@@ -10,6 +10,15 @@ $this->params['breadcrumbs'][] = $this->title;
 $balance = ArrayHelper::getValue($userModel->balance, 'amount', 0);
 $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
 ?>
+
+<style>
+    .content-header{display: none}
+</style>
+
+<section>
+    <h1 class="page-title"><a href="javascript: history.go(-1)"> <返回</a><span>会员详情</span></h1>
+</section>
+
 <div class="row mb-md">
     <div class="col-sm-12 col-xs-12 nav-tabs-custom">
         <ul class="nav nav-tabs">

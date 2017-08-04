@@ -16,6 +16,15 @@ $this->title = '会员详情';
 $this->params['breadcrumbs'][] = ['label' => '用户管理', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style>
+    .content-header{display: none}
+</style>
+
+<section>
+    <h1 class="page-title"><a href="javascript: history.go(-1)"> <返回</a><span>会员详情</span></h1>
+</section>
+
 <div class="row mb-md">
     <div class="col-sm-12 col-xs-12 nav-tabs-custom">
         <ul class="nav nav-tabs">
