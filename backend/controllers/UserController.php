@@ -39,7 +39,12 @@ class UserController extends BaseController
                 'models' => $dataProvider->query->limit(10000)->all(),
                 'mode' => 'export',
                 'columns' => [
-                    'phone',
+                    [
+                        'attribute' => 'phone',
+                        'value' => function ($model) {
+                            return ' '.$model->phone;
+                        },
+                    ],
                     [
                         'attribute' => 'from_platform',
                         'value' => function ($model) {

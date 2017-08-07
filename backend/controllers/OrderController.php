@@ -38,15 +38,30 @@ class OrderController extends BaseController
                 'models' => $dataProvider->query->limit(10000)->all(),
                 'mode' => 'export',
                 'columns' => [
-                    'user.phone',
+                    [
+                        'attribute' => 'user.phone',
+                        'value' => function ($model) {
+                            return ' '.ArrayHelper::getValue($model->user, 'phone');
+                        },
+                    ],
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
                             return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
-                    'platform_order_id',
-                    'order_id',
+                    [
+                        'attribute' => 'platform_order_id',
+                        'value' => function ($model) {
+                            return ' '.$model->platform_order_id;
+                        },
+                    ],
+                    [
+                        'attribute' => 'order_id',
+                        'value' => function ($model) {
+                            return ' '.$model->order_id;
+                        },
+                    ],
                     'type',
                     [
                         'attribute' => 'order_subtype',
@@ -96,7 +111,12 @@ class OrderController extends BaseController
                 'models' => $dataProvider->query->limit(10000)->all(),
                 'mode' => 'export',
                 'columns' => [
-                    'user.phone',
+                    [
+                        'attribute' => 'user.phone',
+                        'value' => function ($model) {
+                            return ' '.ArrayHelper::getValue($model->user, 'phone');
+                        },
+                    ],
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
@@ -118,7 +138,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => '流水单号',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
+                            return ' '.ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
                         }
                     ],
                     [
