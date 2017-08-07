@@ -58,7 +58,12 @@ class CashController extends BaseController
                 'models' => $dataProvider->query->limit(10000)->all(),
                 'mode' => 'export',
                 'columns' => [
-                    'user.phone',
+                    [
+                        'attribute' => 'user.phone',
+                        'value' => function ($model) {
+                            return ' '.ArrayHelper::getValue($model->user, 'phone');
+                        },
+                    ],
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
@@ -74,7 +79,7 @@ class CashController extends BaseController
                     [
                         'attribute' => '到账银行卡',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankCard'), 'value');
+                            return ' '.ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankCard'), 'value');
                         }
                     ],
                     'orderStatus',
