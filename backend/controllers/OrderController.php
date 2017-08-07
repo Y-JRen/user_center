@@ -59,10 +59,7 @@ class OrderController extends BaseController
                     'updated_at:datetime',
                     'orderStatus'
                 ],
-                'headers' => [
-                    'created_at' => 'Date Created Content',
-                ],
-                'fileName' => '订单信息'
+                'fileName' => '交易记录明细'
             ]);
 
             return $this->refresh();

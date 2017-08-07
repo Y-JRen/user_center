@@ -13,7 +13,7 @@ use backend\models\Order;
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '消费记录';
+$this->title = '交易记录明细';
 
 $this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
     'depends' => ['backend\assets\AdminLteAsset']
