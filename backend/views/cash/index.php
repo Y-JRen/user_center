@@ -32,7 +32,7 @@ $statusColumnArray = [
 ];
 if (ArrayHelper::getValue($this->context, 'history')) {
     $statusColumnArray['class'] = FilterColumn::className();
-    $statusColumnArray['filterArray'] = Order::$cashStatusArrayCopy;
+    $statusColumnArray['filterArray'] = Order::$cashStatusArray;
 }
 ?>
 <?php $form = ActiveForm::begin(['method' => 'get']); ?>

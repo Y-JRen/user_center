@@ -74,18 +74,18 @@ class Order extends \common\models\Order
     }
 
     //充值状态
-    public static $rechargeStatusArrayCopy = [
-        self::STATUS_PROCESSING => '充值中',
+    public static $rechargeStatusArray = [
         self::STATUS_SUCCESSFUL => '充值成功',
         self::STATUS_FAILED => '充值失败',
         self::STATUS_PENDING => '待处理',
     ];
 
     //提现和审批状态
-    public static $cashStatusArrayCopy = [
+    public static $cashStatusArray = [
         self::STATUS_PROCESSING => '提现申请中',
         self::STATUS_SUCCESSFUL => '提现成功',
         self::STATUS_FAILED => '提现失败',
+        self::STATUS_TRANSFER => '出纳已打款',
     ];
 
     /**
