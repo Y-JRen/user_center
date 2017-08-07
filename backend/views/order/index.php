@@ -112,9 +112,6 @@ $this->registerJsFile('/dist/js/user/date.js', [
         [
             'class' => FilterColumn::className(),
             'attribute' => 'orderStatus',
-            'value' => function ($model) {
-                return ArrayHelper::getValue(Order::getStatusName(), $model->status);
-            },
             'filterArray' => Order::getStatusName(),
         ],
     ],

@@ -11,6 +11,7 @@ namespace backend\models;
 
 use common\models\User;
 use common\models\UserBalance;
+use common\models\UserInfo;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -83,8 +84,8 @@ class Order extends \common\models\Order
     //提现和审批状态
     public static $cashStatusArray = [
         self::STATUS_PROCESSING => '提现申请中',
-        self::STATUS_SUCCESSFUL => '提现成功',
-        self::STATUS_FAILED => '提现失败',
+        self::STATUS_SUCCESSFUL => '审批通过',
+        self::STATUS_FAILED => '审批不通过',
         self::STATUS_TRANSFER => '出纳已打款',
     ];
 
@@ -180,5 +181,14 @@ class Order extends \common\models\Order
             }
         }
         return '';
+    }
+
+    /**
+     * 获取订单用户扩展信息
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserInfo()
+    {
+        return $this->hasOne(UserInfo::className(), ['uid' => 'uid']);
     }
 }

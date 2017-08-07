@@ -2,12 +2,14 @@
 
 namespace backend\models\search;
 
+use common\models\UserInfo;
 use passport\modules\sso\models\User;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use backend\models\Order;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * OrderLineSearch represents the model behind the search form about `common\models\Order`.
@@ -72,9 +74,16 @@ class OrderLineSearch extends Order
         ]);
 
         if (!empty($this->key)) {
-            $query->andFilterWhere(
-                ['IN', 'uid', (new Query())->select('id')->from(User::tableName())->where(['LIKE', 'phone', "{$this->key}%", false])]
-            );
+            if (preg_match("/[\x7f-\xff]/", $this->key)) {
+                $uid = UserInfo::find()->select('uid')->where(['real_name' => $this->key])->asArray()->all();
+                if (!empty($uid)) {
+                    $query->andFilterWhere(['uid' => ArrayHelper::getColumn($uid, 'uid')]);
+                }
+            } else {
+                $query->andFilterWhere(
+                    ['IN', 'uid', (new Query())->select('id')->from(User::tableName())->where(['LIKE', 'phone', "{$this->key}%", false])]
+                );
+            }
         }
 
         if (!empty($this->orderStatus)) {

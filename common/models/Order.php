@@ -355,7 +355,7 @@ class Order extends BaseModel
 
         switch ($this->order_type) {
             case self::TYPE_RECHARGE:
-                $array = self::$rechargeStatusArray;
+                $array = static::$rechargeStatusArray;
                 break;
             case self::TYPE_CONSUME:
                 $array = self::$consumeStatusArray;
@@ -364,7 +364,7 @@ class Order extends BaseModel
                 $array = self::$refundStatusArray;
                 break;
             case self::TYPE_CASH:
-                $array = self::$cashStatusArray;
+                $array = static::$cashStatusArray;
                 break;
             default:
                 $array = self::getStatusName();

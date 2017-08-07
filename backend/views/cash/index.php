@@ -52,6 +52,12 @@ if (ArrayHelper::getValue($this->context, 'history')) {
             'header' => '序号'
         ],
         [
+            'attribute' => 'userInfo.real_name',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->userInfo, 'real_name', '--');
+            }
+        ],
+        [
             'attribute' => 'user.phone',
             'format' => 'raw',
             'value' => function ($model) {

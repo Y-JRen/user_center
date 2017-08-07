@@ -14,7 +14,7 @@ use yii\widgets\ActiveForm;
 
             <div class="col-sm-9 col-md-9">
                 <input class="form-control" type="text" name="key" value="<?= Yii::$app->request->get('key') ?>"
-                       placeholder="手机号码">
+                       placeholder="手机号码<?= (Yii::$app->controller->id == 'order') ? null : '/真实姓名' ?>">
             </div>
         </div>
         <div class="form-group col-lg-4 col-md-4">
