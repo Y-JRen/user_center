@@ -24,6 +24,17 @@ use yii\web\IdentityInterface;
  */
 class User extends BaseModel implements IdentityInterface
 {
+    //用户状态
+    const STATUS_NORMAL = 1;// 正常状态
+    const STATUS_SEAL = 2;// 封禁状态
+    const STATUS_SEAL_FOREVER = 3;// 永久封禁状态
+
+    public static $statusArray = [
+        self::STATUS_NORMAL => '正常状态',
+        self::STATUS_SEAL => '封禁状态',
+        self::STATUS_SEAL_FOREVER => '永久封禁状态',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -56,7 +67,7 @@ class User extends BaseModel implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'phone' => '手机号',
+            'phone' => '手机号码',
             'user_name' => '用户名',
             'email' => '邮箱',
             'passwd' => 'Passwd',

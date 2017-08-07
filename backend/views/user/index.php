@@ -3,97 +3,131 @@
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\grid\GridView;
 use yii\widgets\ActiveForm;
 use yii\widgets\Pjax;
+use backend\grid\FilterColumn;
+use backend\grid\GridView;
+use common\models\User;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\UserSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $totalBalance integer */
+/* @var $totalBalance $totalFreeze */
 
 $this->title = '用户管理';
-$this->params['breadcrumbs'][] = $this->title;
 
-$this->registerJsFile('//cdn.jsdelivr.net/momentjs/latest/moment.min.js', ['depends' => 'yii\web\JqueryAsset']);
-$this->registerJsFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js', ['depends' => 'yii\web\JqueryAsset']);
-$this->registerCssFile('//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css', ['depends' => 'yii\bootstrap\BootstrapAsset']);
+$this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/plugins/daterangepicker/daterangepicker.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/js/user/date.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
 ?>
-    <div class="user-index">
 
-        <p>
-            <?= Html::a('导出', '', ['class' => 'btn btn-primary', 'data-method' => 'HEAD']) ?>
-        </p>
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'columns' => [
-                ['class' => 'yii\grid\SerialColumn'],
+<?php Pjax::begin(); ?>
 
-                [
-                    'attribute' => 'phone',
-                    'format' => 'raw',
-                    'value' => function ($model) {
-                        return Html::a($model->phone, ['/user/order', 'uid' => $model->id]);
-                    }
-                ],
-                'user_name',
-                'email:email',
-                [
-                    'attribute' => 'status',
-                    'value' => function ($model) {
-                        return $model->status == 1 ? '正常' : '禁用';
-                    },
-                ],
-                [
-                    'attribute' => 'from_platform',
-                    'value' => function ($model) {
-                        return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
-                    },
-                ],
-                'from_channel',
-                'reg_time:datetime',
-                'reg_ip',
-                'login_time:datetime',
+<?php $form = ActiveForm::begin([
+    'action' => ['index'],
+    'method' => 'get',
+]); ?>
 
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view} {order_view} {amount_view}',
-                    'buttons' => [
-                        'view' => function ($url, $model, $key) {
-                            return Html::a('详情', ['user/view', 'id' => $model->id], ['class' => 'btn btn-success btn-xs']);
-                        },
-                        'order_view' => function ($url, $model, $key) {
-                            return Html::a('订单详情', ['user/order', 'uid' => $model->id], ['class' => 'btn btn-success btn-xs']);
-                        },
-                        'amount_view' => function ($url, $model, $key) {
-                            return Html::a('资金详情', ['user/amount', 'uid' => $model->id], ['class' => 'btn btn-success btn-xs']);
-                        }
-                    ]
-                ],
-            ],
-        ]); ?>
-    </div>
-<?php
-$js = <<<JS
-        $(function () {
-            $('input[name="UserSearch[reg_time]"]').daterangepicker({
-                autoApply:true,
-                autoUpdateInput:false,
-                opens: "left",
-                locale: {
-                    format: 'YYYY-MM-DD',
-                    cancelLabel: 'Clear'
+<?= $this->render('_search', ['model' => $searchModel]) ?>
+<div class="mb-md clearfix">
+    <?= Html::a('导出列表', Yii::$app->request->getUrl(), [
+        'class' => 'btn btn-primary btn-sm mr-md pull-left',
+        'data-method' => 'post']) ?>
+</div>
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        [
+            'class' => 'yii\grid\SerialColumn',
+            'header' => '序号',
+        ],
+
+        [
+            'attribute' => 'phone',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::a($model->phone, ['/user/view', 'uid' => $model->id]);
+            }
+        ],
+        [
+            'attribute' => 'userInfo.real_name',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->userInfo, 'real_name', '--');
+            }
+        ],
+        [
+            'class' => FilterColumn::className(),
+            'attribute' => 'from_platform',
+            'value' => function ($model) {
+                return ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
+            },
+            'filterArray' => Config::$platformArray
+        ],
+        [
+            'attribute' => 'reg_time',
+            'format' => 'datetime',
+            'enableSorting' => true
+        ],
+        [
+            'attribute' => 'login_time',
+            'value' => function ($model) {
+                if (empty($model->login_time)) {
+                    return '--';
+                } else {
+                    return Yii::$app->formatter->asDatetime($model->login_time);
                 }
-            });
-              $('input[name="UserSearch[reg_time]"]').on('apply.daterangepicker', function(ev, picker) {
-                  $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-                  
-              });
-            
-              $('input[name="UserSearch[reg_time]"]').on('cancel.daterangepicker', function(ev, picker) {
-                  $(this).val('');
-              });
-        });
-JS;
-
-$this->registerJs($js, $this::POS_END);
+            },
+            'enableSorting' => true
+        ],
+        'reg_ip',
+        [
+            'label' => '可用余额',
+            'format' => 'currency',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->balance, 'amount');
+            }
+        ],
+        [
+            'label' => '冻结金额',
+            'format' => 'currency',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->freeze, 'amount');
+            }
+        ],
+        [
+            'class' => FilterColumn::className(),
+            'attribute' => 'status',
+            'value' => function ($model) {
+                return ArrayHelper::getValue(User::$statusArray, $model->status);
+            },
+            'filterArray' => User::$statusArray,
+        ],
+        [
+            'class' => 'yii\grid\ActionColumn',
+            'template' => '{view} {order_view} {amount_view}',
+            'header' => '操作',
+            'buttons' => [
+                'view' => function ($url, $model, $key) {
+                    return Html::a('详情', ['user/view', 'uid' => $model->id]);
+                }
+            ]
+        ],
+    ],
+]); ?>
+<div class="row">
+    <div class="col-xs-12">
+        <p>总计：</p>
+        <p><b>可用余额:</b><?= Yii::$app->formatter->asCurrency($totalBalance) ?></p>
+        <p><b>冻结余额:</b><?= Yii::$app->formatter->asCurrency($totalFreeze) ?></p>
+    </div>
+</div>
+<?php ActiveForm::end(); ?>
+<?php Pjax::end(); ?>

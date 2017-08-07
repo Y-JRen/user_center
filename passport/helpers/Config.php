@@ -83,13 +83,17 @@ class Config
             1 => 'che.com',
             2 => 'crm',
             3 => 'erp',
+            4 => 'lkl',
+            5 => 'tmp_tep',
         ];
     }
 
     public static $platformArray = [
         1 => '电商',
         2 => 'CRM',
-        3 => 'ERP'
+        3 => 'ERP',
+        4 => '拉卡拉',
+        5 => '租车'
     ];
 
     /**

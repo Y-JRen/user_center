@@ -1,111 +1,147 @@
 <?php
 
+use backend\grid\FilterColumn;
+use backend\grid\GridView;
 use backend\models\Order;
+use common\helpers\JsonHelper;
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\grid\GridView;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '银行待转账记录';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = '付款确认';
+$this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/plugins/daterangepicker/daterangepicker.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/js/user/date.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/js/web.js', [
+    'depends' => ['yii\web\JqueryAsset']
+]);
+$this->registerCssFile('/dist/plugins/datetimepicker/css/bootstrap-datetimepicker.min.css', [
+    'depends' => ['yii\bootstrap\BootstrapAsset']
+]);
+$this->registerJsFile('/dist/plugins/datetimepicker/js/bootstrap-datetimepicker.min.js', [
+    'depends' => ['yii\bootstrap\BootstrapAsset']
+]);
 
-$this->registerJsFile('/js/web.js', ['depends' => 'yii\web\JqueryAsset']);
-$this->registerCssFile('/datetimepicker/css/bootstrap-datetimepicker.min.css', ['depends' => 'yii\bootstrap\BootstrapAsset']);
-$this->registerJsFile('/datetimepicker/js/bootstrap-datetimepicker.min.js', ['depends' => 'yii\bootstrap\BootstrapAsset']);
+
+$statusColumnArray = [
+    'attribute' => 'orderStatus',
+];
+if (ArrayHelper::getValue($this->context, 'history')) {
+    $statusColumnArray['class'] = FilterColumn::className();
+    $statusColumnArray['filterArray'] = Order::$cashStatusArray;
+}
+
+
 ?>
-    <div class="order-index">
+<?php $form = ActiveForm::begin(['method' => 'get']); ?>
+<?= $this->render('/order/_search_recharge', ['model' => $searchModel]) ?>
 
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => isset($searchModel) ? $searchModel : null,
-            'columns' => [
-                ['class' => 'yii\grid\SerialColumn'],
+<div class="mb-md clearfix">
+    <?= Html::a('导出列表', Yii::$app->request->getUrl(), [
+        'class' => 'btn btn-primary btn-sm mr-md pull-left',
+        'data-method' => 'post']) ?>
+</div>
 
-                [
-                    'attribute' => 'uid',
-                    'label' => '用户',
-                    'format' => 'raw',
-                    'value' => function ($model) {
-                        $phone = \common\models\User::findOne($model->uid)->phone;
-                        return Html::a($phone, ['/user/order', 'uid' => $model->uid]);
-                    }
-                ],
-                'platform_order_id',
-                'order_id',
-                [
-                    'attribute' => 'order_type',
-                    'value' => function ($model) {
-                        return $model->type;
-                    },
-                    'filter' => Order::getTypeName()
-                ],
-                [
-                    'attribute' => 'order_subtype',
-                    'value' => function ($model) {
-                        return ArrayHelper::getValue(Order::$subTypeName, $model->order_subtype, $model->order_subtype);
-                    },
-                ],
-                'amount:currency',
-                'counter_fee:currency',
-                'discount_amount:currency',
-                'receipt_amount:currency',
-                [
-                    'attribute' => 'status',
-                    'value' => function ($model) {
-                        return $model->orderStatus;
-                    },
-                    'filter' => Order::getStatusName()
-                ],
-                'created_at:datetime',
-                'updated_at:datetime',
-                [
-                    'attribute' => 'platform',
-                    'value' => function ($model) {
-                        return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
-                    },
-                ],
-                [
-                    'label' => '操作',
-                    'format' => 'raw',
-                    'value' => function ($data) {
-                        return Html::button('确认打款', [
-                            'data-toggle' => "modal",
-                            'data-target' => "#modal",
-                            'class' => 'btn btn-success modalClass btn-xs',
-                            'url' => \yii\helpers\Url::to(['/transfer/confirm', 'id' => $data->id])
-                        ]);
-                    }
-                ]
-            ],
-        ]); ?>
-    </div>
+<?php Pjax::begin() ?>
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        [
+            'class' => 'yii\grid\SerialColumn',
+            'header' => '序号'
+        ],
+        [
+            'attribute' => 'userInfo.real_name',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->userInfo, 'real_name', '--');
+            }
+        ],
+        [
+            'attribute' => 'user.phone',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::a(ArrayHelper::getValue($model->user, 'phone'), ['/user/view', 'uid' => $model->uid]);
+            }
+        ],
+        'order_id',
+        [
+            'class' => FilterColumn::className(),
+            'attribute' => 'platform',
+            'value' => function ($model) {
+                return ArrayHelper::getValue(Config::$platformArray, $model->platform);
+            },
+            'filterArray' => Config::$platformArray
+        ],
+        [
+            'label' => '到账银行名称',
+            'value' => function ($model) {
+                return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
+            }
+        ],
+        [
+            'label' => '到账银行卡',
+            'value' => function ($model) {
+                return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankCard'), 'value');
+            }
+        ],
+        'receipt_amount:currency',
+        $statusColumnArray,
+        'created_at:datetime:申请时间',
+        [
+            'label' => '审批人',
+            'value' => function ($model) {
+                return $model->cashUser;
+            }
+        ],
+        ['class' => 'yii\grid\ActionColumn',
+            'header' => '操作',
+            'template' => '{pass} {empty}',
+            'buttons' => [
+                'pass' => function ($url, $model, $key) {
+                    return $model->status == Order::STATUS_SUCCESSFUL ? Html::a('确认已打款', 'JavaScript:void(0);', ['class' => 'markPass',
+                        'data-url' => Url::to(['/transfer/confirm-form', 'id' => $model->id])]) : null;
+                },
+                'empty' => function ($url, $model, $key) {
+                    return $model->status == Order::STATUS_TRANSFER ? '--' : null;
+                }
+            ]
+        ]
+    ],
+]); ?>
+<?php Pjax::end() ?>
+<?php ActiveForm::end(); ?>
 
+<?php $this->beginBlock('javascript') ?>
+<script type="text/javascript">
+    var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
+    var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';
 
-    <div class="modal fade" id="modal-default">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    <script>
-        var getAccountUrl = '<?= Url::to(['finance/get-accounts']) ?>';
-        var getTypeUrl = '<?= Url::to(['finance/get-tag']) ?>';
-    </script>
-<?php
-
-$js = <<<_SCRIPT
-    $('.modalClass').click(function () {
-        $.get($(this).attr('url'),function (html) {
-            $('.modal-content').html(html);
-            $('#modal-default').modal('show')
+    $(document).ready(function () {
+        $(".markPass").click(function () {
+            var url = $(this).attr('data-url');
+            $.get(url, function (html) {
+                layer.open({
+                    type: 1,
+                    title: '确认已打款',
+                    area: '600px',
+                    shadeClose: true,
+                    content: html
+                });
+            })
         });
-    });
-_SCRIPT;
-$this->registerJs($js);
+    })
+</script>
+<?php $this->endBlock() ?>

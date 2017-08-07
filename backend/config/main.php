@@ -13,16 +13,20 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [],
-    'defaultRoute' => 'user/index',
+    'defaultRoute' => 'site/index',
     'components' => [
+        'formatter' => [
+            'datetimeFormat' => 'php:Y-m-d H:i',
+            'currencyCode' => 'CNY',
+            'nullDisplay' => '--'
+        ],
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
             'identityClass' => 'common\models\AdminUser',
             'enableAutoLogin' => true,
-            'loginUrl' => ['/
-            site/login'],
+            'loginUrl' => ['/site/login'],
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [

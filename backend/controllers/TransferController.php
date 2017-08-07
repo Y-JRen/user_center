@@ -10,23 +10,26 @@ namespace backend\controllers;
 
 
 use backend\models\Order;
+use backend\models\search\OrderLineSearch;
 use backend\models\search\OrderSearch;
-use common\logic\FinanceLogic;
-use common\models\CompanyAccount;
-use common\models\LogReview;
+use common\helpers\JsonHelper;
 use common\models\TransferConfirm;
-use common\models\User;
+use moonland\phpexcel\Excel;
+use passport\helpers\Config;
 use Yii;
 use yii\base\ErrorException;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 class TransferController extends BaseController
 {
+    public $history;
+
     public function verbs()
     {
         return [
             'index' => 'GET',
-            'confirm' => 'GET',
+            'confirm-form' => 'GET',
             'confirm-success' => 'POST',
         ];
     }
@@ -37,24 +40,73 @@ class TransferController extends BaseController
      */
     public function actionIndex()
     {
-        $queryParams['OrderSearch'] = ['order_type' => Order::TYPE_CASH, 'status' => Order::STATUS_SUCCESSFUL];
-        $searchModel = new OrderSearch();
+        $history = $this->history = $this->getShowHistory('transfer');
+
+        $defaultParams = ['order_type' => Order::TYPE_CASH];
+        if ($history) {
+            $defaultParams['status'] = [Order::STATUS_SUCCESSFUL, Order::STATUS_TRANSFER];
+        } else {
+            $defaultParams['status'] = Order::STATUS_SUCCESSFUL;
+        }
+        $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
+
+        $searchModel = new OrderLineSearch();
         $dataProvider = $searchModel->search($queryParams);
+
+        if (Yii::$app->request->isPost) {
+            Excel::export([
+                'models' => $dataProvider->query->limit(10000)->all(),
+                'mode' => 'export',
+                'columns' => [
+                    'user.phone',
+                    [
+                        'attribute' => 'platform',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
+                        },
+                    ],
+                    [
+                        'attribute' => '到账银行名称',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankName'), 'value');
+                        }
+                    ],
+                    [
+                        'attribute' => '到账银行卡',
+                        'value' => function ($model) {
+                            return ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'bankCard'), 'value');
+                        }
+                    ],
+                    'receipt_amount:currency',
+                    'orderStatus',
+                    'created_at:datetime:申请时间',
+                    [
+                        'attribute' => '审批人',
+                        'value' => function ($model) {
+                            return $model->cashUser;
+                        }
+                    ],
+                ],
+                'fileName' => '付款确认'
+            ]);
+
+            return $this->refresh();
+        }
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 
     /**
      * 财务确认
      */
-    public function actionConfirm($id)
+    public function actionConfirmForm($id)
     {
         $model = $this->findModel($id);
-        $phone = User::findOne($model->uid)->phone;
 
-        return $this->renderPartial('_modal', ['model' => $model, 'phone' => $phone]);
+        return $this->renderPartial('_modal', ['model' => $model]);
     }
 
     public function actionConfirmSuccess()
@@ -84,7 +136,8 @@ class TransferController extends BaseController
             $recharge->created_at = time();
 
             if (!$recharge->save()) {
-                throw new ErrorException('确认失败，保存打款信息失败'.json_encode($recharge->errors));
+                Yii::error(var_export($recharge->errors, true), 'actionConfirmSuccess');
+                throw new ErrorException('确认失败，保存打款信息失败' . current($recharge->getFirstErrors()));
             }
 
             if (!$model->setOrderTransfer()) {
