@@ -106,6 +106,9 @@ class UserController extends BaseController
     public function actionView($uid)
     {
         $referrer = Yii::$app->request->referrer;
+        str_replace('&reg', "& reg", $referrer);
+        $referrer = htmlspecialchars($referrer);
+
         $needleArray = ['user/view', 'user/fund-record', 'user/order'];
         $isRecode = true;
         foreach ($needleArray as $needle) {
