@@ -78,9 +78,9 @@ if (ArrayHelper::getValue($this->context, 'history')) {
             'class' => FilterColumn::className(),
             'attribute' => 'platform',
             'value' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                return ArrayHelper::getValue(Config::$platformArray, $model->platform);
             },
-            'filterArray' => Config::getPlatformArray()
+            'filterArray' => Config::$platformArray
         ],
         [
             'label' => '银行名称',

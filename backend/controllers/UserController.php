@@ -43,7 +43,7 @@ class UserController extends BaseController
                     [
                         'attribute' => 'from_platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
                         },
                     ],
                     'reg_time:datetime',

@@ -67,9 +67,9 @@ $this->registerJsFile('/dist/js/user/date.js', [
             'class' => FilterColumn::className(),
             'attribute' => 'from_platform',
             'value' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
+                return ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
             },
-            'filterArray' => Config::getPlatformArray()
+            'filterArray' => Config::$platformArray
         ],
         [
             'attribute' => 'reg_time',

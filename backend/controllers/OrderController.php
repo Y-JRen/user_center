@@ -42,7 +42,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
                     'platform_order_id',
@@ -100,7 +100,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
                     [

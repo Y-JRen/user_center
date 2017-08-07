@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'notice_platform_param',
             [
                 'attribute' => 'platform',
-                'value' => ArrayHelper::getValue(Config::getPlatformArray(), $model->platform)
+                'value' => ArrayHelper::getValue(Config::$platformArray, $model->platform)
             ],
             'remark',
             'created_at:datetime',
