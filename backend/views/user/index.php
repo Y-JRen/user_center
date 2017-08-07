@@ -57,16 +57,11 @@ $this->registerJsFile('/dist/js/user/date.js', [
                 return Html::a($model->phone, ['/user/view', 'uid' => $model->id]);
             }
         ],
-        'user_name',
         [
-            'attribute' => 'email',
+            'attribute' => 'userInfo.real_name',
             'value' => function ($model) {
-                if($model->email){
-                    return $model->email;
-                }else{
-                    return '--';
-                }
-            },
+                return ArrayHelper::getValue($model->userInfo, 'real_name', '--');
+            }
         ],
         [
             'class' => FilterColumn::className(),

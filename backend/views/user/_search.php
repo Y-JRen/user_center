@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
             <label for="" class="control-label col-sm-3 t-r">关 键 字：</label>
             <div class="col-sm-9 col-md-9">
                 <input class="form-control" type="text" name="key" value="<?= Yii::$app->request->get('key') ?>"
-                       placeholder="手机/IP">
+                       placeholder="手机/IP/真实姓名">
             </div>
         </div>
         <div class="form-group col-lg-4 col-md-4">
