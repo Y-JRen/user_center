@@ -78,7 +78,13 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         [
             'attribute' => 'login_time',
-            'format' => 'datetime',
+            'value' => function ($model) {
+                if (empty($model->login_time)) {
+                    return '--';
+                } else {
+                    return Yii::$app->formatter->asDatetime($model->login_time);
+                }
+            },
             'enableSorting' => true
         ],
         'reg_ip',
