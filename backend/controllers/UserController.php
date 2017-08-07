@@ -105,6 +105,24 @@ class UserController extends BaseController
      */
     public function actionView($uid)
     {
+        $referrer = Yii::$app->request->referrer;
+        $needleArray = ['user/view', 'user/fund-record', 'user/order'];
+        $isRecode = true;
+        foreach ($needleArray as $needle) {
+            if (stripos($referrer, $needle)) {
+                $isRecode = false;
+                break;
+            }
+        }
+
+        if ($isRecode) {
+            /* @var $redis yii\redis\Connection */
+            $redis = Yii::$app->redis;
+            $redis->set('returnHistory', $referrer);
+            $redis->expire('returnHistory', 3600);
+        }
+
+
         $user = $this->findModel($uid);
         $queryParams['OrderSearch'] = [
             'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_TRANSFER],

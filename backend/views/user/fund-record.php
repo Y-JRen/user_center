@@ -17,23 +17,7 @@ $this->params['breadcrumbs'][] = ['label' => '用户管理', 'url' => ['index']]
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<style>
-    .content-header{display: none}
-</style>
-
-<section>
-    <h1 class="page-title"><a href="javascript: history.go(-1)"> <返回</a><span>会员详情</span></h1>
-</section>
-
-<div class="row mb-md">
-    <div class="col-sm-12 col-xs-12 nav-tabs-custom">
-        <ul class="nav nav-tabs">
-            <li><a href="<?= Url::to(['user/view', 'uid' => $uid]) ?>">客户信息</a></li>
-            <li class="active"><a href="<?= Url::to(['user/fund-record', 'uid' => $uid]) ?>">资金明细</a></li>
-            <li><?= Html::a('订单记录', ['order', 'uid' => $uid]) ?></li>
-        </ul>
-    </div>
-</div>
+<?= $this->render('_top_header'); ?>
 
 
 <?php Pjax::begin(); ?>

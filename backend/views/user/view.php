@@ -11,23 +11,7 @@ $balance = ArrayHelper::getValue($userModel->balance, 'amount', 0);
 $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
 ?>
 
-<style>
-    .content-header{display: none}
-</style>
-
-<section>
-    <h1 class="page-title"><a href="javascript: history.go(-1)"> <返回</a><span>会员详情</span></h1>
-</section>
-
-<div class="row mb-md">
-    <div class="col-sm-12 col-xs-12 nav-tabs-custom">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="<?= Url::to(['user/view', 'uid' => $userModel->id]) ?>">客户信息</a></li>
-            <li><a href="<?= Url::to(['user/fund-record', 'uid' => $userModel->id]) ?>">资金明细</a></li>
-            <li><?= Html::a('订单记录', ['order', 'uid' => $userModel->id]) ?></li>
-        </ul>
-    </div>
-</div>
+<?= $this->render('_top_header'); ?>
 
 <div class="order-index">
     <div class="box-body no-padding" style="background-color: #fff;">
