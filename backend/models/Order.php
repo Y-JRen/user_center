@@ -62,18 +62,6 @@ class Order extends \common\models\Order
         return ($this->order_type == self::TYPE_CASH && $this->status == self::STATUS_PROCESSING);
     }
 
-    //需求只需要展示‘处理中’，‘处理成功’，‘处理不成功’
-    public static function getStatusNameCopy($key = null)
-    {
-        $data = [
-            self::STATUS_PROCESSING => '处理中',
-            self::STATUS_SUCCESSFUL => '处理成功',
-            self::STATUS_FAILED => '处理不成功',
-        ];
-
-        return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
-    }
-
     //充值状态
     public static $rechargeStatusArray = [
         self::STATUS_SUCCESSFUL => '充值成功',

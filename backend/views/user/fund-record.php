@@ -64,7 +64,10 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'class' => FilterColumn::className(),
             'attribute' => 'orderStatus',
-            'filterArray' => Order::getStatusNameCopy(),
+            'value' => function ($model) {
+                return ArrayHelper::getValue(Order::getStatusName(), $model->status);
+            },
+            'filterArray' => Order::getStatusName(),
         ],
         'desc',
 
