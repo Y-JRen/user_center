@@ -73,6 +73,21 @@ class Order extends \common\models\Order
         return is_null($key) ? $data : ArrayHelper::getValue($data, $key);
     }
 
+    //充值状态
+    public static $rechargeStatusArrayCopy = [
+        self::STATUS_PROCESSING => '充值中',
+        self::STATUS_SUCCESSFUL => '充值成功',
+        self::STATUS_FAILED => '充值失败',
+        self::STATUS_PENDING => '待处理',
+    ];
+
+    //提现和审批状态
+    public static $cashStatusArrayCopy = [
+        self::STATUS_PROCESSING => '提现申请中',
+        self::STATUS_SUCCESSFUL => '提现成功',
+        self::STATUS_FAILED => '提现失败',
+    ];
+
     /**
      * 设置订单状态为已打款
      * @return bool
@@ -165,11 +180,5 @@ class Order extends \common\models\Order
             }
         }
         return '';
-    }
-
-    //用户提现后账户余额
-    public function getBalanceCopy()
-    {
-        return   $this->hasOne(UserBalance::className(), ['uid' => 'uid'])->select('amount')->one()->amount;
     }
 }

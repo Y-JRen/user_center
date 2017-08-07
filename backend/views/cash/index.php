@@ -32,7 +32,7 @@ $statusColumnArray = [
 ];
 if (ArrayHelper::getValue($this->context, 'history')) {
     $statusColumnArray['class'] = FilterColumn::className();
-    $statusColumnArray['filterArray'] = Order::$cashStatusArray;
+    $statusColumnArray['filterArray'] = Order::$cashStatusArrayCopy;
 }
 ?>
 <?php $form = ActiveForm::begin(['method' => 'get']); ?>
@@ -80,12 +80,6 @@ if (ArrayHelper::getValue($this->context, 'history')) {
             }
         ],
         'receipt_amount:currency',
-        [
-            'label' => '提现后账户余额',
-            'value' => function ($model) {
-                return $model->balanceCopy;
-            }
-        ],
         $statusColumnArray,
         'created_at:datetime:申请时间',
         'updated_at:datetime',

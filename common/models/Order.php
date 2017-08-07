@@ -338,7 +338,7 @@ class Order extends BaseModel
 
     public static $cashStatusArray = [
         self::STATUS_PROCESSING => '提现申请中',
-        self::STATUS_SUCCESSFUL => '提现审批通过',
+        self::STATUS_SUCCESSFUL => '提现成功',
         self::STATUS_FAILED => '提现失败',
         self::STATUS_PENDING => '待处理',
         self::STATUS_TRANSFER => '提现成功',
