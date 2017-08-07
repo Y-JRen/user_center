@@ -87,7 +87,7 @@ class TransferController extends BaseController
                         }
                     ],
                 ],
-                'fileName' => '提现审批'
+                'fileName' => '付款确认'
             ]);
 
             return $this->refresh();

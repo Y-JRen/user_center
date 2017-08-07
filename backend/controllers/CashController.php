@@ -81,9 +81,6 @@ class CashController extends BaseController
                     'receipt_amount:currency',
                     'created_at:datetime:申请时间',
                 ],
-                'headers' => [
-                    'created_at' => 'Date Created Content',
-                ],
                 'fileName' => '提现审批'
             ]);
 
