@@ -15,6 +15,7 @@ use yii\db\Query;
 class OrderSearch extends Order
 {
     public $key;
+    public $orderStatus;
 
     /**
      * @inheritdoc
@@ -23,7 +24,7 @@ class OrderSearch extends Order
     {
         return [
             [['created_at', 'updated_at', 'notice_platform_param', 'status', 'key'], 'trim'],
-            [['order_type','platform', 'order_subtype'], 'safe'],
+            [['order_type','platform', 'order_subtype', 'orderStatus','uid'], 'safe'],
         ];
     }
 
@@ -64,6 +65,7 @@ class OrderSearch extends Order
 
         // grid filtering conditions
         $query->andFilterWhere([
+            'uid' => $this->uid,
             'order_type' => $this->order_type,
             'order_subtype' => $this->order_subtype,
             'platform' => $this->platform,
@@ -75,6 +77,10 @@ class OrderSearch extends Order
                 ['LIKE', 'order_id', "%{$this->key}", false],
                 ['IN', 'uid', (new Query())->select('id')->from(User::tableName())->where(['LIKE', 'phone', "{$this->key}%", false])]
             ]);
+        }
+
+        if (!empty($this->orderStatus)) {
+            $this->status = $this->orderStatus;
         }
 
         if (!empty($this->status)) {

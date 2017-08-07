@@ -15,7 +15,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '提现审核记录';
+$this->title = '提现审批';
 
 $this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
     'depends' => ['backend\assets\AdminLteAsset']
@@ -32,7 +32,7 @@ $statusColumnArray = [
 ];
 if (ArrayHelper::getValue($this->context, 'history')) {
     $statusColumnArray['class'] = FilterColumn::className();
-    $statusColumnArray['filterArray'] = Order::getStatusName();
+    $statusColumnArray['filterArray'] = Order::$cashStatusArray;
 }
 ?>
 <?php $form = ActiveForm::begin(['method' => 'get']); ?>
@@ -52,6 +52,12 @@ if (ArrayHelper::getValue($this->context, 'history')) {
             'header' => '序号'
         ],
         [
+            'attribute' => 'userInfo.real_name',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->userInfo, 'real_name', '--');
+            }
+        ],
+        [
             'attribute' => 'user.phone',
             'format' => 'raw',
             'value' => function ($model) {
@@ -63,9 +69,9 @@ if (ArrayHelper::getValue($this->context, 'history')) {
             'class' => FilterColumn::className(),
             'attribute' => 'platform',
             'value' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                return ArrayHelper::getValue(Config::$platformArray, $model->platform);
             },
-            'filterArray' => Config::getPlatformArray()
+            'filterArray' => Config::$platformArray
         ],
         [
             'label' => '到账银行名称',

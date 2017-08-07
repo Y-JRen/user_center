@@ -43,7 +43,7 @@ class UserController extends BaseController
                     [
                         'attribute' => 'from_platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
                         },
                     ],
                     'reg_time:datetime',
@@ -62,10 +62,12 @@ class UserController extends BaseController
             return $this->refresh();
         }
 
-        /* @var $query yii\db\ActiveQuery */
-        $query = $dataProvider->query;
-        $totalBalance = $query->innerJoin(UserBalance::tableName(), 'user.id=user_balance.uid')->sum('user_balance.amount');
-        $totalFreeze = $query->innerJoin(UserFreeze::tableName(), 'user.id=user_freeze.uid')->sum('user_freeze.amount');
+        /* @var $balanceQuery yii\db\ActiveQuery */
+        /* @var $freezeQuery yii\db\ActiveQuery */
+        $balanceQuery = clone $dataProvider->query;
+        $freezeQuery = clone $dataProvider->query;
+        $totalBalance = $balanceQuery->innerJoin(UserBalance::tableName(), 'user.id=user_balance.uid')->sum('user_balance.amount');
+        $totalFreeze = $freezeQuery->innerJoin(UserFreeze::tableName(), 'user.id=user_freeze.uid')->sum('user_freeze.amount');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -83,12 +85,16 @@ class UserController extends BaseController
      */
     public function actionFundRecord($uid)
     {
-        $dataProvider = new ActiveDataProvider(['query' => Order::find()->where(['uid' => $uid])]);
-        $data = Order::find()->where(['uid' => $uid])->all();
+        $defaultParams = [
+            'uid' => $uid,
+        ];
+        $queryParams = ArrayHelper::merge($defaultParams, Yii::$app->request->queryParams);
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($queryParams);
+
         return $this->render('fund-record', [
             'dataProvider' => $dataProvider,
             'uid' => $uid,
-            'data' => $data,
         ]);
     }
 
@@ -99,6 +105,27 @@ class UserController extends BaseController
      */
     public function actionView($uid)
     {
+        $referrer = Yii::$app->request->referrer;
+        str_replace('&reg', "& reg", $referrer);
+        $referrer = htmlspecialchars($referrer);
+
+        $needleArray = ['user/view', 'user/fund-record', 'user/order'];
+        $isRecode = true;
+        foreach ($needleArray as $needle) {
+            if (stripos($referrer, $needle)) {
+                $isRecode = false;
+                break;
+            }
+        }
+
+        if ($isRecode) {
+            /* @var $redis yii\redis\Connection */
+            $redis = Yii::$app->redis;
+            $redis->set('returnHistory', $referrer);
+            $redis->expire('returnHistory', 3600);
+        }
+
+
         $user = $this->findModel($uid);
         $queryParams['OrderSearch'] = [
             'status' => [Order::STATUS_SUCCESSFUL, Order::STATUS_TRANSFER],

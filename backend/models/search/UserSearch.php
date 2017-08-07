@@ -2,10 +2,12 @@
 
 namespace backend\models\search;
 
+use common\models\UserInfo;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\User;
+use yii\helpers\ArrayHelper;
 
 /**
  * UserSearch represents the model behind the search form about `common\models\User`.
@@ -21,7 +23,7 @@ class UserSearch extends User
     {
         return [
             [['reg_time', 'login_time', 'key'], 'trim'],
-            [['from_platform', 'reg_ip', 'status'], 'safe'],
+            [['from_platform', 'reg_ip', 'status', 'id'], 'safe'],
         ];
     }
 
@@ -69,11 +71,18 @@ class UserSearch extends User
         ]);
 
         if (!empty($this->key)) {
-            $query->andFilterWhere([
-                'OR',
-                ['reg_ip' => $this->key],
-                ['LIKE', 'phone', "{$this->key}%", false]
-            ]);
+            if (preg_match("/[\x7f-\xff]/", $this->key)) {
+                $uid = UserInfo::find()->select('uid')->where(['real_name' => $this->key])->asArray()->all();
+                if (!empty($uid)) {
+                    $query->andFilterWhere(['id' => ArrayHelper::getColumn($uid,'uid')]);
+                }
+            } else {
+                $query->andFilterWhere([
+                    'OR',
+                    ['reg_ip' => $this->key],
+                    ['LIKE', 'phone', "{$this->key}%", false]
+                ]);
+            }
         }
 
         if (!empty($this->reg_time)) {
@@ -89,6 +98,7 @@ class UserSearch extends User
             $query->andFilterWhere(['>=', 'login_time', $startTime])
                 ->andFilterWhere(['<', 'login_time', $endTime]);
         }
+
 
         return $dataProvider;
     }

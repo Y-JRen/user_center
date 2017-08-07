@@ -45,7 +45,10 @@ $this->registerJsFile('/dist/js/user/date.js', [
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
-        ['class' => 'yii\grid\SerialColumn'],
+        [
+            'class' => 'yii\grid\SerialColumn',
+            'header' => '序号',
+        ],
 
         [
             'attribute' => 'phone',
@@ -54,15 +57,19 @@ $this->registerJsFile('/dist/js/user/date.js', [
                 return Html::a($model->phone, ['/user/view', 'uid' => $model->id]);
             }
         ],
-        'user_name',
-        'email:email',
+        [
+            'attribute' => 'userInfo.real_name',
+            'value' => function ($model) {
+                return ArrayHelper::getValue($model->userInfo, 'real_name', '--');
+            }
+        ],
         [
             'class' => FilterColumn::className(),
             'attribute' => 'from_platform',
             'value' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->from_platform);
+                return ArrayHelper::getValue(Config::$platformArray, $model->from_platform);
             },
-            'filterArray' => Config::getPlatformArray()
+            'filterArray' => Config::$platformArray
         ],
         [
             'attribute' => 'reg_time',
@@ -71,7 +78,13 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         [
             'attribute' => 'login_time',
-            'format' => 'datetime',
+            'value' => function ($model) {
+                if (empty($model->login_time)) {
+                    return '--';
+                } else {
+                    return Yii::$app->formatter->asDatetime($model->login_time);
+                }
+            },
             'enableSorting' => true
         ],
         'reg_ip',
@@ -100,6 +113,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => '{view} {order_view} {amount_view}',
+            'header' => '操作',
             'buttons' => [
                 'view' => function ($url, $model, $key) {
                     return Html::a('详情', ['user/view', 'uid' => $model->id]);

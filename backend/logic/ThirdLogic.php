@@ -51,7 +51,7 @@ class ThirdLogic extends Logic
             && !empty($returnData['data']['data'])
         ) {
             foreach ($returnData['data']['data'] as $val) {
-                $data[] = [
+                $arr = [
                     $val['id'],
                     $val['name'],
                     $val['organization_id'],
@@ -62,8 +62,13 @@ class ThirdLogic extends Logic
                     $val['bqq_open_id'],
                     implode(',', ArrayHelper::getColumn($val['roles'], 'id'))
                 ];
+
+                if (!in_array($arr, $data)) {
+                    $data[] = $arr;
+                }
             }
         }
+
         $db = \Yii::$app->db;
         $transaction = $db->beginTransaction();
         try {

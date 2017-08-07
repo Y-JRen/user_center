@@ -62,7 +62,7 @@ class CashController extends BaseController
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
                     [
@@ -80,9 +80,6 @@ class CashController extends BaseController
                     'orderStatus',
                     'receipt_amount:currency',
                     'created_at:datetime:申请时间',
-                ],
-                'headers' => [
-                    'created_at' => 'Date Created Content',
                 ],
                 'fileName' => '提现审批'
             ]);
@@ -122,8 +119,9 @@ class CashController extends BaseController
                     throw new Exception('添加冻结资金流水记录失败');
                 }
 
-                if (!$model->addLogReview()) {
-                    throw new Exception('添加财务操作日志失败，请重试');
+                $logReview = $model->addLogReview();
+                if (!$logReview['status']) {
+                    throw new Exception('添加财务操作日志失败，' . $logReview['info']);
                 }
 
                 $transaction->commit();
@@ -182,8 +180,9 @@ class CashController extends BaseController
                     throw new Exception('添加资金流水记录失败');
                 }
 
-                if (!$model->addLogReview(Yii::$app->request->post('remark'))) {
-                    throw new Exception('添加财务操作日志失败，请重试');
+                $logReview = $model->addLogReview(Yii::$app->request->post('remark'));
+                if (!$logReview['status']) {
+                    throw new Exception('添加财务操作日志失败，' . $logReview['info']);
                 }
 
                 $transaction->commit();

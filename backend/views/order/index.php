@@ -13,7 +13,7 @@ use backend\models\Order;
 /* @var $searchModel backend\models\search\OrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '消费记录';
+$this->title = '交易记录明细';
 
 $this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
     'depends' => ['backend\assets\AdminLteAsset']
@@ -57,11 +57,21 @@ $this->registerJsFile('/dist/js/user/date.js', [
             'class' => FilterColumn::className(),
             'attribute' => 'platform',
             'value' => function ($model) {
-                return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                return ArrayHelper::getValue(Config::$platformArray, $model->platform);
             },
-            'filterArray' => Config::getPlatformArray()
+            'filterArray' => Config::$platformArray
         ],
-        'platform_order_id',
+        [
+            'attribute' => 'platform_order_id',
+            'value' => function ($model) {
+                $platform_order_id = $model->platform_order_id;
+                if (empty($platform_order_id)) {
+                    return '--';
+                }else {
+                    return $platform_order_id;
+                }
+            },
+        ],
         [
             'attribute' => 'order_id',
             'format' => 'raw',
@@ -102,7 +112,10 @@ $this->registerJsFile('/dist/js/user/date.js', [
         [
             'class' => FilterColumn::className(),
             'attribute' => 'orderStatus',
-            'filterArray' => Order::getStatus()
+            'value' => function ($model) {
+                return ArrayHelper::getValue(Order::getStatusName(), $model->status);
+            },
+            'filterArray' => Order::getStatusName(),
         ],
     ],
 ]); ?>

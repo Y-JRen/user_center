@@ -1,7 +1,9 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\Order;
 use common\models\AdminUser;
+use common\models\User;
 use Jasny\SSO\Broker;
 use Jasny\SSO\Exception;
 use Jasny\SSO\NotAttachedException;
@@ -64,7 +66,55 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        //昨天时间 开始-结束
+        $beginYesterday = mktime(0, 0, 0, date('m'), date('d') - 1, date('Y'));
+        $endYesterday = mktime(23, 59, 59, date('m'), date('d') - 1, date('Y'));
+
+        //今天时间 开始-结束
+        $beginToday = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+        $endToday = mktime(23, 59, 59, date('m'), date('d'), date('Y'));
+
+        //充值
+        $today['recharge'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_RECHARGE])->sum('amount');
+
+        //消费
+        $today['consume'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_CONSUME])->sum('amount');
+
+        //退款
+        $today['refund'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_REFUND])->sum('amount');
+
+        //提现
+        $today['cash'] = Order::find()->where(['between', 'updated_at', $beginToday, $endToday])->andWhere(['status' => Order::STATUS_TRANSFER])->andWhere(['order_type' => Order::TYPE_CASH])->sum('amount');
+
+
+        //今天的新注册人数
+        $today['user'] = User::find()->where(['between', 'reg_time', $beginToday, $endToday])->count();
+
+        $redis = Yii::$app->redis;
+        $key = 'YESTERDAY' . date('Y-m-d');
+
+        $yesterday = json_decode($redis->get($key), true);
+        if (empty($yesterday)) {
+            //充值
+            $yesterday['recharge'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_RECHARGE])->sum('amount');
+
+            //消费
+            $yesterday['consume'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_CONSUME])->sum('amount');
+
+            //退款
+            $yesterday['refund'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_SUCCESSFUL])->andWhere(['order_type' => Order::TYPE_REFUND])->sum('amount');
+
+            //提现
+            $yesterday['cash'] = Order::find()->where(['between', 'updated_at', $beginYesterday, $endYesterday])->andWhere(['status' => Order::STATUS_TRANSFER])->andWhere(['order_type' => Order::TYPE_CASH])->sum('amount');
+
+            //昨天的新注册人数
+            $yesterday['user'] = User::find()->where(['between', 'reg_time', $beginYesterday, $endYesterday])->count();
+
+            $redis->set($key, json_encode($yesterday));
+            $redis->expire($key, 86400);
+        }
+
+        return $this->render('index', ['data' => [$today, $yesterday]]);
     }
 
     /**
@@ -83,12 +133,11 @@ class SiteController extends Controller
         }
         $broker = new Broker($serverUrl, $brokerId, $brokerSecret);
         $broker->attach(true);
-    
+
         try {
             $user = $broker->getUserInfo();
-        
-            if(!$user && empty($user))
-            {
+
+            if (!$user && empty($user)) {
                 $broker->clearToken();
                 return $this->redirect($power['loginUrl']);
                 //跳转到单点登录页面http://ssourl/login.php?return_url=xxxxx
@@ -98,13 +147,13 @@ class SiteController extends Controller
             $userAdmin = AdminUser::findOne($user['id']);
             $intRoleId = intval(Yii::$app->request->get('role_id'));
             $arrRoleIds = explode(',', $userAdmin->role_ids);
-    
+
             if ($intRoleId && in_array($intRoleId, $arrRoleIds)) {
                 $session->set('ROLE_ID', $intRoleId);
             } else {
                 $session->set('ROLE_ID', $arrRoleIds[0]);
             }
-            Yii::$app->user->login($userAdmin, 3600*12);
+            Yii::$app->user->login($userAdmin, 3600 * 12);
 
             // 获取用户的项目
             ThirdLogic::instance()->getRemoteUserProjects(Yii::$app->user->id);
@@ -131,7 +180,7 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
         Yii::$app->session->destroy();
-        return $this->redirect(Yii::$app->params['power']['loginUrl'].'/logout.php');
+        return $this->redirect(Yii::$app->params['power']['loginUrl'] . '/logout.php');
     }
 
     /**

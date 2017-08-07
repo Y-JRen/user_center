@@ -8,16 +8,7 @@ use yii\widgets\LinkPager;
 
 $this->title = '会员详情';
 ?>
-    <div class="row mb-md">
-        <div class="col-sm-12 col-xs-12 nav-tabs-custom">
-            <ul class="nav nav-tabs">
-                <li><?= Html::a('客户信息', ['view', 'uid' => Yii::$app->request->get('uid')]) ?></li>
-                <li><?= Html::a('资金明细', ['fund-record', 'uid' => Yii::$app->request->get('uid')]) ?></li>
-                <li class="active"><?= Html::a('订单记录', ['order', 'uid' => Yii::$app->request->get('uid')]) ?></li>
-            </ul>
-        </div>
-    </div>
-
+<?= $this->render('_top_header'); ?>
     <div class="grid-view">
         <table class="table table-bordered table-hover" style="margin-bottom: 20px;">
             <thead>

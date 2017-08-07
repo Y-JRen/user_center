@@ -42,7 +42,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
                     'platform_order_id',
@@ -59,10 +59,7 @@ class OrderController extends BaseController
                     'updated_at:datetime',
                     'orderStatus'
                 ],
-                'headers' => [
-                    'created_at' => 'Date Created Content',
-                ],
-                'fileName' => '订单信息'
+                'fileName' => '交易记录明细'
             ]);
 
             return $this->refresh();
@@ -103,7 +100,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
                     [
@@ -137,7 +134,7 @@ class OrderController extends BaseController
                 'headers' => [
                     'created_at' => 'Date Created Content',
                 ],
-                'fileName' => '打款确认'
+                'fileName' => '收款确认'
             ]);
 
             return $this->refresh();
@@ -199,7 +196,8 @@ class OrderController extends BaseController
             $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
             if (!$recharge->save()) {
-                throw new Exception('确认失败，保存充值信息失败' . json_encode($recharge->errors));
+                Yii::error(var_export($recharge->errors, true), 'actionConfirmPass');
+                throw new Exception('确认失败，保存充值信息失败' . current($recharge->getFirstErrors()));
             }
 
             if (!$model->userBalance->plus($model->amount)) {
@@ -249,8 +247,9 @@ class OrderController extends BaseController
                 throw new Exception(current($model->getFirstErrors()));
             }
 
-            if (!$model->addLogReview($remark)) {
-                throw new Exception('添加财务操作日志失败，请重试');
+            $logReview = $model->addLogReview($remark);
+            if (!$logReview['status']) {
+                throw new Exception('添加财务操作日志失败，' . $logReview['info']);
             }
 
             $db->commit();

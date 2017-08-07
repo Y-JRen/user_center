@@ -62,7 +62,7 @@ class TransferController extends BaseController
                     [
                         'attribute' => 'platform',
                         'value' => function ($model) {
-                            return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
+                            return ArrayHelper::getValue(Config::$platformArray, $model->platform);
                         },
                     ],
                     [
@@ -87,7 +87,7 @@ class TransferController extends BaseController
                         }
                     ],
                 ],
-                'fileName' => '提现审批'
+                'fileName' => '付款确认'
             ]);
 
             return $this->refresh();
@@ -136,7 +136,8 @@ class TransferController extends BaseController
             $recharge->created_at = time();
 
             if (!$recharge->save()) {
-                throw new ErrorException('确认失败，保存打款信息失败' . json_encode($recharge->errors));
+                Yii::error(var_export($recharge->errors, true), 'actionConfirmSuccess');
+                throw new ErrorException('确认失败，保存打款信息失败' . current($recharge->getFirstErrors()));
             }
 
             if (!$model->setOrderTransfer()) {

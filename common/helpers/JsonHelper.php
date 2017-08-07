@@ -36,6 +36,9 @@ class JsonHelper
             if (array_key_exists('bankCard', $array)) {
                 $data['bankCard'] = ['label' => '银行卡号', 'value' => $array['bankCard']];
             }
+            if (array_key_exists('account', $array)) {
+                $data['bankCard'] = ['label' => '银行卡号', 'value' => $array['account']];
+            }
             if (array_key_exists('accountName', $array)) {
                 $data['accountName'] = ['label' => '姓名', 'value' => $array['accountName']];
             }
@@ -47,9 +50,6 @@ class JsonHelper
             }
             if (array_key_exists('referenceNumber', $array)) {
                 $data['referenceNumber'] = ['label' => '流水单号', 'value' => $array['referenceNumber']];
-            }
-            if (array_key_exists('account', $array)) {
-                $data['referenceNumber'] = ['label' => '流水单号', 'value' => $array['account']];
             }
             if (array_key_exists('payType', $array)) {
                 $data['payType'] = ['label' => '转账类型', 'value' => $array['payType']];

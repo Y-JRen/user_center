@@ -57,6 +57,16 @@ class Order extends BaseModel
     const STATUS_TRANSFER = 5;// 出纳已转账
     const STATUS_CLOSE = 6;// 关闭；允许第三方充值异步回调
 
+    public static $statusArray = [
+        self::STATUS_PROCESSING => '处理中',
+        self::STATUS_PROCESSING => '处理成功',
+        self::STATUS_PROCESSING => '处理不成功',
+        self::STATUS_PROCESSING => '待处理',
+        self::STATUS_PROCESSING => '已打款',
+        self::STATUS_PROCESSING => '已关闭',
+    ];
+
+
     /**
      * 充值子类型
      */
@@ -345,7 +355,7 @@ class Order extends BaseModel
 
         switch ($this->order_type) {
             case self::TYPE_RECHARGE:
-                $array = self::$rechargeStatusArray;
+                $array = static::$rechargeStatusArray;
                 break;
             case self::TYPE_CONSUME:
                 $array = self::$consumeStatusArray;
@@ -354,7 +364,7 @@ class Order extends BaseModel
                 $array = self::$refundStatusArray;
                 break;
             case self::TYPE_CASH:
-                $array = self::$cashStatusArray;
+                $array = static::$cashStatusArray;
                 break;
             default:
                 $array = self::getStatusName();
