@@ -10,7 +10,7 @@ namespace passport\modules\inside\controllers;
 
 
 use common\models\PoolBalance;
-use passport\models\Order;
+use passport\modules\inside\models\Order;
 use Yii;
 use yii\base\Exception;
 
@@ -24,9 +24,10 @@ class RefundController extends BaseController
             return $this->_error(2007);
         }
 
-        if (empty(Yii::$app->request->post('platform_order_id'))) {
+        /* rules 已有验证
+         * if (empty(Yii::$app->request->post('platform_order_id'))) {
             return $this->_return(null, 2007, '平台ID不存在');
-        }
+        }*/
 
         $model = new Order();
         $param['notice_status'] = 4;
