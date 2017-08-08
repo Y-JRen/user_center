@@ -4,7 +4,7 @@ use common\helpers\JsonHelper;
 use common\logic\FinanceLogic;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-
+use yii\helpers\Html;
 // 获取组织
 $organizations = FinanceLogic::instance()->getOrganization();
 $remarkArr = JsonHelper::BankHelper($model->remark);
@@ -36,6 +36,19 @@ $remarkArr = JsonHelper::BankHelper($model->remark);
             <?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceNumber'), 'value') ?>
         </div>
     </div>
+
+    <!--有图片就显示，没有就不显示-->
+    <?php $data = ArrayHelper::getValue($remarkArr, 'referenceImg'); if ($data):?>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">凭证图片:</label>
+            <div class="col-sm-10 hint-block">
+                <?php foreach ($data['value'] as $image): ?>
+                        <?= Html::a('点击查看'."&nbsp;"."&nbsp;", $image, ['target' => '_blank']);?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif;?>
+
     <input type="hidden" name='id' value="<?= $model->id ?>">
     <input type="hidden" name='back_order'
            value="<?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceNumber'), 'value') ?>">
