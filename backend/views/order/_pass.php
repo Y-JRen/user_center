@@ -36,6 +36,23 @@ $remarkArr = JsonHelper::BankHelper($model->remark);
             <?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceNumber'), 'value') ?>
         </div>
     </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">凭证图片信息:</label>
+        <?php foreach (\common\helpers\JsonHelper::BankHelper($model->remark) as $key => $data): ?>
+                <?php if ($key == 'referenceImg'): ?>
+                    <a><?= $data['label'] ?>:
+                        <?php foreach ($data['value'] as $image) {
+                            echo \yii\helpers\Html::a('点击查看', $image);
+                        } ?>
+                    </a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <div class="col-sm-10 hint-block">
+            <?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceImg'), 'value') ?>
+        </div>
+    </div>
+
     <input type="hidden" name='id' value="<?= $model->id ?>">
     <input type="hidden" name='back_order'
            value="<?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceNumber'), 'value') ?>">
