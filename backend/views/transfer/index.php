@@ -76,7 +76,16 @@ if (ArrayHelper::getValue($this->context, 'history')) {
                 return Html::a(ArrayHelper::getValue($model->user, 'phone'), ['/user/view', 'uid' => $model->uid]);
             }
         ],
-        'order_id',
+        [
+            'attribute' => 'order_id',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::a($model->order_id, 'javascript:void(0)', [
+                    'data-url' => \yii\helpers\Url::to(['/order/view', 'id' => $model->id]),
+                    'class' => 'markOrder'
+                ]);
+            }
+        ],
         [
             'class' => FilterColumn::className(),
             'attribute' => 'platform',
@@ -136,6 +145,18 @@ if (ArrayHelper::getValue($this->context, 'history')) {
                 layer.open({
                     type: 1,
                     title: '确认已打款',
+                    area: '600px',
+                    shadeClose: true,
+                    content: html
+                });
+            })
+        });
+
+        $(".markOrder").click(function () {
+            var url = $(this).attr('data-url');
+            $.get(url, function (html) {
+                layer.open({
+                    title: '交易单详情',
                     area: '600px',
                     shadeClose: true,
                     content: html
