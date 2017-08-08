@@ -23,6 +23,11 @@ class RefundController extends BaseController
         if ($param['order_type'] != Order::TYPE_REFUND) {
             return $this->_error(2007);
         }
+
+        if (empty(Yii::$app->request->post('platform_order_id'))) {
+            return $this->_return(null, 2007, '平台ID不存在');
+        }
+
         $model = new Order();
         $param['notice_status'] = 4;
         if ($model->load($param, '') && $model->save()) {
@@ -59,7 +64,8 @@ class RefundController extends BaseController
                 throw $e;
             }
         } else {
-            return $this->_error(2201, $model->errors);
+            Yii::error(var_export($model->errors, true));
+            return $this->_error(2201);
         }
     }
 
