@@ -4,7 +4,7 @@ use common\helpers\JsonHelper;
 use common\logic\FinanceLogic;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-
+use yii\helpers\Html;
 // 获取组织
 $organizations = FinanceLogic::instance()->getOrganization();
 $remarkArr = JsonHelper::BankHelper($model->remark);
@@ -37,21 +37,21 @@ $remarkArr = JsonHelper::BankHelper($model->remark);
         </div>
     </div>
 
+    <!--有图片就显示，没有就不显示-->
+    <?php $data = ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceImg'), 'value'); if ($data):?>
     <div class="form-group">
-        <label class="col-sm-2 control-label">凭证图片信息:</label>
-        <?php foreach (\common\helpers\JsonHelper::BankHelper($model->remark) as $key => $data): ?>
+        <label class="col-sm-2 control-label">凭证图片:</label>
+        <div class="col-sm-10 hint-block">
+        <?php foreach ($remarkArr as $key => $data): ?>
                 <?php if ($key == 'referenceImg'): ?>
-                    <a><?= $data['label'] ?>:
                         <?php foreach ($data['value'] as $image) {
-                            echo \yii\helpers\Html::a('点击查看', $image);
+                            echo Html::a('点击查看', $image, ['target' => '_blank']);
                         } ?>
-                    </a>
                 <?php endif; ?>
             <?php endforeach; ?>
-        <div class="col-sm-10 hint-block">
-            <?= ArrayHelper::getValue(ArrayHelper::getValue($remarkArr, 'referenceImg'), 'value') ?>
         </div>
     </div>
+    <?php endif;?>
 
     <input type="hidden" name='id' value="<?= $model->id ?>">
     <input type="hidden" name='back_order'
