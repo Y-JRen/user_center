@@ -81,6 +81,22 @@ class Order extends BaseModel
     const SUB_TYPE_TMALL = 'tmall';
 
     /**
+     * 充值中英文对照
+     * @var array
+     */
+    public static $rechargeSubTypeName = [
+        self::SUB_TYPE_WECHAT_CODE => '微信二维码',
+        self::SUB_TYPE_WECHAT_JSAPI => '微信公众号',
+        self::SUB_TYPE_ALIPAY_PC => '支付宝PC网站',
+        self::SUB_TYPE_ALIPAY_WAP => '支付宝手机网站',
+        self::SUB_TYPE_ALIPAY_APP => '支付宝APP',
+        self::SUB_TYPE_ALIPAY_MOBILE => '支付宝移动',
+        self::SUB_TYPE_LINE_DOWN => '线下',
+        self::SUB_TYPE_LAKALA => '拉卡拉POS机',
+        self::SUB_TYPE_TMALL => '天猫',
+    ];
+
+    /**
      * 消费子类型
      */
     const SUB_TYPE_CONSUME_QUICK_PAY = 'quick_pay';// 快捷支付识别字符
