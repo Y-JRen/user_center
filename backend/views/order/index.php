@@ -67,7 +67,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
                 $platform_order_id = $model->platform_order_id;
                 if (empty($platform_order_id)) {
                     return '--';
-                }else {
+                } else {
                     return $platform_order_id;
                 }
             },
@@ -125,7 +125,7 @@ $this->registerJsFile('/dist/js/user/date.js', [
 <?php $this->beginBlock('javascript') ?>
     <script type="text/javascript">
         $(document).ready(function () {
-            $(".markOrder").click(function () {
+            $('body').delegate(".markOrder", "click", function () {
                 var url = $(this).attr('data-url');
                 $.get(url, function (html) {
                     layer.open({
