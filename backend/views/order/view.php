@@ -2,8 +2,10 @@
 
 use passport\helpers\Config;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\widgets\DetailView;
 use backend\models\Order;
+use common\helpers\JsonHelper;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Order */
@@ -35,7 +37,35 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'platform',
                 'value' => ArrayHelper::getValue(Config::$platformArray, $model->platform)
             ],
-            'remark',
+            [
+                'attribute' => 'remark',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    $remarkArr = JsonHelper::BankHelper($model->remark);
+                    $html = '';
+                    foreach ($remarkArr as $key => $remark) {
+                        if (!empty($value = ArrayHelper::getValue($remark, 'value'))) {
+                            $label = ArrayHelper::getValue($remark, 'label');
+                            if (is_array($value)) {
+                                $link = '';
+                                foreach ($value as $val) {
+                                    $link .= Html::a('点击查看', $val, ['target' => '_blank']) . "&nbsp;";
+                                }
+                                $html .= Html::tag('p', "{$label}:{$link}");
+                            } else {
+                                $html .= Html::tag('p', "{$label}:{$value}");
+                            }
+                        }
+                    }
+                    return $html;
+                }
+            ],
+            [
+                'attribute' => 'remark',
+                'value' => function ($model) {
+                    return $model->order_subtype;
+                }
+            ],
             'created_at:datetime',
             'updated_at:datetime',
         ],

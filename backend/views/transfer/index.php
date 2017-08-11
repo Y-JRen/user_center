@@ -152,7 +152,7 @@ if (ArrayHelper::getValue($this->context, 'history')) {
             })
         });
 
-        $(".markOrder").click(function () {
+        $('body').delegate(".markOrder", "click", function () {
             var url = $(this).attr('data-url');
             $.get(url, function (html) {
                 layer.open({

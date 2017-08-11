@@ -87,6 +87,14 @@ class RechargeConfirm extends BaseModel
         if ($insert) {
             if ($this->status == 1) {
                 $remark = ArrayHelper::getValue($this->order, 'remark');
+                $subType = ArrayHelper::getValue($this->order, 'order_subtype');
+                $quickPay = ArrayHelper::getValue($this->order, 'quick_pay');
+
+                if (empty($this->remark) && $subType) {
+                    $this->remark = ArrayHelper::getValue(Order::$rechargeSubTypeName, $subType) . '方式';
+                    $this->remark .= '的' . ($quickPay ? '快捷支付' : '用户充值');
+                }
+
                 $remarkArr = JsonHelper::BankHelper($remark);
                 $data = [
                     'organization_id' => $this->org_id,

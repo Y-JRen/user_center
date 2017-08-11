@@ -132,7 +132,7 @@ class DefaultController extends Controller
      */
     public function actionLakalaNotify()
     {
-        Yii::$app->response->format = 'JSON';
+        Yii::$app->response->format = 'json';
 
         $post = Yii::$app->request->post();
 
