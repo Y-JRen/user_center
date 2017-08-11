@@ -84,6 +84,8 @@ class TransferConfirm extends BaseModel
     {
         if ($insert) {
             if ($this->status == 1) {
+                empty($this->remark) ? $this->remark = '用户提现' : null;
+
                 $remark = ArrayHelper::getValue($this->order, 'remark');
                 $remarkArr = JsonHelper::BankHelper($remark);
                 $data = [
