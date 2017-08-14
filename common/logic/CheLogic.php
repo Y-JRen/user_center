@@ -31,7 +31,7 @@ class CheLogic extends Logic
         $resultInfo = HttpLogic::instance()->http($url, 'GET');
         $result = json_decode($resultInfo, true);
         if (empty(ArrayHelper::getValue((array)$result, 'statusCode'))) {
-            Yii::error("{$orderId}通知电商短信失败;url:{$url};返回值：" . var_export($result, true));
+            Yii::error("{$orderId}通知电商短信失败;url:{$url};返回值：" . var_export($result, true), 'loanArrive');
         }
 
         return true;
