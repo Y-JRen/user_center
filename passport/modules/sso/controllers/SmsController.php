@@ -58,9 +58,10 @@ class SmsController extends BaseController
     {
         $model = new SmsForm();
         $model->load(Yii::$app->request->get(), '');
+
         $res = $model->send();
 
-        if ($res) {
+        if ($res['err_code'] == 0) {
             return $this->_return('成功');
         } else {
             return $this->_error(997, $res['msg']);

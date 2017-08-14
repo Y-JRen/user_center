@@ -32,12 +32,14 @@ class SmsForm extends Model
 			}
 		}
 	}
-	
+
 	public function send()
 	{
+		$params = \Yii::$app->request->get('params');
 		//验证码
 		$code = rand(1001,9999);
-		$res = SmsLogic::instance()->send($this->type, $this->phone, $code);
+		$res = SmsLogic::instance()->send($this->type, $this->phone, $code, 'luosimao', $params);
 		return $res;
 	}
+
 }
