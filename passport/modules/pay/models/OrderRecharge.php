@@ -80,23 +80,24 @@ class OrderRecharge extends Order
     public function checkOld()
     {
         /* @var $model OrderClose */
-        $model = OrderClose::find()->where(['uid' => $this->uid, 'status' => self::STATUS_PENDING, 'order_type' => $this->order_type])->one();
+        $model = OrderClose::find()->where([
+            'uid' => $this->uid,
+            'status' => self::STATUS_PENDING,
+            'order_type' => $this->order_type,
+            'platform_order_id' => $this->platform_order_id,
+            'order_subtype' => $this->order_subtype
+        ])->one();
 
-        if ($model->platform_order_id == $this->platform_order_id) {
-            if ($model->order_subtype == $this->order_subtype && $model->amount == $this->amount) {
-                // 充值子类型、金额完成一样，直接返回
-                $data = $this->getCache($model->id);
-                if (empty($data)) {
-                    // 此处为异常情况,没有获取到返回的信息，关闭订单
-                    $model->close();
-                } else {
-                    return $data;
-                }
-            } else {
-                // 关闭$model的订单，新创建一个
-                $model->close();
+        if ($model && $model->amount == $this->amount) {
+            // 充值子类型、金额完成一样，直接返回
+            $data = $this->getCache($model->id);
+            if (!empty($data)) {
+                return $data;
             }
         }
+
+        // 关闭$model的订单，新创建一个
+        $model->close();
 
         return false;
     }
