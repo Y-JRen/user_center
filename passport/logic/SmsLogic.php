@@ -98,72 +98,82 @@ class SmsLogic extends Logic
      * @param string $phone 手机号
      * @param string $code 验证码
      *
-     * @return boolean
+     * @return boolean | array
      */
-    public function send($tpl_index, $phone, $code = null, $sms_service_type = 'luosimao', $params)
+    public function send($tpl_index, $phone, $params, $sms_service_type = 'luosimao')
     {
         if (!$this->_frequencyLimit($phone)) {
             return false;
         }
-        $arrPlat = $this->luosimao_sms_tpl;
-        //对应的平台：1--对应电商平台短信模板；5--对应租车平台短信模板
-        if (isset($params['platform'])) {
-            $platForm = $params['platform'];
-        } else {
-            return ['err_code' => 997, 'msg' => '平台不存在'];
-        }
-        if ($sms_service_type == 'luosimao') { //luosimao 平台
-            if (in_array($platForm, array_keys($arrPlat))) {
-                if (!array_key_exists($platForm, $this->luosimao_sms_tpl)) {
-                    return false;
-                }
-            } else {
-                return ['err_code' => 997, 'msg' => '平台不存在'];
-            }
-            yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
-            if ($platForm == 5 && intval($tpl_index) >= 1000) {
-                $str = ArrayHelper::getValue($arrPlat[5], $tpl_index);
-                $num = preg_match_all('/{[a-z]+}/', $str, $matches);
-                if ($num == 0) {
-                    $strContent = $str;
-                } else {
-                    if (isset($params)) {
-                        $arrKeys = [];
-                        foreach ($matches[0] as $val) {
-                            $val = trim(trim($val, '}'), '{');
-                            if (ArrayHelper::getValue($params, $val)) {
-                                $arrKeys[] = $val;
-                                continue;
-                            } else {
-                                return ['err_code' => 997, 'msg' => "参数[{$val}]不存在或者值为空"];
-                            }
-                        }
-                        //$arrKeys元素外加上“{}”
-                        foreach ($arrKeys as $k=>$v) {
-                            $arrKeys[$k]='{'.$v.'}';
-                        }
-                        unset($v);
-                        $strContent = str_replace($arrKeys, array_values($params), $str);
-                    } else {
-                        return ['err_code' => 997, 'msg' => '缺少模板对应的参数'];
-                    }
-                }
 
-            } elseif ($platForm == 1 && (intval($tpl_index) == 1 || intval($tpl_index) == 2)) {
-                Yii::$app->redis->expire("sms:{$tpl_index}:$phone", 3600);
-                $strContent = sprintf($arrPlat[1][$tpl_index], $code);
-            } else {
-                return ['err_code' => 997, 'msg' => '平台不存在或者短信模板不存在'];
+        if ($sms_service_type == 'luosimao') { //luosimao 平台
+            $tpl = $this->luosimao_sms_tpl;
+
+            $result = $this->getContend($tpl, $tpl_index, $params, $phone);
+
+            if (is_array($result)) {
+                return $result;
             }
-            return $this->sendLuosimaoSms($phone, $strContent);
+
+            return $this->sendLuosimaoSms($phone, $result);
         } else { // 快通平台
-            if (!array_key_exists($platForm, $this->sms_tpl)) {
-                return false;
+            $tpl = $this->sms_tpl;
+
+            $result = $this->getContend($tpl, $tpl_index, $params, $phone);
+
+            if (is_array($result)) {
+                return $result;
             }
-            yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
-            $strContent = sprintf($this->sms_tpl[$tpl_index], $code);
-            return $this->sendSms($phone, $strContent);
+
+            return $this->sendLuosimaoSms($phone, $result);
         }
+    }
+
+
+    /**
+     *  生成短信发送模板
+     * @param $tpl
+     * @param $tpl_index
+     * @param $params
+     * @param $phone
+     * @return array|mixed|string
+     */
+    public function getContend($tpl, $tpl_index, $params, $phone)
+    {
+        $platform = Config::getPlatform();
+        $str = ArrayHelper::getValue($tpl, [$platform, $tpl_index]);
+
+        if (empty($str)) {
+            return ['err_code' => 997, 'msg' => "发送模板不存在"];
+        }
+
+        if ($platform == 1 && in_array($tpl_index, [1, 2])) {
+            $code = ArrayHelper::getValue($params, 'code');
+            yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
+            Yii::$app->redis->expire("sms:{$tpl_index}:$phone", 3600);
+            $strContent = sprintf($str, $code);
+        } else {
+            preg_match_all('/{(?P<valName>[a-z]+)}/', $str, $matches);
+
+            $replace = [];
+            foreach (ArrayHelper::getValue($matches, 'valName', []) as $val) {
+                if ($data = ArrayHelper::getValue($params, $val)) {
+                    $arrKeys['search'] = "{$val}";
+                    $arrKeys['replace'] = $data;
+                    continue;
+                } else {
+                    return ['err_code' => 997, 'msg' => "参数[{$val}]" . array_key_exists($val, $params) ? '值不能为空' : '不存在'];
+                }
+            }
+
+            if (empty($replace)) {
+                $strContent = str_replace($replace['search'], $replace['replace'], $str);
+            } else {
+                $strContent = $str;
+            }
+        }
+
+        return $strContent;
     }
 
     /**
