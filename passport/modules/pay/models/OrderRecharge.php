@@ -89,7 +89,7 @@ class OrderRecharge extends Order
 
         $data = [];
         foreach ($models as $model) {
-            if ($data) {
+            if (!empty($data)) {
                 $model->close();
                 continue;
             }
