@@ -55,6 +55,8 @@ class SmsLogic extends Logic
             '2' => '您好，您的验证码是%s。【车城】',//注册短信
         ],
         '5' => [//租车平台短信模板
+            '1' => '您好，您的验证码是%s。【车城】',//注册短信
+            '2' => '您好，您的验证码是%s。【车城】',//注册短信
             '1000' => '我们向您提供的用车服务已完成，请及时支付订单，否则将影响您今后的个人征信度。如需帮助，请及时联系客服【车城】',
             '1001' => '我们向您提供的用车服务已完成，您的未结订单已超过24小时，请尽快支付，否则将影响您今后的个人征信度。如需帮助，请及时联系客服【车城】',
             '1002' => '已赠送金豆到您的账户请访问公众号查询【车城】',
@@ -103,13 +105,13 @@ class SmsLogic extends Logic
     public function send($tpl_index, $phone, $params, $sms_service_type = 'luosimao')
     {
         if (!$this->_frequencyLimit($phone)) {
-            return false;
+            return ['err_code' => 997, 'msg' => "达到发送最高限制"];
         }
 
         if ($sms_service_type == 'luosimao') { //luosimao 平台
             $tpl = $this->luosimao_sms_tpl;
 
-            $result = $this->getContend($tpl, $tpl_index, $params, $phone);
+            $result = $this->getContent($tpl, $tpl_index, $params, $phone);
 
             if (is_array($result)) {
                 return $result;
@@ -119,7 +121,7 @@ class SmsLogic extends Logic
         } else { // 快通平台
             $tpl = $this->sms_tpl;
 
-            $result = $this->getContend($tpl, $tpl_index, $params, $phone);
+            $result = $this->getContent($tpl, $tpl_index, $params, $phone);
 
             if (is_array($result)) {
                 return $result;
@@ -138,7 +140,7 @@ class SmsLogic extends Logic
      * @param $phone
      * @return array|mixed|string
      */
-    public function getContend($tpl, $tpl_index, $params, $phone)
+    public function getContent($tpl, $tpl_index, $params, $phone)
     {
         $platform = Config::getPlatform();
         $str = ArrayHelper::getValue($tpl, [$platform, $tpl_index]);
@@ -158,18 +160,18 @@ class SmsLogic extends Logic
             $replace = [];
             foreach (ArrayHelper::getValue($matches, 'valName', []) as $val) {
                 if ($data = ArrayHelper::getValue($params, $val)) {
-                    $arrKeys['search'] = "{$val}";
-                    $arrKeys['replace'] = $data;
+                    $replace['search'][] = "{{$val}}";
+                    $replace['replace'][] = $data;
                     continue;
                 } else {
-                    return ['err_code' => 997, 'msg' => "参数[{$val}]" . array_key_exists($val, $params) ? '值不能为空' : '不存在'];
+                    return ['err_code' => 997, 'msg' => "参数params[{$val}]" . (array_key_exists($val, $params) ? '值不能为空' : '不存在')];
                 }
             }
 
             if (empty($replace)) {
-                $strContent = str_replace($replace['search'], $replace['replace'], $str);
-            } else {
                 $strContent = $str;
+            } else {
+                $strContent = str_replace($replace['search'], $replace['replace'], $str);
             }
         }
 
