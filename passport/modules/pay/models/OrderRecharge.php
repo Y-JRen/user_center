@@ -70,7 +70,7 @@ class OrderRecharge extends Order
     }
 
     /**
-     * 检测是否存在旧的有效订单
+     * 检测是否存在旧的有效订单,去除线下充值，线下充值有临界状态
      *
      * 有就返回旧订单的返回信息
      * 没有返回false
@@ -79,27 +79,38 @@ class OrderRecharge extends Order
      */
     public function checkOld()
     {
-        /* @var $model OrderClose */
-        $model = OrderClose::find()->where([
+        /* @var $models OrderClose[] */
+        $models = OrderClose::find()->where([
             'uid' => $this->uid,
             'status' => self::STATUS_PENDING,
             'order_type' => $this->order_type,
             'platform_order_id' => $this->platform_order_id,
-            'order_subtype' => $this->order_subtype
-        ])->one();
+        ])->andWhere("order_subtype != :order_subtype", [':order_subtype' => Order::SUB_TYPE_LINE_DOWN])->all();
 
-        if ($model && $model->amount == $this->amount) {
-            // 充值子类型、金额完成一样，直接返回
-            $data = $this->getCache($model->id);
-            if (!empty($data)) {
-                return $data;
+        $data = [];
+        foreach ($models as $model) {
+            if ($data) {
+                $model->close();
+                continue;
             }
+
+            if (($model->order_subtype == $this->order_subtype) && ($model->amount == $this->amount)) {
+                // 充值子类型、金额完成一样，直接返回
+                $data = $this->getCache($model->id);
+                if (!empty($data)) {
+                    continue;
+                }
+            }
+
+            // 关闭$model的订单，新创建一个
+            $model->close();
         }
 
-        // 关闭$model的订单，新创建一个
-        $model->close();
-
-        return false;
+        if ($data) {
+            return $data;
+        } else {
+            return false;
+        }
     }
 
 
