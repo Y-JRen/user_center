@@ -104,6 +104,10 @@ class SmsLogic extends Logic
      */
     public function send($tpl_index, $phone, $params, $sms_service_type = 'luosimao')
     {
+        if (empty($phone)) {
+            return ['err_code' => 999, 'msg' => "电话号码不能为空"];
+        }
+
         if (!$this->_frequencyLimit($phone)) {
             return ['err_code' => 997, 'msg' => "达到发送最高限制"];
         }
