@@ -36,6 +36,7 @@ class SmsForm extends Model
 	public function send()
 	{
 		$params = \Yii::$app->request->get('params');
+		//短信模板平台（1--电商平台，5--租车平台）：  $params['platform']
 		//验证码
 		$code = rand(1001,9999);
 		$res = SmsLogic::instance()->send($this->type, $this->phone, $code, 'luosimao', $params);
