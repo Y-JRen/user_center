@@ -36,7 +36,6 @@ class OrderRecharge extends Order
             ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName)],
             ['order_subtype', 'validatorOrderSubType'],
             [['openid', 'return_url'], 'string'],
-            ['finance_id', 'integer']
         ];
     }
 
