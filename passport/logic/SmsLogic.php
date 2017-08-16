@@ -155,9 +155,13 @@ class SmsLogic extends Logic
 
         if ($platform == 1 && in_array($tpl_index, [1, 2])) {
             $code = ArrayHelper::getValue($params, 'code');
-            yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
-            Yii::$app->redis->expire("sms:{$tpl_index}:$phone", 3600);
-            $strContent = sprintf($str, $code);
+            if (empty($code)) {
+                return ['err_code' => 997, 'msg' => '请选择验证码发送接口'];
+            } else {
+                yii::$app->redis->set("sms:{$tpl_index}:$phone", $code);
+                Yii::$app->redis->expire("sms:{$tpl_index}:$phone", 3600);
+                $strContent = sprintf($str, $code);
+            }
         } else {
             preg_match_all('/{(?P<valName>[a-z]+)}/', $str, $matches);
 
