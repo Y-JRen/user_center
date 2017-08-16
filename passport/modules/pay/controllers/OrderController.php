@@ -14,6 +14,7 @@ use common\jobs\OrderCloseJob;
 use common\models\SystemConf;
 use passport\controllers\AuthController;
 use passport\modules\pay\models\OrderClose;
+use passport\modules\pay\models\OrderRecharge;
 use passport\modules\sso\models\UserInfo;
 use Yii;
 use passport\modules\pay\models\OrderForm;
@@ -48,32 +49,35 @@ class OrderController extends AuthController
     public function actionRecharge()
     {
         $param = Yii::$app->request->post();
-        if ($param['order_type'] != OrderForm::TYPE_RECHARGE) {
+        if ($param['order_type'] != OrderRecharge::TYPE_RECHARGE) {
             return $this->_error(2007);
         }
 
-        $model = new OrderForm();
+        $model = new OrderRecharge();
         $param['notice_status'] = 1;
-        if ($model->load($param, '') && $model->save()) {// 创建充值订单
-            // 添加关闭任务
-            if (in_array($model->order_subtype, OrderClose::$allowCloseSubtype)) {
-                Yii::$app->queue_second->delay(SystemConf::getValue('recharge_order_valid_time') * 60)->push(new OrderCloseJob([
-                    'order_id' => $model->order_id
-                ]));
-            }
+        $model->load($param, '');
+        $model->initSet();
 
-            $result = PayLogic::instance()->pay($model);
+        if ($data = $model->checkOld()) {
+            return $this->_return($data);
+        }else{
+            if ($model->save()) {// 创建充值订单
+                $result = PayLogic::instance()->pay($model);
 
-            $status = ArrayHelper::getValue($result, 'status', 0);
-            $data = ArrayHelper::getValue($result, 'data');
-            if ($status == 0) {
-                $data['platform_order_id'] = $model->platform_order_id;
-                $data['order_id'] = $model->order_id;
-                $data['notice_platform_param'] = $model->notice_platform_param;
+                $status = ArrayHelper::getValue($result, 'status', 0);
+                $data = ArrayHelper::getValue($result, 'data');
+                if ($status == 0) {
+                    $data['platform_order_id'] = $model->platform_order_id;
+                    $data['order_id'] = $model->order_id;
+                    $data['notice_platform_param'] = $model->notice_platform_param;
+
+                    // 返回值加入缓存
+                    $model->addCache($model->id, $data);
+                }
+                return $this->_return($data, $status);
+            } else {
+                return $this->_error(2001, $model->errors);
             }
-            return $this->_return($data, $status);
-        } else {
-            return $this->_error(2001, $model->errors);
         }
     }
 

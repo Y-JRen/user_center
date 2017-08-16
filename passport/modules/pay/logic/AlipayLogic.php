@@ -17,14 +17,14 @@ use common\lib\pay\alipay\PayWap;
 use passport\helpers\Config;
 use passport\helpers\Redis;
 use passport\logic\Logic;
-use passport\modules\pay\models\OrderForm;
+use passport\modules\pay\models\OrderRecharge;
 use yii\helpers\Url;
 
 class AlipayLogic extends Logic
 {
     /**
      * 支付宝PC支付入口
-     * @param $order OrderForm
+     * @param $order OrderRecharge
      * @return string|array
      */
     public function pc($order)
@@ -52,7 +52,7 @@ class AlipayLogic extends Logic
 
     /**
      * 支付宝wap支付入口
-     * @param $order OrderForm
+     * @param $order OrderRecharge
      * @return string|array
      */
     public function wap($order)
@@ -80,7 +80,7 @@ class AlipayLogic extends Logic
 
     /**
      * 支付宝app支付入口
-     * @param $order OrderForm
+     * @param $order OrderRecharge
      * @return string|array
      */
     public function app($order)
@@ -109,7 +109,7 @@ class AlipayLogic extends Logic
      *
      * 支付宝旧版移动支付接口
      *
-     * @param $order OrderForm
+     * @param $order OrderRecharge
      * @return array
      */
     public function mobile($order)

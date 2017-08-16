@@ -10,12 +10,12 @@ namespace passport\modules\pay\logic;
 
 
 use common\logic\Logic;
-use passport\modules\pay\models\OrderForm;
+use passport\modules\pay\models\OrderRecharge;
 
 class PayLogic extends Logic
 {
     /**
-     * @param OrderForm $order
+     * @param OrderRecharge $order
      * @return  array
      */
     public function pay($order)
