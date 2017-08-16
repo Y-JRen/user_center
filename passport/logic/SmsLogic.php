@@ -153,7 +153,7 @@ class SmsLogic extends Logic
             return ['err_code' => 997, 'msg' => "发送模板不存在"];
         }
 
-        if ($platform == 1 && in_array($tpl_index, [1, 2])) {
+        if (in_array($tpl_index, [1, 2])) {
             $code = ArrayHelper::getValue($params, 'code');
             if (empty($code)) {
                 return ['err_code' => 997, 'msg' => '请选择验证码发送接口'];
