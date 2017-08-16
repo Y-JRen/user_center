@@ -60,12 +60,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $html;
                 }
             ],
-            [
-                'attribute' => 'remark',
-                'value' => function ($model) {
-                    return $model->order_subtype;
-                }
-            ],
             'created_at:datetime',
             'updated_at:datetime',
         ],

@@ -20,6 +20,13 @@ class JsonHelper
      */
     public static function BankHelper($remark)
     {
+        $payType = [
+            '1' => '支付宝',
+            '2' => '微信',
+            '3' => '银行转账',
+            '4' => '银联POS机',
+            '5' => '拉卡拉POS机',
+        ];
         $data = [];
         if ($remark) {
             $array = json_decode($remark, true);
@@ -52,7 +59,8 @@ class JsonHelper
                 $data['referenceNumber'] = ['label' => '流水单号', 'value' => $array['referenceNumber']];
             }
             if (array_key_exists('payType', $array)) {
-                $data['payType'] = ['label' => '转账类型', 'value' => $array['payType']];
+                $type = ArrayHelper::getValue($payType,$array['payType']);
+                $data['payType'] = ['label' => '转账类型', 'value' => $type];
             }
             if (array_key_exists('amount', $array)) {
                 $data['amount'] = ['label' => '金额', 'value' => $array['amount']];

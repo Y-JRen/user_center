@@ -42,7 +42,7 @@ class SmsController extends BaseController
     	if(!$model->validate()){
     		return $this->_error(1001,current($model -> getErrors())[0]);
     	}
-    	$res = $model->send();
+    	$res = $model->sendCode();
     	if($res){
     		return $this->_return('成功');
     	}else{
@@ -58,9 +58,27 @@ class SmsController extends BaseController
     {
         $model = new SmsForm();
         $model->load(Yii::$app->request->get(), '');
-        $res = $model->send();
 
-        if ($res) {
+        $res = $model->sendCode();
+
+        if ($res['err_code'] == 0) {
+            return $this->_return('成功');
+        } else {
+            return $this->_error(997, $res['msg']);
+        }
+    }
+
+    /**
+     * 发送短信通知
+     */
+    public function actionNotify()
+    {
+        $model = new SmsForm();
+        $model->load(Yii::$app->request->get(), '');
+
+        $res = $model->sendNotify();
+
+        if ($res['err_code'] == 0) {
             return $this->_return('成功');
         } else {
             return $this->_error(997, $res['msg']);
