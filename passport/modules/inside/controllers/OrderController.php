@@ -11,7 +11,6 @@ namespace passport\modules\inside\controllers;
 use common\jobs\RechargePushJob;
 use common\lib\pay\alipay\PayCore;
 use common\lib\pay\alipay\PayQuery;
-use common\logic\CheLogic;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use passport\helpers\Config;
@@ -72,9 +71,6 @@ class OrderController extends BaseController
                 }
 
                 $transaction->commit();
-
-                // 通知电商发送短信
-                CheLogic::instance()->loanArrive($model->platform_order_id);
 
                 return $this->_return(['order_id' => $consumeModel->order_id], 0, '贷款入账成功');
             } catch (Exception $e) {
