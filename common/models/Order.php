@@ -72,6 +72,7 @@ class Order extends BaseModel
      */
     const SUB_TYPE_WECHAT_CODE = 'wechat_code';
     const SUB_TYPE_WECHAT_JSAPI = 'wechat_jsapi';
+    const SUB_TYPE_WECHAT_APP = 'wechat_app';
     const SUB_TYPE_ALIPAY_PC = 'alipay_pc';
     const SUB_TYPE_ALIPAY_WAP = 'alipay_wap';
     const SUB_TYPE_ALIPAY_APP = 'alipay_app';
@@ -87,6 +88,7 @@ class Order extends BaseModel
     public static $rechargeSubTypeName = [
         self::SUB_TYPE_WECHAT_CODE => '微信二维码',
         self::SUB_TYPE_WECHAT_JSAPI => '微信公众号',
+        self::SUB_TYPE_WECHAT_APP => '微信APP',
         self::SUB_TYPE_ALIPAY_PC => '支付宝PC网站',
         self::SUB_TYPE_ALIPAY_WAP => '支付宝手机网站',
         self::SUB_TYPE_ALIPAY_APP => '支付宝APP',
