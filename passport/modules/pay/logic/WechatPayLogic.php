@@ -31,10 +31,10 @@ class WechatPayLogic extends Logic
             'out_trade_no' => $order->order_id,
             'spbill_create_ip' => $_SERVER['REMOTE_ADDR'],
             'total_fee' => $order->amount * 100,
-            'notify_url' => 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/wechat-notify']),
+            'notify_url' => 'http://' . $_SERVER['HTTP_HOST'] . Url::to(['/default/wechat-notify']),
             'trade_type' => $tradeType
         ];
-        if($tradeType == 'JSAPI') {
+        if ($tradeType == 'JSAPI') {
             $remark = json_decode($order->remark, true);
             $param['openid'] = $remark['openid'];
         }
@@ -51,10 +51,10 @@ class WechatPayLogic extends Logic
     public function weChatPayJS($order)
     {
         $result = $this->weChatPay($order, "JSAPI");
-        if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
+        if ($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
             $pay = PayCore::instance();
             $data = [
-                'package' => 'prepay_id='.$result['prepay_id'],
+                'package' => 'prepay_id=' . $result['prepay_id'],
                 'timeStamp' => time(),
                 'nonceStr' => $pay->nonceStr(),
                 'signType' => 'MD5',
@@ -63,7 +63,7 @@ class WechatPayLogic extends Logic
             $data['paySign'] = $pay->sign($data);
             return [
                 'data' => $data
-             ];
+            ];
 
         }
         return [
@@ -81,8 +81,8 @@ class WechatPayLogic extends Logic
     public function weChatPayCode($order)
     {
         $result = $this->weChatPay($order);
-        if($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
-            $qrCode = 'http://'.$_SERVER['HTTP_HOST'].Url::to(['/default/qrcode', 'url' => $result['code_url']]);
+        if ($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
+            $qrCode = 'http://' . $_SERVER['HTTP_HOST'] . Url::to(['/default/qrcode', 'url' => $result['code_url']]);
             return [
                 'data' => [
                     'qrcode' => $qrCode,
@@ -90,6 +90,37 @@ class WechatPayLogic extends Logic
                 'status' => 0
             ];
         }
+        return [
+            'status' => 2002,
+            'data' => $result
+        ];
+    }
+
+
+    /**
+     * APP支付
+     * @param $order
+     * @return array
+     */
+    public function weChatPayApp($order)
+    {
+        $result = $this->weChatPay($order);
+        if ($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
+            $pay = PayCore::instance();
+            $data = [
+                'appId' => $pay->weChatConfig['appid'],
+                'partnerId' => $pay->weChatConfig['mch_id'],
+                'prepayId' => $result['prepay_id'],
+                'package' => 'Sign=WXPay',
+                'noncestr' => $pay->nonceStr(),
+                'timestamp' => time(),
+            ];
+            $data['sign'] = $pay->sign($data);
+            return [
+                'data' => $data
+            ];
+        }
+
         return [
             'status' => 2002,
             'data' => $result
