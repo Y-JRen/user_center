@@ -63,7 +63,7 @@ class ConsumeController extends BaseController
                 throw $e;
             }
         } else {
-            return $this->_error(2101, $model->errors);
+            return $this->_error(2101, current($model->getFirstErrors()));
         }
     }
 }
