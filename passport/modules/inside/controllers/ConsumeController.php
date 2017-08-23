@@ -29,7 +29,6 @@ class ConsumeController extends BaseController
      */
     public function actionIndex()
     {
-        return false;
         $param = Yii::$app->request->post();
         if ($param['order_type'] != Order::TYPE_CONSUME) {
             return $this->_error(2007);
