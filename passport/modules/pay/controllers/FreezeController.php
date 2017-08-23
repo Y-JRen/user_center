@@ -15,6 +15,7 @@ use passport\modules\pay\models\OrderForm;
 use Yii;
 use passport\controllers\AuthController;
 use yii\base\Exception;
+use yii\helpers\ArrayHelper;
 
 class FreezeController extends AuthController
 {
@@ -25,36 +26,31 @@ class FreezeController extends AuthController
      */
     public function actionThaw()
     {
-        $order_id = Yii::$app->request->post('order_id');
+        $orderIds = explode(',', Yii::$app->request->post('order_id'));
         $uid = Yii::$app->user->id;
         $amount = Yii::$app->request->post('amount');
 
-        /* @var $order OrderForm */
-        $order = OrderForm::find()->where(['order_id' => $order_id])->one();
-        if (!$order) {
-            return $this->_error(2005, '订单不存在');
-        }
 
-        if ($order->status != OrderForm::STATUS_PROCESSING) {
-            return $this->_error(2005, '订单状态异常');
-        }
+        $this->check($uid, $orderIds, $amount);
 
-        if ($order->uid != $uid || $order->amount != $amount) {
-            return $this->_error(2005, '订单用户、订单金额不匹配');
-        }
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$order->userFreeze->less($amount)) {
-                throw new Exception('用户冻结余额解冻失败');
-            }
+            /* @var $orders OrderForm[] */
+            $orders = OrderForm::find()->where(['order_id' => $orderIds])->one();
+            foreach ($orders as $order) {
+                if (!$order->userFreeze->less($amount)) {
+                    throw new Exception('用户冻结余额解冻失败');
+                }
 
-            if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
-                throw new Exception('添加冻结资金流水记录失败');
-            }
+                if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                    throw new Exception('添加冻结资金流水记录失败');
+                }
 
-            if (!$order->setOrderSuccess()) {
-                throw new Exception('更新订单状态失败');
+                if (!$order->setOrderSuccess()) {
+                    throw new Exception('更新订单状态失败');
+                }
+                unset($order);
             }
 
             $transaction->commit();
@@ -74,7 +70,7 @@ class FreezeController extends AuthController
     public function actionThawRefund()
     {
         $platform_order_id = Yii::$app->request->post('platform_order_id');
-        $order_id = Yii::$app->request->post('order_id');
+        $orderIds = explode(',', Yii::$app->request->post('order_id'));
         $uid = Yii::$app->user->id;
         $amount = Yii::$app->request->post('amount');
         $refundAmount = Yii::$app->request->post('refund_amount');
@@ -85,32 +81,26 @@ class FreezeController extends AuthController
             return $this->_error(2005, '解冻退款失败，退款金额有误');
         }
 
-        /* @var $order OrderForm */
-        $order = OrderForm::find()->where(['order_id' => $order_id])->one();
-        if (!$order) {
-            return $this->_error(2005, '订单不存在');
-        }
-
-        if ($order->status != OrderForm::STATUS_PROCESSING) {
-            return $this->_error(2005, '订单状态异常');
-        }
-
-        if ($order->uid != $uid || $order->amount != $amount) {
-            return $this->_error(2005, '订单用户、订单金额不匹配');
-        }
+        $this->check($uid, $orderIds, $amount);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$order->userFreeze->less($amount)) {
-                throw new Exception('用户冻结余额解冻失败');
-            }
+            /* @var $orders OrderForm[] */
+            $orders = OrderForm::find()->where(['order_id' => $orderIds])->one();
 
-            if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
-                throw new Exception('添加冻结资金流水记录失败');
-            }
+            foreach ($orders as $order) {
+                if (!$order->userFreeze->less($amount)) {
+                    throw new Exception('用户冻结余额解冻失败');
+                }
 
-            if (!$order->setOrderSuccess()) {
-                throw new Exception('更新订单状态失败');
+                if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                    throw new Exception('添加冻结资金流水记录失败');
+                }
+
+                if (!$order->setOrderSuccess()) {
+                    throw new Exception('更新订单状态失败');
+                }
+                unset($order);
             }
 
             // 添加退款
@@ -141,6 +131,52 @@ class FreezeController extends AuthController
         } catch (Exception $e) {
             $transaction->rollBack();
             throw $e;
+        }
+    }
+
+
+    /**
+     * 订单贷款解冻校验
+     *
+     * @param $uid
+     * @param $orderId
+     * @param $amount
+     * @return array
+     */
+    public function check($uid, $orderIds, $amount)
+    {
+        if (count($orderIds) > 1) {
+            $totalAmount = OrderForm::find()->where(['order_id' => $orderIds])->sum('amount');
+
+            if ($totalAmount != $amount) {
+                return $this->_error(2005, '订单总金额不匹配');
+            }
+
+            $orderArr = OrderForm::find()->select('uid')->where(['order_id' => $orderId])->groupBy('uid')->asArray()->all();
+            $uidArr = ArrayHelper::getColumn($orderArr, 'uid');
+            if (count($uidArr) != 1 || current($uidArr) != $uid) {
+                return $this->_error(2005, '订单部分用户不匹配');
+            }
+
+            $orderStatusArr = OrderForm::find()->select('status')->where(['order_id' => $orderId])->groupBy('status')->asArray()->all();
+            $statusArr = ArrayHelper::getColumn($orderStatusArr, 'status');
+            if (count($statusArr) != 1 || current($statusArr) != OrderForm::STATUS_PROCESSING) {
+                return $this->_error(2005, '订单状态存在异常');
+            }
+        } else {
+            /* @var $order OrderForm */
+            $order = OrderForm::find()->where(['order_id' => $orderIds])->one();
+            if (!$order) {
+                return $this->_error(2005, '订单不存在');
+            }
+
+            if ($order->status != OrderForm::STATUS_PROCESSING) {
+                return $this->_error(2005, '订单状态异常');
+            }
+
+            if ($order->uid != $uid || $order->amount != $amount) {
+                return $this->_error(2005, '订单用户、订单金额不匹配');
+            }
         }
     }
 }
