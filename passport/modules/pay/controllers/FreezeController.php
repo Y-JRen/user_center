@@ -37,7 +37,7 @@ class FreezeController extends AuthController
         $transaction = Yii::$app->db->beginTransaction();
         try {
             /* @var $orders OrderForm[] */
-            $orders = OrderForm::find()->where(['order_id' => $orderIds])->one();
+            $orders = OrderForm::find()->where(['order_id' => $orderIds])->all();
             foreach ($orders as $order) {
                 if (!$order->userFreeze->less($amount)) {
                     throw new Exception('用户冻结余额解冻失败');
@@ -86,7 +86,7 @@ class FreezeController extends AuthController
         $transaction = Yii::$app->db->beginTransaction();
         try {
             /* @var $orders OrderForm[] */
-            $orders = OrderForm::find()->where(['order_id' => $orderIds])->one();
+            $orders = OrderForm::find()->where(['order_id' => $orderIds])->all();
 
             foreach ($orders as $order) {
                 if (!$order->userFreeze->less($amount)) {
@@ -139,7 +139,7 @@ class FreezeController extends AuthController
      * 订单贷款解冻校验
      *
      * @param $uid
-     * @param $orderId
+     * @param $orderIds
      * @param $amount
      * @return array
      */
@@ -152,16 +152,16 @@ class FreezeController extends AuthController
                 return $this->_error(2005, '订单总金额不匹配');
             }
 
-            $orderArr = OrderForm::find()->select('uid')->where(['order_id' => $orderId])->groupBy('uid')->asArray()->all();
-            $uidArr = ArrayHelper::getColumn($orderArr, 'uid');
-            if (count($uidArr) != 1 || current($uidArr) != $uid) {
-                return $this->_error(2005, '订单部分用户不匹配');
-            }
+            /* @var $orders OrderForm[] */
+            $orders = OrderForm::find()->where(['order_id' => $orderIds])->all();
+            foreach ($orders as $order) {
+                if ($order->status != OrderForm::STATUS_PROCESSING) {
+                    return $this->_error(2005, '订单状态异常');
+                }
 
-            $orderStatusArr = OrderForm::find()->select('status')->where(['order_id' => $orderId])->groupBy('status')->asArray()->all();
-            $statusArr = ArrayHelper::getColumn($orderStatusArr, 'status');
-            if (count($statusArr) != 1 || current($statusArr) != OrderForm::STATUS_PROCESSING) {
-                return $this->_error(2005, '订单状态存在异常');
+                if ($order->uid != $uid) {
+                    return $this->_error(2005, '订单用户不匹配');
+                }
             }
         } else {
             /* @var $order OrderForm */
