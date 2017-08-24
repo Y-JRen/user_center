@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -473,5 +474,14 @@ class Order extends BaseModel
     public function getDescription()
     {
         return $this->getType();
+    }
+
+    /**
+     * 获取该订单的微信支付配置
+     * @return array
+     */
+    public function getWeChatConfig()
+    {
+        return Config::getWeChatConfig($this->order_subtype);
     }
 }

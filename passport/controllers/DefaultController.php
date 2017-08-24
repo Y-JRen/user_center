@@ -13,6 +13,7 @@ use common\lib\pay\lakala\LakalaCore;
 use common\lib\pay\wechat\PayCore;
 use common\logic\ApiLogsLogic;
 use dosamigos\qrcode\QrCode;
+use passport\helpers\Config;
 use passport\modules\pay\logic\OrderLogic;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -47,8 +48,9 @@ class DefaultController extends Controller
         $xml = Yii::$app->request->getRawBody();
 
 
-        $pay = PayCore::instance();
-        $data = $pay->xmlToArray($xml);
+        $data = PayCore::xmlToArray($xml);
+        $type = strtolower(ArrayHelper::getValue($data, 'trade_type'));
+        $pay = PayCore::instance(Config::getWeChatConfig($type));
         if (empty($data)) {
             $return = [
                 'return_code' => 'FAIL',
@@ -92,7 +94,8 @@ class DefaultController extends Controller
     {
         $json = Yii::$app->request->post('json');
         $data = json_decode($json, true);
-        $pay = PayCore::instance();
+        $type = strtolower(ArrayHelper::getValue($data, 'trade_type'));
+        $pay = PayCore::instance(Config::getWeChatConfig($type));
         if (empty($data)) {
             $return = [
                 'return_code' => 'FAIL',

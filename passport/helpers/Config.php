@@ -2,6 +2,7 @@
 
 namespace passport\helpers;
 
+use common\models\Order;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -109,11 +110,22 @@ class Config
 
     /**
      * 获取微信支付配置
+     * @param string $type
      * @return array
      */
-    public static function getWeChatConfig()
+    public static function getWeChatConfig($type = 'default')
     {
-        return Yii::$app->params['pay']['wechat'];
+        switch ($type) {
+            case Order::SUB_TYPE_WECHAT_APP:
+            case 'app':
+                $payType = 'wechat_app';
+                break;
+            default:
+                $payType = 'wechat_default';
+                break;
+        }
+
+        return ['weChatConfig' => ArrayHelper::getValue(Yii::$app->params, ['pay', $payType])];
     }
 
     /**

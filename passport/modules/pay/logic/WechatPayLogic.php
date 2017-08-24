@@ -25,7 +25,7 @@ class WechatPayLogic extends Logic
      */
     public function weChatPay($order, $tradeType = 'NATIVE')
     {
-        $pay = PayCore::instance();
+        $pay = PayCore::instance($order->getWeChatConfig());
         $param = [
             'body' => '车城网充值中心',
             'out_trade_no' => $order->order_id,
