@@ -105,7 +105,8 @@ class Config
      */
     public static function createOrderId()
     {
-        $key = 'rand_' . date('His');
+        $time = time();
+        $key = 'rand_' . date('His', $time);
         /* @var $redis yii\redis\Connection */
         $redis = Yii::$app->redis;
         $json = $redis->get($key);
@@ -117,7 +118,7 @@ class Config
         $redis->set($key, json_encode($array));
         $redis->expire($key, 2);
 
-        return 'U' . date('YmdHis') . static::getPlatform() . $rand;
+        return 'U' . date('YmdHis', $time) . static::getPlatform() . $rand;
     }
 
     /**
