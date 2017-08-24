@@ -34,7 +34,7 @@ class RechargeController extends BaseController
         $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
 
         foreach ($keys as $key) {
-            if ($value = trim(Yii::$app->request->post($key))) {
+            if ($value =Yii::$app->request->post($key)) {
                 $remark[$key] = $value;
             }
         }
