@@ -91,36 +91,30 @@ class OrderController extends BaseController
      */
     public function actionUnfreeze()
     {
-        $order_id = Yii::$app->request->post('order_id');
+        $orderIds = explode(',', Yii::$app->request->post('order_id'));
         $uid = Yii::$app->request->post('uid');
         $amount = Yii::$app->request->post('amount');
 
-        /* @var $order Order */
-        $order = Order::find()->where(['order_id' => $order_id])->one();
-        if (!$order) {
-            return $this->_error(2005, '订单不存在');
-        }
-
-        if ($order->status != Order::STATUS_PROCESSING) {
-            return $this->_error(2005, '订单状态异常');
-        }
-
-        if ($order->uid != $uid || $order->amount != $amount) {
-            return $this->_error(2005, '订单用户、订单金额不匹配');
-        }
+        $this->check($uid, $orderIds, $amount);
 
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            if (!$order->userFreeze->less($amount)) {
-                throw new Exception('用户冻结余额解冻失败');
-            }
+            /* @var $orders Order[] */
+            $orders = Order::find()->where(['order_id' => $orderIds])->all();
 
-            if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
-                throw new Exception('添加冻结资金流水记录失败');
-            }
+            foreach ($orders as $order) {
+                if (!$order->userFreeze->less($order->amount)) {
+                    throw new Exception('用户冻结余额解冻失败');
+                }
 
-            if (!$order->setOrderSuccess()) {
-                throw new Exception('更新订单状态失败');
+                if (!$order->addPoolFreeze(PoolFreeze::STYLE_LESS)) {
+                    throw new Exception('添加冻结资金流水记录失败');
+                }
+
+                if (!$order->setOrderSuccess()) {
+                    throw new Exception('更新订单状态失败');
+                }
+                unset($order);
             }
 
             $transaction->commit();
@@ -252,5 +246,50 @@ class OrderController extends BaseController
         $query->setTradeNo($trade_no);
         $query->setOutTradeNo($out_trade_no);
         return $pay->query($query);
+    }
+
+    /**
+     * 订单贷款解冻校验
+     *
+     * @param $uid
+     * @param $orderIds
+     * @param $amount
+     * @return array
+     */
+    public function check($uid, $orderIds, $amount)
+    {
+        if (count($orderIds) > 1) {
+            $totalAmount = Order::find()->where(['order_id' => $orderIds])->sum('amount');
+
+            if ($totalAmount != $amount) {
+                return $this->_error(2005, '订单总金额不匹配');
+            }
+
+            /* @var $orders Order[] */
+            $orders = Order::find()->where(['order_id' => $orderIds])->all();
+            foreach ($orders as $order) {
+                if ($order->status != Order::STATUS_PROCESSING) {
+                    return $this->_error(2005, '订单状态异常');
+                }
+
+                if ($order->uid != $uid) {
+                    return $this->_error(2005, '订单用户不匹配');
+                }
+            }
+        } else {
+            /* @var $order Order */
+            $order = Order::find()->where(['order_id' => $orderIds])->one();
+            if (!$order) {
+                return $this->_error(2005, '订单不存在');
+            }
+
+            if ($order->status != Order::STATUS_PROCESSING) {
+                return $this->_error(2005, '订单状态异常');
+            }
+
+            if ($order->uid != $uid || $order->amount != $amount) {
+                return $this->_error(2005, '订单用户、订单金额不匹配');
+            }
+        }
     }
 }

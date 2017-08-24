@@ -39,7 +39,7 @@ class FreezeController extends AuthController
             /* @var $orders OrderForm[] */
             $orders = OrderForm::find()->where(['order_id' => $orderIds])->all();
             foreach ($orders as $order) {
-                if (!$order->userFreeze->less($amount)) {
+                if (!$order->userFreeze->less($order->amount)) {
                     throw new Exception('用户冻结余额解冻失败');
                 }
 
@@ -89,7 +89,7 @@ class FreezeController extends AuthController
             $orders = OrderForm::find()->where(['order_id' => $orderIds])->all();
 
             foreach ($orders as $order) {
-                if (!$order->userFreeze->less($amount)) {
+                if (!$order->userFreeze->less($order->amount)) {
                     throw new Exception('用户冻结余额解冻失败');
                 }
 
