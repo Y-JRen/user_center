@@ -105,7 +105,33 @@ class Config
      */
     public static function createOrderId()
     {
-        return 'U' . date('YmdHis') . static::getPlatform() . rand(100, 999);
+        $key = 'rand_' . date('His');
+        /* @var $redis yii\redis\Connection */
+        $redis = Yii::$app->redis;
+        $json = $redis->get($key);
+        $array = (array)json_decode($json, true);
+
+        $rand = self::getRand($array);
+
+        array_push($array, $rand);
+        $redis->set($key, json_encode($array));
+        $redis->expire($key, 2);
+
+        return 'U' . date('YmdHis') . static::getPlatform() . $rand;
+    }
+
+    /**
+     * 获取每秒内的唯一随机值
+     * @param $array
+     * @return int
+     */
+    public static function getRand($array)
+    {
+        $val = rand(100, 999);
+        if (in_array($val, $array)) {
+            $val = self::getRand($array);
+        }
+        return $val;
     }
 
     /**
