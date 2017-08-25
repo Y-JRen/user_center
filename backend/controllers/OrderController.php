@@ -9,6 +9,7 @@ use common\logic\HttpLogic;
 use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
+use common\traits\ConsumeTrait;
 use moonland\phpexcel\Excel;
 use passport\helpers\Config;
 use Yii;
@@ -22,6 +23,7 @@ use yii\web\NotFoundHttpException;
  */
 class OrderController extends BaseController
 {
+    use ConsumeTrait;
     public $history;
 
     /**
@@ -41,7 +43,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'user.phone',
                         'value' => function ($model) {
-                            return ' '.ArrayHelper::getValue($model->user, 'phone');
+                            return ' ' . ArrayHelper::getValue($model->user, 'phone');
                         },
                     ],
                     [
@@ -53,13 +55,13 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'platform_order_id',
                         'value' => function ($model) {
-                            return ' '.$model->platform_order_id;
+                            return ' ' . $model->platform_order_id;
                         },
                     ],
                     [
                         'attribute' => 'order_id',
                         'value' => function ($model) {
-                            return ' '.$model->order_id;
+                            return ' ' . $model->order_id;
                         },
                     ],
                     'type',
@@ -114,7 +116,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => 'user.phone',
                         'value' => function ($model) {
-                            return ' '.ArrayHelper::getValue($model->user, 'phone');
+                            return ' ' . ArrayHelper::getValue($model->user, 'phone');
                         },
                     ],
                     [
@@ -138,7 +140,7 @@ class OrderController extends BaseController
                     [
                         'attribute' => '流水单号',
                         'value' => function ($model) {
-                            return ' '.ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
+                            return ' ' . ArrayHelper::getValue(ArrayHelper::getValue(JsonHelper::BankHelper($model->remark), 'referenceNumber'), 'value');
                         }
                     ],
                     [
@@ -212,7 +214,7 @@ class OrderController extends BaseController
             $recharge->back_order = $post['back_order'];
             $recharge->transaction_time = strtotime($post['transaction_time']);
             $recharge->remark = $post['remark'];
-            $recharge->amount = $model->amount;
+            $recharge->amount = $model->receipt_amount;
             $recharge->status = ($post['sync'] ? 1 : 2);
             $recharge->created_at = time();
             if (!$recharge->save()) {
@@ -220,7 +222,7 @@ class OrderController extends BaseController
                 throw new Exception('确认失败，保存充值信息失败' . current($recharge->getFirstErrors()));
             }
 
-            if (!$model->userBalance->plus($model->amount)) {
+            if (!$model->userBalance->plus($model->receipt_amount)) {
                 throw new Exception('增加用户余额失败');
             }
 
@@ -232,7 +234,11 @@ class OrderController extends BaseController
                 throw new Exception('更新订单状态失败');
             }
 
-            $db->commit();
+            if ($this->fee($model)) {// 完成手续费
+                $db->commit();
+            } else {
+                $db->rollBack();
+            }
 
             Yii::$app->session->setFlash('success', '确认成功');
         } catch (Exception $e) {
