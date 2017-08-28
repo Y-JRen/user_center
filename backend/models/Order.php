@@ -106,6 +106,7 @@ class Order extends \common\models\Order
         'bank' => '银行',
         'lakala' => '拉卡拉POS机',
         self::SUB_TYPE_TMALL => '天猫',
+        'ddsbtk' => '订单失败退款',
     ];
 
     public function attributeLabels()
