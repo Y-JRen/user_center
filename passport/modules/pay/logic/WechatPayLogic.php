@@ -108,9 +108,9 @@ class WechatPayLogic extends Logic
         if ($result['return_code'] == 'SUCCESS' && $result['result_code'] == 'SUCCESS') {
             $pay = PayCore::instance();
             $data = [
-                'appId' => $pay->weChatConfig['appid'],
-                'partnerId' => $pay->weChatConfig['mch_id'],
-                'prepayId' => $result['prepay_id'],
+                'appid' => $pay->weChatConfig['appid'],
+                'partnerid' => $pay->weChatConfig['mch_id'],
+                'prepayid' => $result['prepay_id'],
                 'package' => 'Sign=WXPay',
                 'noncestr' => $pay->nonceStr(),
                 'timestamp' => time(),
