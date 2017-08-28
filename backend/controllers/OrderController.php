@@ -234,12 +234,11 @@ class OrderController extends BaseController
                 throw new Exception('更新订单状态失败');
             }
 
-            if ($this->fee($model)) {// 完成手续费
-                $db->commit();
-            } else {
-                $db->rollBack();
+            if (!$this->fee($model)) {// 完成手续费
+                throw new Exception('添加手续费消费失败');
             }
 
+            $db->commit();
             Yii::$app->session->setFlash('success', '确认成功');
         } catch (Exception $e) {
             $db->rollBack();

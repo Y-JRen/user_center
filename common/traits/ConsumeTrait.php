@@ -14,6 +14,7 @@ use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use Exception;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * 消费相关
@@ -41,15 +42,14 @@ trait ConsumeTrait
         $model->order_type = Order::TYPE_CONSUME;
         $model->order_subtype = Order::SUB_TYPE_CONSUME_FEE;
         $model->amount = $order->counter_fee;
-        $model->receipt_amount = $order->counter_fee;
         $model->status = Order::STATUS_PROCESSING;
         $model->desc = '手续费';
         $model->notice_status = 4;// 手续费的不需要通知第三方
         $model->platform = $order->platform;
         $model->quick_pay = 0;
         if ($model->save()) {
-            $this->freeze($order);
-            $this->thaw($order);
+            $this->freeze($model);
+            $this->thaw($model);
             return $model->setOrderSuccess();
         } else {
             Yii::error(var_export($model->errors, true), 'ConsumeTrait');
@@ -64,7 +64,6 @@ trait ConsumeTrait
      */
     protected function freeze($order)
     {
-        unset($order->userBalance, $order->userFreeze);
         if (!$order->userBalance->less($order->amount)) {
             throw new Exception('余额扣除失败');
         }
@@ -93,7 +92,6 @@ trait ConsumeTrait
      */
     protected function thaw($order)
     {
-        unset($order->userFreeze);
         if (!$order->userFreeze->less($order->amount)) {
             throw new Exception('资金解冻失败');
         }
