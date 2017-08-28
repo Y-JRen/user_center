@@ -121,7 +121,7 @@ class Order extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
+            [['uid', 'order_id', 'order_type', 'amount', 'status'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
@@ -483,5 +483,16 @@ class Order extends BaseModel
     public function getWeChatConfig()
     {
         return Config::getWeChatConfig($this->order_subtype);
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            // 实际金额处理
+            if (empty($this->receipt_amount)) {
+                $this->receipt_amount = (float)$this->amount + (float)$this->counter_fee - (float)$this->discount_amount;
+            }
+        }
+        return parent::beforeSave($insert);
     }
 }
