@@ -42,7 +42,7 @@ class RechargeController extends BaseController
         $model = new Order();
         $param['notice_status'] = 4;
 
-        if (!empty($remarkArray)) {
+        if (!empty($remark)) {
             $param['remark'] = json_encode($remark);
         }
 
