@@ -28,17 +28,9 @@ $remarkArr = JsonHelper::BankHelper($model->remark);
     <div class="form-group">
         <label class="col-sm-2 control-label">打款金额:</label>
         <div class="col-sm-10 hint-block">
-            <?= Yii::$app->formatter->asCurrency($model->amount) ?>
+            <?= Yii::$app->formatter->asCurrency($model->receipt_amount) ?>
         </div>
     </div>
-    <?php if ($model->counter_fee > 0): ?>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">打款手续费:</label>
-            <div class="col-sm-10 hint-block">
-                <?= Yii::$app->formatter->asCurrency($model->counter_fee) ?>
-            </div>
-        </div>
-    <?php endif; ?>
     <div class="form-group">
         <label class="col-sm-2 control-label">流水单号:</label>
         <div class="col-sm-10 hint-block">
