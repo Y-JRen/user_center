@@ -8,6 +8,7 @@
 
 namespace passport\traits;
 
+use common\helpers\ConfigHelper;
 use common\logic\RefundLogin;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
@@ -82,6 +83,9 @@ trait LoanTrait
             try {
                 // 添加退款
                 $model = new Order();
+                $model->order_id = ConfigHelper::createOrderId();
+                $model->platform = ConfigHelper::getPlatform();
+                $model->status = Order::STATUS_PENDING;
                 $model->uid = $uid;
                 $model->order_type = Order::TYPE_REFUND;
                 $model->order_subtype = Order::SUB_TYPE_LOAN_REFUND;
