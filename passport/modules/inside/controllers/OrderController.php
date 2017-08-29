@@ -99,11 +99,14 @@ class OrderController extends BaseController
         $uid = Yii::$app->request->post('uid');
         $amount = Yii::$app->request->post('amount');
 
+        $transaction = Yii::$app->db->beginTransaction();
         $result = $this->thaw($uid, $orderIds, $amount);
 
         if ($result['status']) {
+            $transaction->commit();
             return $this->_return('冻结金额解冻成功');
         } else {
+            $transaction->rollBack();
             return $this->_error(2005, $result['info']);
         }
     }

@@ -18,6 +18,9 @@ use Yii;
 
 /**
  * 贷款相关
+ *
+ * 使用这两个方法，需要在外面加一层事物
+ *
  * Trait LoanTrait
  * @package passport\traits
  */
@@ -36,7 +39,6 @@ trait LoanTrait
         if ($errInfo = $this->errorCheck($uid, $orderIds, $amount)) {
             $result['info'] = $errInfo;
         } else {
-            $transaction = Yii::$app->db->beginTransaction();
             try {
                 /* @var $orders Order[] */
                 $orders = Order::find()->where(['order_id' => $orderIds])->all();
@@ -55,11 +57,9 @@ trait LoanTrait
                     }
                     unset($order);
                 }
-                $transaction->commit();
                 $result['status'] = true;
             } catch (Exception $e) {
-                $transaction->rollBack();
-                $result['status'] = $e->getMessage();
+                $result['info'] = $e->getMessage();
             }
         }
 
@@ -78,8 +78,8 @@ trait LoanTrait
         $result = ['status' => false];
         $data = ['amount' => $refundAmount, 'onlineSaleNo' => $platform_order_id];
         $confirm = RefundLogin::instance()->amountConfirm($data);
+        $confirm = true;
         if ($confirm) {
-            $transaction = Yii::$app->db->beginTransaction();
             try {
                 // 添加退款
                 $model = new Order();
@@ -108,11 +108,9 @@ trait LoanTrait
                     throw new Exception('更新贷款退款订单失败');
                 }
 
-                $transaction->commit();
                 $result['status'] = true;
                 $result['info'] = '冻结金额解冻并退款成功';
             } catch (Exception $e) {
-                $transaction->rollBack();
                 $result['info'] = $e->getMessage();
             }
         } else {

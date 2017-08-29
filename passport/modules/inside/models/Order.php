@@ -81,7 +81,7 @@ class Order extends \passport\models\Order
         $model->amount = $this->amount;
         $model->order_type = self::TYPE_CONSUME;
         $model->order_subtype = self::SUB_TYPE_LOAN_RECORD;
-        $model->desc = "订单号：[{$model->platform_order_id}]贷款进入冻结金额";
+        $model->desc = "订单号[{$model->platform_order_id}]贷款进入冻结金额";
         if ($model->save()) {
             return $model;
         } else {
