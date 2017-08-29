@@ -19,12 +19,16 @@ class Order extends \passport\models\Order
     public function rules()
     {
         return [
-            [['uid', 'platform_order_id', 'order_type', 'amount', 'desc'], 'required'],
+            [['uid', 'order_type', 'amount', 'desc'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
-            [['amount'], 'number'],
+            [['amount', 'counter_fee', 'discount_amount', 'receipt_amount'], 'number'],
+            ['amount', 'compare', 'compareValue' => 0, 'operator' => '>'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
             ['order_id', 'unique'],
+            ['platform_order_id', 'required', 'when' => function ($model) {
+                return $model->order_type != self::TYPE_RECHARGE;
+            }]
 //            ['platform_order_id', 'validatorPlatformOrderId'],
         ];
     }
@@ -60,7 +64,7 @@ class Order extends \passport\models\Order
             $this->quick_pay = 0;
             $this->platform = Config::getPlatform();
             $this->order_id = Config::createOrderId();
-            $this->status = self::STATUS_PROCESSING;
+            $this->status = self::STATUS_PENDING;
         }
         return parent::beforeSave($insert);
     }
@@ -77,7 +81,7 @@ class Order extends \passport\models\Order
         $model->amount = $this->amount;
         $model->order_type = self::TYPE_CONSUME;
         $model->order_subtype = self::SUB_TYPE_LOAN_RECORD;
-        $model->desc = "订单号：[{$model->platform_order_id}]贷款进入冻结金额";
+        $model->desc = "订单号[{$model->platform_order_id}]贷款进入冻结金额";
         if ($model->save()) {
             return $model;
         } else {

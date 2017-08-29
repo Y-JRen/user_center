@@ -29,7 +29,6 @@ class ConsumeController extends BaseController
      */
     public function actionIndex()
     {
-        return false;
         $param = Yii::$app->request->post();
         if ($param['order_type'] != Order::TYPE_CONSUME) {
             return $this->_error(2007);
@@ -64,7 +63,7 @@ class ConsumeController extends BaseController
                 throw $e;
             }
         } else {
-            return $this->_error(2101, $model->errors);
+            return $this->_error(2101, current($model->getFirstErrors()));
         }
     }
 }

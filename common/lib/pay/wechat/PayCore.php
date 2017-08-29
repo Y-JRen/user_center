@@ -51,11 +51,6 @@ class PayCore extends Logic
 
     public $weChatConfig;
 
-    public function init()
-    {
-        $this->weChatConfig = Config::getWeChatConfig();
-    }
-
 
     /**
      * 统一下单
@@ -98,9 +93,8 @@ class PayCore extends Logic
     public function shortUrl($longUrl)
     {
         $data['long_url'] = $longUrl;
-        $weChatConfig = Config::getWeChatConfig();
-        $data['appid'] = $weChatConfig['appid'];
-        $data['mch_id'] = $weChatConfig['mch_id'];
+        $data['appid'] = $this->weChatConfig['appid'];
+        $data['mch_id'] = $this->weChatConfig['mch_id'];
         $data['nonce_str'] = $this->nonceStr();
         $data['sign'] = $this->sign($data);
         $dataXml = $this->buildXml($data);
@@ -156,7 +150,7 @@ class PayCore extends Logic
         $data = curl_exec($ch);
         if ($data) {
             curl_close($ch);
-            return $this->xmlToArray($data);
+            return self::xmlToArray($data);
         } else {
             $error = curl_errno($ch);
             echo "curl出错，错误码:$error" . "<br>";
@@ -214,7 +208,7 @@ class PayCore extends Logic
      * @param $xml
      * @return mixed
      */
-    function xmlToArray($xml)
+    public static function xmlToArray($xml)
     {
         //禁止引用外部xml实体
         libxml_disable_entity_loader(true);

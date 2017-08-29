@@ -11,6 +11,7 @@ namespace passport\modules\pay\models;
 
 use common\lib\pay\wechat\PayCore;
 use common\logic\AlipayBaseLogic;
+use passport\helpers\Config;
 use passport\models\Order;
 
 class OrderClose extends Order
@@ -23,6 +24,7 @@ class OrderClose extends Order
         self::SUB_TYPE_ALIPAY_WAP,
         self::SUB_TYPE_WECHAT_JSAPI,
         self::SUB_TYPE_WECHAT_CODE,
+        self::SUB_TYPE_WECHAT_APP,
         self::SUB_TYPE_LAKALA,
     ];
 
@@ -42,8 +44,9 @@ class OrderClose extends Order
                 break;
             case self::SUB_TYPE_WECHAT_CODE:
             case self::SUB_TYPE_WECHAT_JSAPI:
+            case self::SUB_TYPE_WECHAT_APP:
                 $data = ['out_trade_no' => $this->order_id];
-                PayCore::instance()->close($data);
+                PayCore::instance($this->getWeChatConfig())->close($data);
                 break;
         }
 

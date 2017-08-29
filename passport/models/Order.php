@@ -26,6 +26,9 @@ class Order extends \common\models\Order
             'order_type',
             'order_subtype',
             'amount',
+            'receipt_amount',
+            'counter_fee',
+            'discount_amount',
             'desc',
             'status',
             'statusName' => function ($model) {
@@ -44,16 +47,6 @@ class Order extends \common\models\Order
         ];
     }
 
-    public function beforeSave($insert)
-    {
-        if ($this->isNewRecord) {
-            // 实际金额处理
-            if (empty($this->receipt_amount)) {
-                $this->receipt_amount = (float)$this->amount + (float)$this->counter_fee - (float)$this->discount_amount;
-            }
-        }
-        return parent::beforeSave($insert);
-    }
 
     // 交易记录默认搜索的状态
     public static $defaultSearchStatus = [

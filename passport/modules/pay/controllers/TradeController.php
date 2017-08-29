@@ -41,7 +41,6 @@ class TradeController extends AuthController
     public function actionList()
     {
         $query = OrderForm::find()->where([
-            'platform' => Config::getPlatform(),
             'uid' => Yii::$app->user->getId()
         ]);
 

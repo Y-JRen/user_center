@@ -208,7 +208,7 @@ class PayCore extends Object
         $aop->signType = $this->signtype;
 
         $response = $aop->sdkExecute($request);
-        return htmlspecialchars($response);
+        return $response;
     }
 
     public function getNotifyUrl()
