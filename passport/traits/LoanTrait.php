@@ -23,6 +23,7 @@ use Yii;
 trait LoanTrait
 {
     /**
+     * 贷款解冻
      * @param $uid
      * @param $orderIds
      * @param $amount
@@ -87,6 +88,7 @@ trait LoanTrait
                 $model->amount = $refundAmount;
                 $model->desc = '贷款退款';
                 if (!$model->save()) {
+                    Yii::error(var_export($model->errors, true), 'LoanTrait[refund]');
                     throw new Exception('生成贷款退款订单失败');
                 }
 
