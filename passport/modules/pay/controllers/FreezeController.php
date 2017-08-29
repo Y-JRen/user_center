@@ -38,10 +38,10 @@ class FreezeController extends AuthController
         if ($result['status']) {
             $transaction->commit();
             return $this->_return('冻结金额解冻成功');
-        } else {
-            $transaction->rollBack();
-            return $this->_error(2005, $result['info']);
         }
+
+        $transaction->rollBack();
+        return $this->_error(2005, $result['info']);
     }
 
     /**
@@ -62,6 +62,8 @@ class FreezeController extends AuthController
         $transaction = Yii::$app->db->beginTransaction();
 
         $result = $this->thaw($uid, $orderIds, $amount);
+
+
         if ($result['status']) {
             unset($result);
 
@@ -71,5 +73,8 @@ class FreezeController extends AuthController
                 return $this->_return($result['info']);
             }
         }
+
+        $transaction->rollBack();
+        return $this->_error(2005, $result['info']);
     }
 }

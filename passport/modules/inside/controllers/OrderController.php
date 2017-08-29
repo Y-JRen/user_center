@@ -105,10 +105,10 @@ class OrderController extends BaseController
         if ($result['status']) {
             $transaction->commit();
             return $this->_return('冻结金额解冻成功');
-        } else {
-            $transaction->rollBack();
-            return $this->_error(2005, $result['info']);
         }
+
+        $transaction->rollBack();
+        return $this->_error(2005, $result['info']);
     }
 
     /**
@@ -121,8 +121,8 @@ class OrderController extends BaseController
         $platform_order_id = Yii::$app->request->post('platform_order_id');
         $orderIds = explode(',', Yii::$app->request->post('order_id'));
         $uid = Yii::$app->request->post('uid');
-        $amount = Yii::$app->request->post('amount');
-        $refundAmount = Yii::$app->request->post('refund_amount');
+        $amount = Yii::$app->request->post('amount', 0);
+        $refundAmount = Yii::$app->request->post('refund_amount', 0);
 
         $transaction = Yii::$app->db->beginTransaction();
 

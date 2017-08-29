@@ -78,7 +78,6 @@ trait LoanTrait
         $result = ['status' => false];
         $data = ['amount' => $refundAmount, 'onlineSaleNo' => $platform_order_id];
         $confirm = RefundLogin::instance()->amountConfirm($data);
-        $confirm = true;
         if ($confirm) {
             try {
                 // 添加退款
@@ -93,7 +92,7 @@ trait LoanTrait
                 $model->desc = '贷款退款';
                 if (!$model->save()) {
                     Yii::error(var_export($model->errors, true), 'LoanTrait[refund]');
-                    throw new Exception('生成贷款退款订单失败');
+                    throw new Exception('生成退款订单失败:' . current($model->firstErrors));
                 }
 
                 if (!$model->userBalance->plus($refundAmount)) {
