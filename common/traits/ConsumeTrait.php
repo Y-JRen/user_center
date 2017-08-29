@@ -14,7 +14,6 @@ use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use Exception;
 use Yii;
-use yii\helpers\ArrayHelper;
 
 /**
  * 消费相关

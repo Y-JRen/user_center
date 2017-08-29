@@ -307,3 +307,11 @@ VALUES
 	(3428, 37696, '', 'U201708162309331665', 1, 'line_down', 1.00, 3, '用户：177xxxx9998充值', 1, '{\"orderPayType\":3}', 1502896173, 1502973039, '{\"accountName\":\"测试\",\"bankName\":\"测试\",\"payType\":3,\"referenceImg\":[],\"referenceNumber\":\"测试\",\"transferDate\":\"2017-08-16\"}', 1, 0, 1.00, 0.00, 0.00),
 	(3430, 37696, '897840490656043008', 'U201708162339441449', 1, 'wechat_jsapi', 66411.01, 6, '', 1, '{\"orderPayType\":2}', 1502897984, 1502899787, '{\"openid\":\"ou9c3wt1HXsZ2WwWuxtZ7goCts80\"}', 1, 1, 66411.01, 0.00, 0.00),
 	(3531, 37696, '898174244394110976', 'U201708172126481916', 1, 'alipay_pc', 3999.00, 6, '2016款 1.5L 自动欣享版定金', 1, '{\"orderPayType\":1}', 1502976408, 1502978210, 'quick_pay', 1, 1, 3999.00, 0.00, 0.00);
+
+
+
+2017-08-29 财务重复确认
+INSERT INTO `order` (`id`, `uid`, `platform_order_id`, `order_id`, `order_type`, `order_subtype`, `amount`, `status`, `desc`, `notice_status`, `notice_platform_param`, `created_at`, `updated_at`, `remark`, `platform`, `quick_pay`, `receipt_amount`, `counter_fee`, `discount_amount`)
+VALUES
+	(4076, 158031, '', 'U201708251434331723', 1, 'line_down', 5999.00, 2, '用户：133xxxx4286充值', 1, '{\"orderPayType\":3}', 1503642873, 1503643455, '{\"accountName\":\"徐银明\",\"bankName\":\"中国建设银行\",\"payType\":3,\"referenceImg\":[\"http://img.che.com/che/170825/6268fab267434d40aea0398b8eeb5fd1.jpg\"],\"referenceNumber\":\"082551034950\",\"transferDate\":\"2017-08-25\"}', 1, 0, 5999.00, 0.00, 0.00);
+

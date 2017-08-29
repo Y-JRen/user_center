@@ -10,11 +10,11 @@ use common\models\LogReview;
 use common\models\PoolBalance;
 use common\models\RechargeConfirm;
 use common\traits\ConsumeTrait;
+use Exception;
 use moonland\phpexcel\Excel;
 use passport\helpers\Config;
 use Yii;
 use backend\models\search\OrderSearch;
-use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
