@@ -142,6 +142,9 @@ class Order extends \passport\models\Order
                 'desc',
                 'type',
                 'amount',
+                'receipt_amount',
+                'counter_fee',
+                'discount_amount',
                 'status',
                 'statusName' => function ($model) {
                     return $this->orderStatus;
