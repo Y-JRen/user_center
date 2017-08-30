@@ -31,8 +31,9 @@ class Order extends \common\models\Order
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
-            [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
+            [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             [['order_id'], 'unique'],
+            [['remark'], 'string'],
         ];
     }
 

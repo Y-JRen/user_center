@@ -41,8 +41,9 @@ class OrderForm extends Order
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
-            [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
+            [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             ['order_id', 'unique'],
+            [['remark'], 'string'],
             ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
             ['order_subtype', 'in', 'range' => ['wechat_code', 'wechat_jsapi', 'alipay_pc', 'alipay_wap', 'alipay_app', 'alipay_mobile', 'line_down', 'lakala'], 'when' => function ($model) {
                 return $model->order_type == self::TYPE_RECHARGE;

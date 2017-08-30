@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -72,6 +73,7 @@ class Order extends BaseModel
      */
     const SUB_TYPE_WECHAT_CODE = 'wechat_code';
     const SUB_TYPE_WECHAT_JSAPI = 'wechat_jsapi';
+    const SUB_TYPE_WECHAT_APP = 'wechat_app';
     const SUB_TYPE_ALIPAY_PC = 'alipay_pc';
     const SUB_TYPE_ALIPAY_WAP = 'alipay_wap';
     const SUB_TYPE_ALIPAY_APP = 'alipay_app';
@@ -87,6 +89,7 @@ class Order extends BaseModel
     public static $rechargeSubTypeName = [
         self::SUB_TYPE_WECHAT_CODE => '微信二维码',
         self::SUB_TYPE_WECHAT_JSAPI => '微信公众号',
+        self::SUB_TYPE_WECHAT_APP => '微信APP',
         self::SUB_TYPE_ALIPAY_PC => '支付宝PC网站',
         self::SUB_TYPE_ALIPAY_WAP => '支付宝手机网站',
         self::SUB_TYPE_ALIPAY_APP => '支付宝APP',
@@ -118,12 +121,13 @@ class Order extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'order_id', 'order_type', 'amount', 'status', 'created_at', 'updated_at'], 'required'],
+            [['uid', 'order_id', 'order_type', 'amount', 'status'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
-            [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
+            [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             [['order_id'], 'unique'],
+            [['remark'], 'string'],
         ];
     }
 
@@ -471,5 +475,25 @@ class Order extends BaseModel
     public function getDescription()
     {
         return $this->getType();
+    }
+
+    /**
+     * 获取该订单的微信支付配置
+     * @return array
+     */
+    public function getWeChatConfig()
+    {
+        return Config::getWeChatConfig($this->order_subtype);
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            // 实际金额处理
+            if (empty($this->receipt_amount)) {
+                $this->receipt_amount = (float)$this->amount + (float)$this->counter_fee - (float)$this->discount_amount;
+            }
+        }
+        return parent::beforeSave($insert);
     }
 }

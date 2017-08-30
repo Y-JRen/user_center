@@ -27,6 +27,9 @@ class PayLogic extends Logic
             case 'wechat_jsapi':
                 return WechatPayLogic::instance()->weChatPayJS($order);
                 break;
+            case 'wechat_app':
+                return WechatPayLogic::instance()->weChatPayApp($order);
+                break;
             case 'alipay_pc':
                 return AlipayLogic::instance()->pc($order);
                 break;
