@@ -8,6 +8,7 @@
 
 namespace common\jobs;
 
+use common\helpers\ConfigHelper;
 use common\logic\CrmLogic;
 use common\models\Order;
 use common\models\RechargeConfirm;
@@ -37,7 +38,9 @@ class RechargePushJob extends Object implements Job
                 $config = ArrayHelper::getValue($alipay, $key);
                 break;
             case 2:
-                $config = Yii::$app->params['recharge_push']['wechat'];
+                $subtype = ArrayHelper::getValue($order, 'order_subtype');
+                $key = (($subtype == Order::SUB_TYPE_WECHAT_APP) ? 'app' : 'default');
+                $config = ArrayHelper::getValue(Yii::$app->params, ['recharge_push', 'wechat', $key]);;
                 break;
             case 3:
                 $config = Yii::$app->params['recharge_push']['lakala'];

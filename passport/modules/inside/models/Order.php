@@ -24,8 +24,9 @@ class Order extends \passport\models\Order
             [['amount', 'counter_fee', 'discount_amount', 'receipt_amount'], 'number'],
             ['amount', 'compare', 'compareValue' => 0, 'operator' => '>'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
-            [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
+            [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             ['order_id', 'unique'],
+            [['remark'], 'string'],
             ['platform_order_id', 'required', 'when' => function ($model) {
                 return $model->order_type != self::TYPE_RECHARGE;
             }]
@@ -141,6 +142,9 @@ class Order extends \passport\models\Order
                 'desc',
                 'type',
                 'amount',
+                'receipt_amount',
+                'counter_fee',
+                'discount_amount',
                 'status',
                 'statusName' => function ($model) {
                     return $this->orderStatus;

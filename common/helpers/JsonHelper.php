@@ -59,7 +59,7 @@ class JsonHelper
                 $data['referenceNumber'] = ['label' => '流水单号', 'value' => $array['referenceNumber']];
             }
             if (array_key_exists('payType', $array)) {
-                $type = ArrayHelper::getValue($payType,$array['payType']);
+                $type = ArrayHelper::getValue($payType, $array['payType']);
                 $data['payType'] = ['label' => '转账类型', 'value' => $type];
             }
             if (array_key_exists('amount', $array)) {
@@ -70,7 +70,7 @@ class JsonHelper
                 if (is_array($array['referenceImg'])) {
                     $data['referenceImg']['value'] = $array['referenceImg'];
                 } else {
-                    $data['referenceImg']['value'][] = $array['referenceImg'];
+                    $data['referenceImg']['value'] = explode(',', $array['referenceImg']);
                 }
             }
         }

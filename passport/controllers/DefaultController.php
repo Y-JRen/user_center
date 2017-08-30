@@ -14,6 +14,7 @@ use common\lib\pay\wechat\PayCore;
 use common\logic\ApiLogsLogic;
 use dosamigos\qrcode\QrCode;
 use passport\helpers\Config;
+use passport\models\Order;
 use passport\modules\pay\logic\OrderLogic;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -49,8 +50,13 @@ class DefaultController extends Controller
 
 
         $data = PayCore::xmlToArray($xml);
-        $type = strtolower(ArrayHelper::getValue($data, 'trade_type'));
-        $pay = PayCore::instance(Config::getWeChatConfig($type));
+        $order = new Order();
+        $orderId = ArrayHelper::getValue($data, 'out_trade_no');
+        if ($orderId) {
+            /* @var $order Order */
+            $order = Order::find()->where(['order_id' => $orderId])->one();
+        }
+        $pay = PayCore::instance($order->getWeChatConfig());
         if (empty($data)) {
             $return = [
                 'return_code' => 'FAIL',
@@ -59,6 +65,8 @@ class DefaultController extends Controller
         } else {
             $sign = $data['sign'];
             unset($data['sign']);
+
+
             if ($sign == $pay->sign($data)) {
                 $result = OrderLogic::instance()->notify($data);
                 if ($result) {

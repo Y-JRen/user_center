@@ -30,8 +30,9 @@ class OrderRecharge extends Order
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
-            [['order_subtype', 'desc', 'notice_platform_param', 'remark'], 'string', 'max' => 255],
+            [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             ['order_id', 'unique'],
+            [['remark'], 'string'],
             ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
             ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName)],
             ['order_subtype', 'validatorOrderSubType'],
@@ -71,6 +72,16 @@ class OrderRecharge extends Order
 
     /**
      * 检测是否存在旧的有效订单,去除线下充值，线下充值有临界状态
+     *
+     * 同一电商订单号，只会存在一个待处理的订单
+     *
+     * 相关条件
+     * 1、充值订单
+     * 2、待处理
+     * 3、同一用户
+     * 4、子类型相同，充值金额也相同，直接返回上次的相关充值信息
+     *
+     *
      *
      * 有就返回旧订单的返回信息
      * 没有返回false
