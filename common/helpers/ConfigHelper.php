@@ -143,7 +143,6 @@ class ConfigHelper
     {
         switch ($type) {
             case Order::SUB_TYPE_WECHAT_APP:
-            case 'app':
                 $payType = 'wechat_app';
                 break;
             default:
