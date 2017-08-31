@@ -41,6 +41,7 @@ class UserForm extends Model
     public $img_code;
     public $img_unique;
     public $uuid;
+    public $login_ip;
 
 
     public function rules()
@@ -62,18 +63,19 @@ class UserForm extends Model
             ['is_agreement', 'compare', 'compareValue' => 1, 'operator' => '==', 'message' => '必需同意协议'],
             ['token', 'validateToken'],
             [['user_name', 'verify_code'], 'required', 'on' => [self::QUICK_LOGIN]],
-            ['channel', 'string', 'on' => [self::QUICK_LOGIN]]
+            ['channel', 'string', 'on' => [self::QUICK_LOGIN]],
+            ['login_ip', 'string']
         ];
     }
 
     public function scenarios()
     {
         return [
-            self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd', 'verify_code', 'channel', 'is_agreement', 'client_type'],
+            self::SCENARIO_REG => ['user_name', 'passwd', 'repasswd', 'verify_code', 'channel', 'is_agreement', 'client_type', 'login_ip'],
             self::SCENARIO_LOGIN => ['user_name', 'passwd', 'uuid', 'img_code', 'img_unique'],
             self::SCENARIO_LOGGED => ['token'],
             self::SCENARIO_REPASSWD => ['user_name', 'passwd', 'repasswd', 'verify_code'],
-            self::QUICK_LOGIN => ['user_name', 'verify_code', 'channel']
+            self::QUICK_LOGIN => ['user_name', 'verify_code', 'channel', 'login_ip']
         ];
     }
 
@@ -228,7 +230,7 @@ class UserForm extends Model
      */
     protected function getIp()
     {
-        return yii::$app->request->userIP;
+        return empty($this->login_ip) ? yii::$app->request->userIP : $this->login_ip;
     }
 
 
