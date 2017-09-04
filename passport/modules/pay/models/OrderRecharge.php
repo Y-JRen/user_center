@@ -11,7 +11,6 @@ namespace passport\modules\pay\models;
 
 use common\jobs\OrderCloseJob;
 use common\models\SystemConf;
-use passport\helpers\Config;
 use passport\models\Order;
 use Yii;
 
@@ -28,15 +27,14 @@ class OrderRecharge extends Order
         return [
             [['uid', 'order_type', 'amount', 'order_subtype'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
-            [['amount'], 'number'],
+            [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
+            ['amount', 'compare', 'compareValue' => 0, 'operator' => '>'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            [['remark'], 'string'],
-            ['order_type', 'in', 'range' => [self::TYPE_RECHARGE, self::TYPE_CONSUME, self::TYPE_REFUND, self::TYPE_CASH]],
             ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName)],
             ['order_subtype', 'validatorOrderSubType'],
-            [['openid', 'return_url'], 'string'],
+            [['openid', 'return_url', 'remark'], 'string'],
         ];
     }
 
@@ -54,20 +52,6 @@ class OrderRecharge extends Order
             }
         }
         return true;
-    }
-
-    /**
-     * 初始化充值订单的属性
-     */
-    public function initSet()
-    {
-        // 新增订单时，设置平台、订单号、初始状态
-        $this->quick_pay = (empty($this->quick_pay) ? 0 : $this->quick_pay);
-
-        $this->uid = Yii::$app->user->id;
-        $this->platform = Config::getPlatform();
-        $this->order_id = Config::createOrderId();
-        $this->status = self::STATUS_PENDING;
     }
 
     /**
