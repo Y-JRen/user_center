@@ -12,6 +12,7 @@ use common\helpers\ConfigHelper;
 use common\models\Order;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
+use common\models\PreOrder;
 use Exception;
 use Yii;
 
@@ -44,6 +45,35 @@ trait ConsumeTrait
         $model->status = Order::STATUS_PROCESSING;
         $model->desc = '手续费';
         $model->notice_status = 4;// 手续费的不需要通知第三方
+        $model->platform = $order->platform;
+        $model->quick_pay = 0;
+        if ($model->save()) {
+            $this->freeze($model);
+            $this->thaw($model);
+            return $model->setOrderSuccess();
+        } else {
+            Yii::error(var_export($model->errors, true), 'ConsumeTrait');
+            return false;
+        }
+    }
+
+    /**
+     * 快捷支付消费
+     * @param $order Order | PreOrder
+     * @return bool
+     */
+    public function quickPay($order)
+    {
+        $model = new Order();
+        $model->uid = $order->uid;
+        $model->platform_order_id = $order->platform_order_id;
+        $model->order_id = ConfigHelper::createOrderId();
+        $model->order_type = Order::TYPE_CONSUME;
+        $model->order_subtype = Order::SUB_TYPE_CONSUME_QUICK_PAY;
+        $model->amount = $order->amount;
+        $model->status = Order::STATUS_PROCESSING;
+        $model->desc = '快捷支付';
+        $model->notice_status = 4;// 快捷支付的不需要消费时通知第三方
         $model->platform = $order->platform;
         $model->quick_pay = 0;
         if ($model->save()) {

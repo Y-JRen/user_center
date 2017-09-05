@@ -11,36 +11,59 @@ namespace common\jobs;
 
 use common\models\Order;
 use common\models\PreOrder;
+use common\traits\ConsumeTrait;
+use Exception;
 use Yii;
 use yii\base\Object;
 use zhuravljov\yii\queue\Job;
 
 class LakalaOrderJob extends Object implements Job
 {
+    use ConsumeTrait;
     public $platform_order_id;
 
     public function execute($queue)
     {
-        $amount = Order::find()->where(['platform_order_id' => $this->platform_order_id, 'status' => Order::STATUS_SUCCESSFUL])->sum('amount');
+
+        $amount = Order::find()->where([
+            'platform_order_id' => $this->platform_order_id,
+            'status' => Order::STATUS_SUCCESSFUL
+        ])->sum('amount');
 
         /* @var $preOrder PreOrder */
-        $preOrder = PreOrder::find()->where(['id' => $this->platform_order_id, 'status' => PreOrder::STATUS_PENDING])->one();
+        $preOrder = PreOrder::find()->where([
+            'id' => $this->platform_order_id,
+            'status' => PreOrder::STATUS_PENDING
+        ])->one();
 
-        if (empty($preOrder)) {
-            Yii::error('预处理订单不存在');
-            return false;
-        }
-
-        if ((float)$amount >= (float)$preOrder->amount) {
+        if ((float)$amount == (float)$preOrder->amount) {
+            $status = 1;
             // 快捷支付
-            if ($preOrder->quick_pay) {
-                // @todo 添加消费， 消费后添加异步回调
+            if (!empty($preOrder->quick_pay)) {
+                //添加消费
+                $db = Yii::$app->db->beginTransaction();
+                try {
+                    $this->quickPay($preOrder);
 
-            } else {// 充值
-                // @todo 发送回调通知
+                    if (!$preOrder->setSuccess()) {
+                        throw new Exception('更新预处理订单状态失败');
+                    }
+                    $db->commit();
+                } catch (Exception $e) {
+                    $db->rollBack();
+                    $status = 3;
+                    Yii::error($e->getMessage(), 'LakalaOrderJob');
+                }
             }
 
+            // 发送回调通知
+            Yii::$app->queue_second->push(new OrderCallbackJob([
+                'notice_platform_param' => $preOrder->notice_platform_param,
+                'order_id' => $preOrder->order_id,
+                'platform_order_id' => $preOrder->platform_order_id,
+                'quick_pay' => $preOrder->quick_pay,
+                'status' => $status,
+            ]));
         }
-
     }
 }

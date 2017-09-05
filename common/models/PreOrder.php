@@ -99,6 +99,21 @@ class PreOrder extends BaseModel
         return $this->hasOne(User::className(), ['id' => 'uid']);
     }
 
+    /**
+     * 设置为成功
+     * @return bool
+     */
+    public function setSuccess()
+    {
+        $this->status = self::STATUS_SUCCESSFUL;
+        if ($this->save()) {
+            return true;
+        } else {
+            Yii::error(var_export($this->errors, true), 'PreOrder');
+            return false;
+        }
+    }
+
     public function behaviors()
     {
         return [
