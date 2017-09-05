@@ -38,22 +38,23 @@ class LakalaOrderJob extends Object implements Job
 
         if ((float)$amount == (float)$preOrder->amount) {
             $status = 1;
-            // 快捷支付
-            if (!empty($preOrder->quick_pay)) {
-                //添加消费
-                $db = Yii::$app->db->beginTransaction();
-                try {
+            $db = Yii::$app->db->beginTransaction();
+            try {
+                // 快捷支付
+                if (!empty($preOrder->quick_pay)) {
+                    //添加消费
                     $this->quickPay($preOrder);
-
-                    if (!$preOrder->setSuccess()) {
-                        throw new Exception('更新预处理订单状态失败');
-                    }
-                    $db->commit();
-                } catch (Exception $e) {
-                    $db->rollBack();
-                    $status = 3;
-                    Yii::error($e->getMessage(), 'LakalaOrderJob');
                 }
+
+                // 将充值、快捷支付订单设置为成功
+                if (!$preOrder->setSuccess()) {
+                    throw new Exception('更新预处理订单状态失败');
+                }
+                $db->commit();
+            } catch (Exception $e) {
+                $db->rollBack();
+                $status = 3;
+                Yii::error($e->getMessage(), 'LakalaOrderJob');
             }
 
             // 发送回调通知
