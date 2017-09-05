@@ -100,6 +100,15 @@ class PreOrder extends BaseModel
     }
 
     /**
+     * 关联订单表
+     * @return \yii\db\ActiveQuery|Order
+     */
+    public function getOrders()
+    {
+        return $this->hasMany(Order::className(), ['platform_order_id' => 'id']);
+    }
+
+    /**
      * 设置为成功
      * @return bool
      */

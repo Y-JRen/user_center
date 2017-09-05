@@ -27,18 +27,10 @@ class PreOrderController extends BaseController
     {
         $model = PreOrder::find()->where(['order_id' => $order_id])->one();
 
-        switch (ArrayHelper::getValue($model, 'status')) {
-            case PreOrder::STATUS_SUCCESSFUL:
-                return $this->_error(2005, '该订单已处理成功');
-                break;
-            case PreOrder::STATUS_CLOSE:
-                return $this->_error(2005, '该订单已关闭');
-                break;
-            case PreOrder::STATUS_PENDING:
-                return $this->_return($model);
-                break;
-            default:
-                return $this->_error(2005, '该订单不存在');
+        if ($model) {
+            return $this->_return($model);
+        } else {
+            return $this->_error(2005, '该订单不存在');
         }
     }
 

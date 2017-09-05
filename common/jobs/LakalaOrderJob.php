@@ -36,7 +36,7 @@ class LakalaOrderJob extends Object implements Job
             'status' => PreOrder::STATUS_PENDING
         ])->one();
 
-        if ((float)$amount == (float)$preOrder->amount) {
+        if ((float)$amount >= (float)$preOrder->amount) {
             $status = 1;
             $db = Yii::$app->db->beginTransaction();
             try {
@@ -52,6 +52,7 @@ class LakalaOrderJob extends Object implements Job
                 }
                 $db->commit();
             } catch (Exception $e) {
+                // @todo 是否需要设置预充值订单为失败
                 $db->rollBack();
                 $status = 3;
                 Yii::error($e->getMessage(), 'LakalaOrderJob');
