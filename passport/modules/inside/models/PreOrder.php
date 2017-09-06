@@ -16,6 +16,9 @@ class PreOrder extends \passport\models\PreOrder
     public function fields()
     {
         return [
+            '_id' => function ($model) {
+                return $model->id;
+            },
             'order_id',
             'platform_order_id',
             'phone' => function ($model) {
