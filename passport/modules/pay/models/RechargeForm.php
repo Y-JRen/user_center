@@ -37,7 +37,7 @@ use Yii;
 class RechargeForm extends \yii\base\Model
 {
     public $uid;// 用户id
-    public $platform_order_id = '';// 平台订单号
+    public $platform_order_id='';// 平台订单号
     public $order_id;// 会员中心单号
     public $order_type;// 类型
     public $order_subtype;// 子类型
@@ -64,7 +64,7 @@ class RechargeForm extends \yii\base\Model
         return [
             [['uid', 'order_type', 'status', 'notice_status', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
-            [['order_subtype', 'notice_platform_param', 'remark', 'desc', 'openid', 'return_url'], 'string'],
+            [['platform_order_id', 'order_subtype', 'notice_platform_param', 'remark', 'desc', 'openid', 'return_url'], 'string'],
         ];
     }
 

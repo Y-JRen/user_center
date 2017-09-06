@@ -42,6 +42,7 @@ class PreOrderController extends BaseController
     public function actionSearch($key)
     {
         $key = strtoupper($key);
+        $pageSize = Yii::$app->request->get('page-size', 20);
 
         $query = PreOrder::find();
         $length = strlen($key);
@@ -71,10 +72,10 @@ class PreOrderController extends BaseController
         $data = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => Yii::$app->request->get('page_size', 20),
+                'pageSize' => $pageSize,
             ],
         ]);
-        $pagination = new Pagination(['totalCount' => $query->count()]);
+        $pagination = new Pagination(['totalCount' => $query->count(), 'pageSize' => $pageSize]);
 
         return $this->_return([
             'list' => $data->getModels(),
