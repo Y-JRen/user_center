@@ -27,7 +27,7 @@ class OrderLineSearch extends Order
     {
         return [
             [['created_at', 'status', 'key'], 'trim'],
-            [['order_type', 'platform', 'order_subtype', 'history', 'orderStatus'], 'safe'],
+            [['order_type', 'platform', 'order_subtype', 'history', 'orderStatus', 'receipt_amount'], 'safe'],
         ];
     }
 
@@ -71,6 +71,7 @@ class OrderLineSearch extends Order
             'order_type' => $this->order_type,
             'order_subtype' => $this->order_subtype,
             'platform' => $this->platform,
+            'receipt_amount' => $this->receipt_amount,
         ]);
 
         if (!empty($this->key)) {
