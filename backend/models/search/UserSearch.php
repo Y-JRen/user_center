@@ -2,6 +2,8 @@
 
 namespace backend\models\search;
 
+use common\models\UserBalance;
+use common\models\UserFreeze;
 use common\models\UserInfo;
 use Yii;
 use yii\base\Model;
@@ -15,6 +17,24 @@ use yii\helpers\ArrayHelper;
 class UserSearch extends User
 {
     public $key;
+    public $balance;
+    public $freeze;
+
+    public static $balanceArray = [
+        2 => '0＜X≤3000',
+        3 => '3000＜X≤7000',
+        4 => '7000＜X≤15000',
+        5 => '15000＜X≤30000',
+        6 => '30000＜X≤50000',
+        7 => '50000以上'
+    ];
+
+    public static $freezeArray = [
+        2 => '0＜X≤50000',
+        3 => '5000＜X≤10000',
+        4 => '100000＜X≤200000',
+        5 => '200000以上'
+    ];
 
     /**
      * @inheritdoc
@@ -23,7 +43,7 @@ class UserSearch extends User
     {
         return [
             [['reg_time', 'login_time', 'key'], 'trim'],
-            [['from_platform', 'reg_ip', 'status', 'id'], 'safe'],
+            [['from_platform', 'reg_ip', 'status', 'id', 'balance', 'freeze'], 'safe'],
         ];
     }
 
@@ -74,7 +94,7 @@ class UserSearch extends User
             if (preg_match("/[\x7f-\xff]/", $this->key)) {
                 $uid = UserInfo::find()->select('uid')->where(['real_name' => $this->key])->asArray()->all();
                 if (!empty($uid)) {
-                    $query->andFilterWhere(['id' => ArrayHelper::getColumn($uid,'uid')]);
+                    $query->andFilterWhere(['id' => ArrayHelper::getColumn($uid, 'uid')]);
                 }
             } else {
                 $query->andFilterWhere([
@@ -99,6 +119,65 @@ class UserSearch extends User
                 ->andFilterWhere(['<', 'login_time', $endTime]);
         }
 
+        /**
+         * 余额查询
+         */
+        if (!empty($this->balance)) {
+            $balanceQuery = UserBalance::find();
+            foreach ($this->balance as $value) {
+                switch ($value) {
+                    case 2:
+                        $balanceQuery->orWhere('amount > 0 and amount <= 3000');
+                        break;
+                    case 3:
+                        $balanceQuery->orWhere('amount > 3000 and amount <= 7000');
+                        break;
+                    case 4:
+                        $balanceQuery->orWhere('amount > 7000 and amount <= 15000');
+                        break;
+                    case 5:
+                        $balanceQuery->orWhere('amount > 15000 and amount <= 30000');
+                        break;
+                    case 6:
+                        $balanceQuery->orWhere('amount > 30000 and amount <= 50000');
+                        break;
+                    case 7:
+                        $balanceQuery->orWhere('amount > 50000');
+                        break;
+                }
+            }
+            if (!empty($balanceQuery->where)) {
+                $uid = $balanceQuery->select('uid')->asArray()->all();
+                $query->andFilterWhere(['id' => ArrayHelper::getColumn($uid, 'uid')]);
+            }
+        }
+
+        /**
+         * 冻结余额查询
+         */
+        if (!empty($this->freeze)) {
+            $freezeQuery = UserFreeze::find();
+            foreach ($this->freeze as $value) {
+                switch ($value) {
+                    case 2:
+                        $freezeQuery->orWhere('amount > 0 and amount <= 50000');
+                        break;
+                    case 3:
+                        $freezeQuery->orWhere('amount > 50000 and amount <= 100000');
+                        break;
+                    case 4:
+                        $freezeQuery->orWhere('amount > 100000 and amount <= 200000');
+                        break;
+                    case 5:
+                        $freezeQuery->orWhere('amount > 200000');
+                        break;
+                }
+            }
+            if (!empty($freezeQuery->where)) {
+                $uid = $freezeQuery->select('uid')->asArray()->all();
+                $query->andFilterWhere(['id' => ArrayHelper::getColumn($uid, 'uid')]);
+            }
+        }
 
         return $dataProvider;
     }
