@@ -31,6 +31,13 @@ use yii\widgets\ActiveForm;
                 </div>
             </div>
         </div>
+        <div class="form-group col-lg-4 col-md-6">
+            <label for="" class="control-label col-sm-3 t-r"><?= (Yii::$app->controller->id == 'order') ? '充值金额' : '实际交易金额' ?>：</label>
+            <div class="col-sm-9 col-md-9">
+                <input type="text" class="form-control" name="receipt_amount"
+                       value="<?= Yii::$app->request->get('receipt_amount') ?>">
+            </div>
+        </div>
     </div>
 
     <div class="row">
