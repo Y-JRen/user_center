@@ -20,6 +20,7 @@ class PreOrder extends \passport\models\PreOrder
                 return $model->id;
             },
             'order_id',
+            'uid',
             'platform_order_id',
             'phone' => function ($model) {
                 return ArrayHelper::getValue($model->user, 'phone');
