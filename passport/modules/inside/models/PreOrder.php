@@ -54,7 +54,7 @@ class PreOrder extends \passport\models\PreOrder
             // 快捷支付时，判断余额
             if ($this->quick_pay) {
                 $balance = ArrayHelper::getValue($this->user, ['balance', 'amount'], 0);
-                $amount = (($balance < $this->amount) ? $this->amount - $balance : 0);
+                $amount = (($balance < $this->amount) ? $this->amount * 100 - $balance * 100 : 0) / 100;
             } else {
                 // 充值的时候，不用管余额
                 $amount = 0;
