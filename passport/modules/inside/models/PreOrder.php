@@ -28,7 +28,9 @@ class PreOrder extends \passport\models\PreOrder
             'desc',
             'amount',// 订单金额
             'lackAmount',// 待充值金额
-            'quick_pay',
+            'quick_pay' => function ($model) {
+                return (boolean)$model->quick_pay;
+            },
             'status',
             'created_at'
         ];
