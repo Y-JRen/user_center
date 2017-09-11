@@ -42,7 +42,7 @@ class PreOrder extends \passport\models\PreOrder
      */
     public function getLackAmount()
     {
-        $sum = (float)$this->getOrders()->sum('amount');
+        $sum = (float)$this->getOrders()->andWhere(['status' => self::STATUS_SUCCESSFUL])->sum('amount');
 
         if ($sum < $this->amount) {
             $amount = $this->amount - $sum;
