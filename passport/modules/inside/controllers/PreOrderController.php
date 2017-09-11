@@ -30,7 +30,7 @@ class PreOrderController extends BaseController
         if ($model) {
             return $this->_return($model);
         } else {
-            return $this->_error(2005, '该订单不存在');
+            return $this->_return(null, 2005, '该订单不存在');
         }
     }
 
