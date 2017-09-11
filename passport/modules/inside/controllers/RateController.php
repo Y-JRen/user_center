@@ -43,7 +43,9 @@ class RateController extends BaseController
         $result = [
             'info' => $infoArr,
             'default_checked' => ArrayHelper::getValue($data, 'default_checked'),// 默认借记卡
-            'is_modify' => (bool)ArrayHelper::getValue($data, 'is_modify')// m默认不允许修改
+            'is_modify' => (bool)ArrayHelper::getValue($data, 'is_modify'),// 默认不允许修改
+            'recharge_is_split' => (bool)ArrayHelper::getValue($data, 'recharge_is_split'),// 充值是否拆单
+            'pay_is_split' => (bool)ArrayHelper::getValue($data, 'pay_is_split')// 快捷支付是否拆单
         ];
 
         return $this->_return($result);
