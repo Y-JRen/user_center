@@ -8,6 +8,7 @@
 
 namespace passport\models;
 
+use common\jobs\OrderCloseJob;
 use common\models\RechargeExtend;
 use common\models\SystemConf;
 use passport\helpers\Config;
