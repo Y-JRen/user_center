@@ -16,6 +16,10 @@ use yii\helpers\ArrayHelper;
 
 class Order extends \passport\models\Order
 {
+    public $openid;// 微信jssdk使用
+    public $return_url; // 支付宝同步回调地址
+    public $use;// 用途
+
     public function rules()
     {
         return [
@@ -26,11 +30,14 @@ class Order extends \passport\models\Order
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            [['remark'], 'string'],
+            [['openid', 'return_url', 'remark', 'use'], 'string'],
             ['platform_order_id', 'required', 'when' => function ($model) {
                 return $model->order_type != self::TYPE_RECHARGE;
             }],
             ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName), 'when' => function ($model) {
+                return $model->order_type == self::TYPE_RECHARGE;
+            }],
+            ['order_subtype', 'validatorOrderSubType', 'when' => function ($model) {
                 return $model->order_type == self::TYPE_RECHARGE;
             }],
         ];
@@ -58,6 +65,22 @@ class Order extends \passport\models\Order
             $this->addError('platform_order_id', '该电商订单号不存在');
             return false;
         }
+    }
+
+    /**
+     * 主要检测微信充值的必填参数
+     */
+    function validatorOrderSubType()
+    {
+        if ($this->order_subtype == self::SUB_TYPE_WECHAT_JSAPI && $this->isNewRecord) {
+            if ($this->openid) {
+                $this->remark = json_encode(['openid' => $this->openid]);
+            } else {
+                $this->addError('order_subtype', '参数有误');
+                return false;
+            }
+        }
+        return true;
     }
 
     public function initSet()
