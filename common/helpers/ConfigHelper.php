@@ -102,8 +102,9 @@ class ConfigHelper
      * 生成订单ID
      * @return string
      */
-    public static function createOrderId()
+    public static function createOrderId($platform = null)
     {
+        $platform = empty($platform) ? static::getPlatform() : $platform;
         $time = time();
         $key = 'rand_' . date('His', $time);
         /* @var $redis yii\redis\Connection */
@@ -117,7 +118,7 @@ class ConfigHelper
         $redis->set($key, json_encode($array));
         $redis->expire($key, 2);
 
-        return 'U' . date('YmdHis', $time) . static::getPlatform() . $rand;
+        return 'U' . date('YmdHis', $time) . $platform . $rand;
     }
 
     /**
