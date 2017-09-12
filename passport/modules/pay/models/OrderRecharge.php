@@ -10,6 +10,7 @@ namespace passport\modules\pay\models;
 
 
 use common\jobs\OrderCloseJob;
+use common\models\RechargeExtend;
 use common\models\SystemConf;
 use passport\models\Order;
 use Yii;
@@ -18,6 +19,7 @@ class OrderRecharge extends Order
 {
     public $openid;// 微信jssdk使用
     public $return_url; // 支付宝同步回调地址
+    public $use;// 用途
 
     /**
      * @inheritdoc
@@ -34,7 +36,7 @@ class OrderRecharge extends Order
             ['order_id', 'unique'],
             ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName)],
             ['order_subtype', 'validatorOrderSubType'],
-            [['openid', 'return_url', 'remark'], 'string'],
+            [['openid', 'return_url', 'remark', 'use'], 'string'],
         ];
     }
 
@@ -110,7 +112,10 @@ class OrderRecharge extends Order
 
 
     /**
-     * 创建充值订单后，添加定时关闭
+     * 创建充值订单后
+     *
+     * 1、添加扩展记录
+     * 2、添加定时关闭
      *
      * @param bool $insert
      * @param array $changedAttributes
@@ -118,6 +123,19 @@ class OrderRecharge extends Order
     public function afterSave($insert, $changedAttributes)
     {
         if ($insert) {
+            // 扩展表添加记录
+            if (!empty($this->use)) {
+                $model = new RechargeExtend();
+                $model->uid = $this->uid;
+                $model->order_id = $this->id;
+                $model->order_no = $this->order_id;
+                $model->use = $this->use;
+                if (!$model->save()) {
+                    Yii::error(var_export($model->errors, true));
+                }
+            }
+
+            // 添加定时任务
             if (in_array($this->order_subtype, OrderClose::$allowCloseSubtype)) {
                 Yii::$app->queue_second->delay(SystemConf::getValue('recharge_order_valid_time') * 60)->push(new OrderCloseJob([
                     'order_id' => $this->order_id

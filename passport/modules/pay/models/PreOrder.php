@@ -10,12 +10,27 @@ namespace passport\modules\pay\models;
 
 
 use common\jobs\PreOrderCloseJob;
+use common\models\RechargeExtend;
 use common\models\SystemConf;
 use passport\models\Order;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class PreOrder extends \passport\models\PreOrder
 {
+    public $use;// 用途
+
+    public function rules()
+    {
+        $rules = [
+            ['use', 'string'],
+        ];
+
+        return ArrayHelper::merge(
+            parent::rules(),
+            $rules
+        );
+    }
 
     /**
      * @return array|bool|mixed
@@ -54,6 +69,18 @@ class PreOrder extends \passport\models\PreOrder
     public function afterSave($insert, $changedAttributes)
     {
         if ($insert) {
+            // 扩展表添加记录
+            if (!empty($this->use)) {
+                $model = new RechargeExtend();
+                $model->uid = $this->uid;
+                $model->order_id = $this->id;
+                $model->order_no = $this->order_id;
+                $model->use = $this->use;
+                if (!$model->save()) {
+                    Yii::error(var_export($model->errors, true));
+                }
+            }
+
             Yii::$app->queue_second->delay(SystemConf::getValue('pre_order_valid_time') * 86400)->push(new PreOrderCloseJob([
                 'id' => $this->id
             ]));
