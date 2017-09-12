@@ -8,6 +8,7 @@
 
 namespace common\jobs;
 
+use common\models\PreOrder;
 use Yii;
 use common\models\Order;
 use passport\helpers\Config;
@@ -29,6 +30,9 @@ class OrderCallbackJob extends Object implements Job
     public $quick_pay;
     public $status;
 
+    /**
+     * @param \zhuravljov\yii\queue\Queue $queue
+     */
     public function execute($queue)
     {
         $arrPost = [
@@ -38,15 +42,19 @@ class OrderCallbackJob extends Object implements Job
             'quick_pay' => $this->quick_pay,
             'status' => $this->status,
         ];
-        echo 'job1__'.json_encode($arrPost);
+        echo 'job1__' . json_encode($arrPost);
 
-        /* @var $order Order */
+        /* @var $order Order|PreOrder */
         $order = Order::find()->where(['order_id' => $this->order_id])->one();
+        if (empty($order)) {
+            $order = PreOrder::find()->where(['order_id' => $this->order_id])->one();
+        }
+
         if ($order) {
             $callbackUrl = Config::getOrderCallbackUrl($order->platform);
             $jsonRes = HttpLogic::instance()->http($callbackUrl, 'POST', $arrPost);
 
-            echo 'job2__'.$jsonRes;
+            echo 'job2__' . $jsonRes;
 
             $arrRes = json_decode($jsonRes, true);
 
@@ -77,7 +85,7 @@ class OrderCallbackJob extends Object implements Job
                 }
             }
         } else {
-            echo 'job3__'.'异常的队列数据:' . json_encode($arrPost);
+            echo 'job3__' . '异常的队列数据:' . json_encode($arrPost);
         }
     }
 }
