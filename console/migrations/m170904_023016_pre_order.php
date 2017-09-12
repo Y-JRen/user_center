@@ -18,7 +18,7 @@ class m170904_023016_pre_order extends Migration
             'order_id' => $this->string(32)->notNull()->unique()->comment('用户中心单号'),
             'order_subtype' => $this->string(32)->notNull()->comment('子类型'),
             'desc' => $this->string()->notNull()->comment('订单简述'),
-            'amount' => $this->float()->notNull()->comment('订单金额'),
+            'amount' => $this->decimal(10, 2)->notNull()->comment('订单金额'),
             'remark' => $this->text()->notNull()->defaultValue('')->comment('备注'),
             'status' => $this->boolean()->notNull()->comment('状态'),
             'platform' => $this->boolean()->notNull()->comment('平台来源'),

@@ -16,7 +16,7 @@ class m170911_073228_freeze_record extends Migration
             'order_no' => $this->string(32)->notNull()->unique(),
             'uid' => $this->integer()->notNull(),
             'use' => $this->string(32)->notNull()->comment('用途'),// 用途
-            'amount' => $this->float()->notNull(),
+            'amount' => $this->decimal(10,2)->notNull(),
             'status' => $this->boolean()->notNull()->comment('1:冻结失败;2:冻结成功;3:解冻成功;4:解冻失败'),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),

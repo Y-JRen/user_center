@@ -29,8 +29,10 @@ class Order extends \passport\models\Order
             [['remark'], 'string'],
             ['platform_order_id', 'required', 'when' => function ($model) {
                 return $model->order_type != self::TYPE_RECHARGE;
-            }]
-//            ['platform_order_id', 'validatorPlatformOrderId'],
+            }],
+            ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName), 'when' => function ($model) {
+                return $model->order_type == self::TYPE_RECHARGE;
+            }],
         ];
     }
 
@@ -58,16 +60,13 @@ class Order extends \passport\models\Order
         }
     }
 
-    public function beforeSave($insert)
+    public function initSet()
     {
         // 新增订单时，设置平台、订单号、初始状态
-        if ($this->isNewRecord) {
-            $this->quick_pay = 0;
-            $this->platform = Config::getPlatform();
-            $this->order_id = Config::createOrderId();
-            $this->status = self::STATUS_PENDING;
-        }
-        return parent::beforeSave($insert);
+        $this->quick_pay = empty($this->quick_pay) ? 0 : $this->quick_pay;
+        $this->platform = Config::getPlatform();
+        $this->order_id = Config::createOrderId();
+        $this->status = self::STATUS_PENDING;
     }
 
     /**
@@ -155,5 +154,27 @@ class Order extends \passport\models\Order
             ];
         }
         return parent::fields();
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($insert) {
+
+            // 线下充值时，组合充值信息加入备注
+            if ($this->order_type == self::TYPE_RECHARGE && $this->order_subtype == self::SUB_TYPE_LINE_DOWN) {
+                $remark = [];
+                $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
+
+                foreach ($keys as $key) {
+                    if ($value = Yii::$app->request->post($key)) {
+                        $remark[$key] = $value;
+                    }
+                }
+                if (!empty($remark)) {
+                    $this->remark = json_encode($remark);
+                }
+            }
+        }
+        return parent::beforeSave($insert);
     }
 }

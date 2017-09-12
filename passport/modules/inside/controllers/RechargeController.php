@@ -10,6 +10,7 @@ namespace passport\modules\inside\controllers;
 
 
 use passport\modules\inside\models\Order;
+use passport\modules\pay\logic\PayLogic;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -20,42 +21,26 @@ use yii\helpers\ArrayHelper;
  */
 class RechargeController extends BaseController
 {
+    /**
+     * 总充值入口
+     * @return array
+     */
+    public function actionIndex()
+    {
+        $param = Yii::$app->request->post();
+        return $this->recharge($param);
+    }
+
+    /**
+     * 线下充值
+     * @return array
+     */
     public function actionLineDown()
     {
         $param = Yii::$app->request->post();
-        if ($param['order_type'] != Order::TYPE_RECHARGE) {
-            return $this->_error(2007);
-        }
+        $param['order_subtype'] = Order::SUB_TYPE_LINE_DOWN;
 
-        if ($param['order_subtype'] != Order::SUB_TYPE_LINE_DOWN) {
-            return $this->_error(2007);
-        }
-
-        $remark = [];
-        $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
-
-        foreach ($keys as $key) {
-            if ($value = Yii::$app->request->post($key)) {
-                $remark[$key] = $value;
-            }
-        }
-
-        $model = new Order();
-        $param['notice_status'] = 4;
-
-        if (!empty($remark)) {
-            $param['remark'] = json_encode($remark);
-        }
-
-        if ($model->load($param, '') && $model->save()) {
-            $data['platform_order_id'] = $model->platform_order_id;
-            $data['order_id'] = $model->order_id;
-            $data['notice_platform_param'] = $model->notice_platform_param;
-
-            return $this->_return($data);
-        } else {
-            return $this->_error(2001, current($model->getFirstErrors()));
-        }
+        return $this->recharge($param);
     }
 
     /**
@@ -65,28 +50,47 @@ class RechargeController extends BaseController
     public function actionLakala()
     {
         $param = Yii::$app->request->post();
-        if ($param['order_type'] != Order::TYPE_RECHARGE) {
-            return $this->_error(2007);
-        }
-
-        if ($param['order_subtype'] != Order::SUB_TYPE_LAKALA) {
-            return $this->_error(2007);
-        }
-
         if (empty(ArrayHelper::getValue($param, 'platform_order_id'))) {
             return $this->_error(2007);
         }
 
+        $param['order_subtype'] = Order::SUB_TYPE_LAKALA;
+
+        return $this->recharge($param);
+    }
+
+    /**
+     * 公共方法
+     * @param $param
+     * @return array
+     */
+    private function recharge($param)
+    {
+        $param['order_type'] = Order::TYPE_RECHARGE;
         $model = new Order();
         $param['notice_status'] = 4;
-        if ($model->load($param, '') && $model->save()) {
-            $data['platform_order_id'] = $model->platform_order_id;
-            $data['order_id'] = $model->order_id;
-            $data['notice_platform_param'] = $model->notice_platform_param;
-
+        $model->load($param, '');
+        $model->initSet();
+        if ($data = $model->checkOld()) {
             return $this->_return($data);
         } else {
-            return $this->_error(2001, current($model->getFirstErrors()));
+            if ($model->save()) {
+                $result = PayLogic::instance()->pay($model);
+
+                $status = ArrayHelper::getValue($result, 'status', 0);
+                $data = ArrayHelper::getValue($result, 'data');
+                if ($status == 0) {
+                    $data['platform_order_id'] = $model->platform_order_id;
+                    $data['order_id'] = $model->order_id;
+                    $data['notice_platform_param'] = $model->notice_platform_param;
+
+                    // 返回值加入缓存
+                    $model->addCache($model->id, $data);
+                }
+                return $this->_return($data);
+            } else {
+                return $this->_error(2001, current($model->getFirstErrors()));
+            }
         }
     }
 }
