@@ -12,7 +12,9 @@ class m170912_011157_recharge_extend extends Migration
         }
 
         $this->createTable('{{%recharge_extend}}', [
-            'order_id' => $this->primaryKey()->notNull(),
+            'id' => $this->primaryKey()->notNull(),
+            'object_name' => $this->string()->notNull(),
+            'object_id' => $this->integer()->notNull(),
             'order_no' => $this->string(32)->notNull()->unique(),
             'uid' => $this->integer()->notNull(),
             'use' => $this->string(32)->notNull()->comment('用途'),// 用途

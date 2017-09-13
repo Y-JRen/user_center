@@ -158,7 +158,8 @@ class Order extends \common\models\Order
             if (!empty($this->use)) {
                 $model = new RechargeExtend();
                 $model->uid = $this->uid;
-                $model->order_id = $this->id;
+                $model->object_name = $this::className();
+                $model->object_id = $this->id;
                 $model->order_no = $this->order_id;
                 $model->use = $this->use;
                 if (!$model->save()) {

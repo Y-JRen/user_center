@@ -7,7 +7,9 @@ use Yii;
 /**
  * This is the model class for table "recharge_extend".
  *
- * @property integer $order_id
+ * @property integer $id
+ * @property string $object_name
+ * @property integer $object_id
  * @property string $order_no
  * @property integer $uid
  * @property string $use
@@ -28,11 +30,11 @@ class RechargeExtend extends BaseModel
     public function rules()
     {
         return [
-            [['order_no', 'uid', 'use'], 'required'],
-            [['uid'], 'integer'],
+            [['object_name', 'object_id', 'order_no', 'uid', 'use'], 'required'],
+            [['object_id', 'uid'], 'integer'],
+            [['object_name'], 'string', 'max' => 255],
             [['order_no', 'use'], 'string', 'max' => 32],
             [['order_no'], 'unique'],
         ];
     }
-
 }

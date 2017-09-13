@@ -67,8 +67,9 @@ class RechargeController extends BaseController
     private function recharge($param)
     {
         $param['order_type'] = Order::TYPE_RECHARGE;
-        $model = new Order();
         $param['notice_status'] = 4;
+
+        $model = new Order();
         $model->load($param, '');
         $model->initSet();
         if ($data = $model->checkOld()) {
