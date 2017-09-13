@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use common\traits\FreezeTrait;
+use Exception;
 use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -40,6 +42,7 @@ use yii\helpers\ArrayHelper;
  */
 class Order extends BaseModel
 {
+    use FreezeTrait;
     /**
      * 订单处理类型
      */
@@ -492,7 +495,7 @@ class Order extends BaseModel
      */
     public function getRechargeExtend()
     {
-        return $this->hasOne(RechargeExtend::className(), ['order_id' => 'id']);
+        return $this->hasOne(RechargeExtend::className(), ['order_on' => 'order_id']);
     }
 
     public function beforeSave($insert)
@@ -514,7 +517,13 @@ class Order extends BaseModel
                 if ($this->rechargeExtend) {
                     // 当前订单用户是备用金
                     if ($this->rechargeExtend->use == 'intention_gold') {
-                        
+                        $transaction = Yii::$app->db->beginTransaction();
+                        try {
+                            $this->createFreeze($this);
+                        } catch (Exception $e) {
+                            $transaction->rollBack();
+                            Yii::error($e->getMessage(), 'order_after_save');
+                        }
                     }
                 }
             }

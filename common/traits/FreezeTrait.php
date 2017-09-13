@@ -28,7 +28,7 @@ trait FreezeTrait
      * @param Order|PreOrder $order 充值订单
      * @throws Exception
      */
-    public function create($order)
+    public function createFreeze($order)
     {
         $model = new FreezeRecord();
         $model->uid = $order->uid;
