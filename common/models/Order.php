@@ -495,7 +495,7 @@ class Order extends BaseModel
      */
     public function getRechargeExtend()
     {
-        return $this->hasOne(RechargeExtend::className(), ['order_on' => 'order_id']);
+        return $this->hasOne(RechargeExtend::className(), ['order_no' => 'order_id']);
     }
 
     public function beforeSave($insert)
