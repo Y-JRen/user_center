@@ -520,6 +520,7 @@ class Order extends BaseModel
                         $transaction = Yii::$app->db->beginTransaction();
                         try {
                             $this->createFreeze($this);
+                            $transaction->commit();
                         } catch (Exception $e) {
                             $transaction->rollBack();
                             Yii::error($e->getMessage(), 'order_after_save');
