@@ -49,12 +49,16 @@ trait FreezeTrait
      * @param $order_no
      * @throws Exception
      */
-    public function thaw($order_no)
+    public function thaw($order_no, $uid, $amount)
     {
         /* @var $model FreezeRecord */
         $model = FreezeRecord::find()->where(['order_no' => $order_no])->one();
         if (!$model) {
             throw new Exception('不存在该笔冻结');
+        }
+
+        if (($model->uid != $uid) || ($model->amount != $amount)) {
+            throw new Exception('解冻信息不匹配');
         }
 
         if ($model->status == FreezeRecord::STATUS_FREEZE_OK) {

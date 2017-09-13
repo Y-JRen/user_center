@@ -58,9 +58,11 @@ class FreezeController extends BaseController
     public function actionThaw()
     {
         $order_no = Yii::$app->request->post('order_no');
+        $uid = Yii::$app->request->post('uid');
+        $amount = Yii::$app->request->post('amount');
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $this->thaw($order_no);
+            $this->thaw($order_no, $uid, $amount);
 
             $transaction->commit();
 
