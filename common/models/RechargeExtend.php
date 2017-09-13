@@ -37,4 +37,13 @@ class RechargeExtend extends BaseModel
             [['order_no'], 'unique'],
         ];
     }
+
+    /**
+     * 获取关联的订单
+     * @return \yii\db\ActiveQuery|Order|PreOrder
+     */
+    public function getOrder()
+    {
+        return $this->hasOne($this->object_name, ['id' => 'object_id']);
+    }
 }

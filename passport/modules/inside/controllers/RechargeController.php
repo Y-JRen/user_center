@@ -9,6 +9,7 @@
 namespace passport\modules\inside\controllers;
 
 
+use common\models\RechargeExtend;
 use passport\modules\inside\models\Order;
 use passport\modules\pay\logic\PayLogic;
 use Yii;
@@ -57,6 +58,24 @@ class RechargeController extends BaseController
         $param['order_subtype'] = Order::SUB_TYPE_LAKALA;
 
         return $this->recharge($param);
+    }
+
+    /**
+     * 获取用户待处理的意向金信息
+     * @param $uid
+     * @return array
+     */
+    public function actionIntentionGoldInfo($uid)
+    {
+        /* @var $models RechargeExtend[] */
+        $models = RechargeExtend::find()->where(['uid' => $uid, 'use' => 'intention_gold'])->orderBy('id DESC')->all();
+        foreach ($models as $model) {
+            $result = $model->getOrder()->where(['status' => Order::STATUS_PENDING])->one();
+            if ($result) {
+                return $this->_return($result);
+            }
+        }
+        return $this->_return(null);
     }
 
     /**
