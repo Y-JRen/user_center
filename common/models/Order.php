@@ -486,6 +486,15 @@ class Order extends BaseModel
         return Config::getWeChatConfig($this->order_subtype);
     }
 
+    /**
+     * 获取充值订单的扩展数据
+     * @return \yii\db\ActiveQuery|RechargeExtend
+     */
+    public function getRechargeExtend()
+    {
+        return $this->hasOne(RechargeExtend::className(), ['order_id' => 'id']);
+    }
+
     public function beforeSave($insert)
     {
         if ($this->isNewRecord) {
@@ -495,5 +504,20 @@ class Order extends BaseModel
             }
         }
         return parent::beforeSave($insert);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        // 充值成功后的一些处理
+        if ($this->order_type == self::TYPE_RECHARGE) {
+            if ($this->getOldAttribute('status') == self::STATUS_PENDING && $this->status == self::STATUS_SUCCESSFUL) {
+                if ($this->rechargeExtend) {
+                    // 当前订单用户是备用金
+                    if ($this->rechargeExtend->use == 'intention_gold') {
+                        
+                    }
+                }
+            }
+        }
     }
 }

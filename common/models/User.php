@@ -21,6 +21,9 @@ use yii\web\IdentityInterface;
  * @property string $reg_ip
  * @property integer $login_time
  * @property string $client_type
+ *
+ * @property UserBalance $userBalance
+ * @property UserFreeze $userFreeze
  */
 class User extends BaseModel implements IdentityInterface
 {
@@ -157,12 +160,46 @@ class User extends BaseModel implements IdentityInterface
     }
 
     /**
+     * 获取当前关联的冻结金额对象
+     * @return mixed|UserFreeze
+     */
+    public function getUserBalance()
+    {
+        unset($this->balance);
+        $object = $this->balance;
+        if (empty($object)) {
+            $object = new UserBalance();
+            $object->uid = $this->id;
+            $object->amount = 0;
+            $object->updated_at = time();
+        }
+        return $object;
+    }
+
+    /**
      * 获取用户冻结余额
      * @return \yii\db\ActiveQuery | UserFreeze
      */
     public function getFreeze()
     {
         return $this->hasOne(UserFreeze::className(), ['uid' => 'id']);
+    }
+
+    /**
+     * 获取当前关联的冻结金额对象
+     * @return mixed|UserFreeze
+     */
+    public function getUserFreeze()
+    {
+        unset($this->freeze);
+        $object = $this->freeze;
+        if (empty($object)) {
+            $object = new UserFreeze();
+            $object->uid = $this->id;
+            $object->amount = 0;
+            $object->updated_at = time();
+        }
+        return $object;
     }
 
     /**
