@@ -513,7 +513,7 @@ class Order extends BaseModel
     {
         // 充值成功后的一些处理
         if ($this->order_type == self::TYPE_RECHARGE) {
-            if ($this->getOldAttribute('status') == self::STATUS_PENDING && $this->status == self::STATUS_SUCCESSFUL) {
+            if (ArrayHelper::getValue($changedAttributes, 'status', 0) == self::STATUS_PROCESSING && $this->status == self::STATUS_SUCCESSFUL) {
                 if ($this->rechargeExtend) {
                     // 当前订单用户是备用金
                     if ($this->rechargeExtend->use == 'intention_gold') {
