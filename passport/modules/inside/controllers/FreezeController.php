@@ -38,10 +38,7 @@ class FreezeController extends BaseController
      */
     public function actionUserInfo($uid)
     {
-        $model = FreezeRecord::find()->where(['uid' => $uid, 'status' => FreezeRecord::STATUS_FREEZE_OK])->one();
-        if ($model) {
-            $model->setScenario('view');
-        }
+        $model = FreezeRecord::find()->where(['uid' => $uid, 'status' => FreezeRecord::STATUS_FREEZE_OK])->all();
 
         return $this->_return($model);
     }
