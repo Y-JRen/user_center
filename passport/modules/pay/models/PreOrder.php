@@ -54,7 +54,10 @@ class PreOrder extends \passport\models\PreOrder
     public function afterSave($insert, $changedAttributes)
     {
         if ($insert) {
-            Yii::$app->queue_second->delay(SystemConf::getValue('pre_order_valid_time') * 86400)->push(new PreOrderCloseJob([
+            $valid_time = Yii::$app->request->post('valid_time');
+            $seconds = empty($valid_time) ? SystemConf::getValue('pre_order_valid_time') * 86400 : $valid_time * 60;
+
+            Yii::$app->queue_second->delay($seconds)->push(new PreOrderCloseJob([
                 'id' => $this->id
             ]));
         }
@@ -68,9 +71,12 @@ class PreOrder extends \passport\models\PreOrder
     public function addCache($id, $data)
     {
         /* @var $redis yii\redis\Connection */
+        $valid_time = Yii::$app->request->post('valid_time');
+        $seconds = empty($valid_time) ? SystemConf::getValue('pre_order_valid_time') * 86400 : $valid_time * 60;
+
         $redis = Yii::$app->redis;
         $redis->set("pre_order_{$id}_return_data", json_encode($data));
-        $redis->expire("pre_order_{$id}_return_data", SystemConf::getValue('pre_order_valid_time') * 86400);
+        $redis->expire("pre_order_{$id}_return_data", $seconds);
     }
 
     /**
