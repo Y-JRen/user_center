@@ -26,7 +26,7 @@ class OrderRecharge extends Order
     {
         return [
             [['uid', 'order_type', 'amount', 'order_subtype'], 'required'],
-            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
+            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay', 'platform'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             ['amount', 'compare', 'compareValue' => 0, 'operator' => '>'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],

@@ -37,7 +37,7 @@ use Yii;
 class RechargeForm extends \yii\base\Model
 {
     public $uid;// 用户id
-    public $platform_order_id='';// 平台订单号
+    public $platform_order_id = '';// 平台订单号
     public $order_id;// 会员中心单号
     public $order_type;// 类型
     public $order_subtype;// 子类型
@@ -94,7 +94,7 @@ class RechargeForm extends \yii\base\Model
         $this->initSet();
 
         // 电商平台拉卡拉类型走预处理流程
-        if (ConfigHelper::getPlatform() == 1 && $this->order_subtype == Order::SUB_TYPE_LAKALA) {
+        if ($this->platform != 4 && $this->order_subtype == Order::SUB_TYPE_LAKALA) {
             // 预处理订单流程
             $model = new PreOrder();
         } else {
