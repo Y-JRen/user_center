@@ -80,7 +80,7 @@ class FreezeController extends BaseController
                 'defaultOrder' => ['id' => SORT_DESC]
             ],
             'pagination' => [
-                'pageSize' => Yii::$app->request->get('pageSize', 20)
+                'pageSize' => min(max(Yii::$app->request->get('pageSize', 20), 1), 50)
             ],
         ]);
 
