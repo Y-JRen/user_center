@@ -76,19 +76,22 @@ class FreezeController extends BaseController
 
         $data = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ],
+            'pagination' => [
+                'pageSize' => Yii::$app->request->get('pageSize', 20)
+            ],
         ]);
 
-        $data->setSort(['sort' => 'id']);
-
-        $pagination = new Pagination(['totalCount' => $query->count()]);
 
         return $this->_return([
             'list' => $data->getModels(),
             'pages' => [
-                'totalCount' => intval($pagination->totalCount),
-                'pageCount' => $pagination->pageCount,
-                'currentPage' => $pagination->page + 1,
-                'perPage' => $pagination->pageSize,
+                'totalCount' => intval($data->pagination->totalCount),
+                'pageCount' => $data->pagination->pageCount,
+                'currentPage' => $data->pagination->page + 1,
+                'perPage' => $data->pagination->pageSize,
             ]
         ]);
     }
