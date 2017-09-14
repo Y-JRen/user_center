@@ -2,8 +2,11 @@
 
 namespace common\models;
 
+use common\traits\FreezeTrait;
+use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "pre_order".
@@ -26,6 +29,8 @@ use yii\behaviors\TimestampBehavior;
  */
 class PreOrder extends BaseModel
 {
+    use FreezeTrait;
+
     /**
      * 订单处理状态
      */
@@ -123,10 +128,39 @@ class PreOrder extends BaseModel
         }
     }
 
+    /**
+     * 获取充值订单的扩展数据
+     * @return \yii\db\ActiveQuery|RechargeExtend
+     */
+    public function getRechargeExtend()
+    {
+        return $this->hasOne(RechargeExtend::className(), ['order_no' => 'order_id']);
+    }
+
     public function behaviors()
     {
         return [
             TimestampBehavior::className(),
         ];
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        // 充值成功后的一些处理
+        if ((ArrayHelper::getValue($changedAttributes, 'status', 0) == self::STATUS_PENDING) && ($this->status == self::STATUS_SUCCESSFUL)) {
+            if ($this->rechargeExtend) {
+                // 当前订单用户是备用金
+                if ($this->rechargeExtend->use == 'intention_gold') {
+                    $transaction = Yii::$app->db->beginTransaction();
+                    try {
+                        $this->createFreeze($this);
+                        $transaction->commit();
+                    } catch (Exception $e) {
+                        $transaction->rollBack();
+                        Yii::error($e->getMessage(), 'order_after_save');
+                    }
+                }
+            }
+        }
     }
 }

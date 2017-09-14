@@ -6,10 +6,10 @@
  * Time: 下午3:33
  */
 
-namespace passport\modules\pay\models;
+namespace passport\models;
 
 
-use passport\models\Order;
+use Yii;
 
 class OrderRecharge extends Order
 {
@@ -52,6 +52,24 @@ class OrderRecharge extends Order
         return true;
     }
 
+    public function beforeSave($insert)
+    {
+        if ($insert) {
+            // 线下充值时，组合充值信息加入备注
+            if ($this->order_type == self::TYPE_RECHARGE && $this->order_subtype == self::SUB_TYPE_LINE_DOWN && empty($this->remark)) {
+                $remark = [];
+                $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
 
-
+                foreach ($keys as $key) {
+                    if ($value = Yii::$app->request->post($key)) {
+                        $remark[$key] = $value;
+                    }
+                }
+                if (!empty($remark)) {
+                    $this->remark = json_encode($remark);
+                }
+            }
+        }
+        return parent::beforeSave($insert);
+    }
 }

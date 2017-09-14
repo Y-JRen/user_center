@@ -10,7 +10,10 @@ namespace passport\modules\inside\controllers;
 
 
 use common\models\RechargeExtend;
+use passport\models\OrderRecharge;
+use passport\models\RechargeForm;
 use passport\modules\inside\models\Order;
+use passport\modules\inside\models\PreOrder;
 use passport\modules\pay\logic\PayLogic;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -88,9 +91,14 @@ class RechargeController extends BaseController
         $param['order_type'] = Order::TYPE_RECHARGE;
         $param['notice_status'] = 4;
 
-        $model = new Order();
-        $model->load($param, '');
-        $model->initSet();
+        $form = new RechargeForm();
+
+        $param['notice_status'] = 1;
+        $form->load($param, '');
+
+        /* @var $model OrderRecharge|PreOrder */
+        $model = $form->createObject();
+
         if ($data = $model->checkOld()) {
             return $this->_return($data);
         } else {

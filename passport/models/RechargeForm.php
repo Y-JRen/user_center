@@ -6,11 +6,10 @@
  * Time: 上午11:47
  */
 
-namespace passport\modules\pay\models;
+namespace passport\models;
 
 
 use common\helpers\ConfigHelper;
-use passport\models\Order;
 use Yii;
 
 /**
@@ -77,7 +76,9 @@ class RechargeForm extends \yii\base\Model
         // 新增订单时，设置平台、订单号、初始状态
         $this->quick_pay = (empty($this->quick_pay) ? 0 : $this->quick_pay);
 
-        $this->uid = Yii::$app->user->id;
+        //设置用户id，以token获取的uid为准
+        Yii::$app->user ? $this->uid = Yii::$app->user->id : null;
+
         $this->platform = ConfigHelper::getPlatform();
         $this->order_id = ConfigHelper::createOrderId();
         $this->status = Order::STATUS_PENDING;
@@ -95,7 +96,7 @@ class RechargeForm extends \yii\base\Model
         $this->initSet();
 
         // 电商平台拉卡拉类型走预处理流程
-        if (ConfigHelper::getPlatform() == 1 && $this->order_subtype == Order::SUB_TYPE_LAKALA) {
+        if (ConfigHelper::getPlatform() != 4 && $this->order_subtype == Order::SUB_TYPE_LAKALA) {
             // 预处理订单流程
             $model = new PreOrder();
         } else {

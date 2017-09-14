@@ -34,53 +34,7 @@ class Order extends \passport\models\Order
             ['platform_order_id', 'required', 'when' => function ($model) {
                 return $model->order_type != self::TYPE_RECHARGE;
             }],
-            ['order_subtype', 'in', 'range' => array_keys(self::$rechargeSubTypeName), 'when' => function ($model) {
-                return $model->order_type == self::TYPE_RECHARGE;
-            }],
-            ['order_subtype', 'validatorOrderSubType', 'when' => function ($model) {
-                return $model->order_type == self::TYPE_RECHARGE;
-            }],
         ];
-    }
-
-    /**
-     * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
-     * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
-     * @return bool
-     */
-    public function validatorPlatformOrderId()
-    {
-        if ($this->order_type != self::TYPE_RECHARGE) {
-            return true;
-        }
-        $model = Order::find()->where(['platform_order_id' => $this->platform_order_id])->orderBy(['id' => 'desc'])->one();
-        if ($model) {
-            if ($model->uid == $this->uid) {
-                return true;
-            } else {
-                $this->addError('platform_order_id', '电商订单号用户与入账用户不匹配');
-                return false;
-            }
-        } else {
-            $this->addError('platform_order_id', '该电商订单号不存在');
-            return false;
-        }
-    }
-
-    /**
-     * 主要检测微信充值的必填参数
-     */
-    function validatorOrderSubType()
-    {
-        if ($this->order_subtype == self::SUB_TYPE_WECHAT_JSAPI && $this->isNewRecord) {
-            if ($this->openid) {
-                $this->remark = json_encode(['openid' => $this->openid]);
-            } else {
-                $this->addError('order_subtype', '参数有误');
-                return false;
-            }
-        }
-        return true;
     }
 
     public function initSet()
@@ -179,25 +133,5 @@ class Order extends \passport\models\Order
         return parent::fields();
     }
 
-    public function beforeSave($insert)
-    {
-        if ($insert) {
 
-            // 线下充值时，组合充值信息加入备注
-            if ($this->order_type == self::TYPE_RECHARGE && $this->order_subtype == self::SUB_TYPE_LINE_DOWN) {
-                $remark = [];
-                $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
-
-                foreach ($keys as $key) {
-                    if ($value = Yii::$app->request->post($key)) {
-                        $remark[$key] = $value;
-                    }
-                }
-                if (!empty($remark)) {
-                    $this->remark = json_encode($remark);
-                }
-            }
-        }
-        return parent::beforeSave($insert);
-    }
 }
