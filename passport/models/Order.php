@@ -174,5 +174,8 @@ class Order extends \common\models\Order
                 ]));
             }
         }
+
+        parent::afterSave($insert, $changedAttributes);
     }
+
 }
