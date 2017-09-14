@@ -39,7 +39,10 @@ class FreezeController extends BaseController
     public function actionUserInfo($uid)
     {
         $model = FreezeRecord::find()->where(['uid' => $uid, 'status' => FreezeRecord::STATUS_FREEZE_OK])->one();
-        $model->setScenario('view');
+        if ($model) {
+            $model->setScenario('view');
+        }
+
         return $this->_return($model);
     }
 
@@ -51,7 +54,9 @@ class FreezeController extends BaseController
     public function actionOrderInfo($order_no)
     {
         $model = FreezeRecord::find()->where(['order_no' => $order_no, 'status' => FreezeRecord::STATUS_FREEZE_OK])->one();
-        $model->setScenario('view');
+        if ($model) {
+            $model->setScenario('view');
+        }
         return $this->_return($model);
     }
 
@@ -72,6 +77,8 @@ class FreezeController extends BaseController
         $data = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $data->setSort(['sort' => 'id']);
 
         $pagination = new Pagination(['totalCount' => $query->count()]);
 
