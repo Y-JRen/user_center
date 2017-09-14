@@ -77,7 +77,7 @@ class RechargeForm extends \yii\base\Model
         $this->quick_pay = (empty($this->quick_pay) ? 0 : $this->quick_pay);
 
         //设置用户id，以token获取的uid为准
-        Yii::$app->user ? $this->uid = Yii::$app->user->id : null;
+        Yii::$app->user->id ? $this->uid = Yii::$app->user->id : null;
 
         $this->platform = ConfigHelper::getPlatform();
         $this->order_id = ConfigHelper::createOrderId();
