@@ -5,7 +5,7 @@
  * Date: 2017/8/23
  * Time: 18:14
  */
-namespace common\dubbo\orderCenter;
+namespace common\lib\dubbo\orderCenter;
 
 use dubbo\CheDubbo;
 

@@ -5,7 +5,7 @@
  * Date: 2017/8/23
  * Time: 18:16
  */
-namespace common\dubbo;
+namespace common\lib\dubbo;
 
 class DubboBase
 {

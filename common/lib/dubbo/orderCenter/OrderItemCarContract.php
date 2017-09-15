@@ -6,7 +6,7 @@
  * Time: 16:24
  */
 
-namespace common\dubbo\orderCenter;
+namespace common\lib\dubbo\orderCenter;
 
 use dubbo\CheDubbo;
 

@@ -6,12 +6,12 @@
  * Time: 11:06
  */
 
-namespace common\dubbo\orderCenter;
+namespace common\lib\dubbo\orderCenter;
 
 use dubbo\CheDubbo;
 use Yii;
 use yii\helpers\ArrayHelper;
-use common\dubbo\DubboBase;
+use common\lib\dubbo\DubboBase;
 
 abstract class DubboOrderCenterBase extends DubboBase
 {
