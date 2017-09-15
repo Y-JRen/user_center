@@ -18,8 +18,9 @@ $this->title = '会员详情';
             'header' => '序号',
         ],
         'create_time:datetime',
+        'platform',
         'platform_order_no',
-        'pro_type',
+        'proTypeName',
         'pro_name',
         'statusName',
         [
