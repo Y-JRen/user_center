@@ -327,7 +327,7 @@ class OrderController extends BaseController
     {
         if (Yii::$app->request->isAjax && !empty($platform_order_id)) {
             $path = Yii::$app->params['projects']['erp']['apiDomain'] . 'api/sale/detail';
-            $params = ['onlineSaleNo' => $platform_order_id];
+            $params = ['ocOrderNo' => $platform_order_id];
             $result = HttpLogic::instance()->http($path . '?' . http_build_query($params), 'GET');
             return $result;
         }
