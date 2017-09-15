@@ -14,7 +14,7 @@ class m170830_075644_platform_order extends Migration
         $this->createTable('{{%platform_order}}', [
             'id' => $this->primaryKey()->notNull(),
             'uid' => $this->integer()->notNull(),
-            'platform_order_id' => $this->string(32)->notNull(),
+            'platform_order_id' => $this->integer()->notNull(),
             'created_at' => $this->integer()->notNull(),
         ], $tableOptions);
     }
