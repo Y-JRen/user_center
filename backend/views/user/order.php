@@ -1,50 +1,42 @@
 <?php
 
-use yii\helpers\ArrayHelper;
+use backend\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\LinkPager;
 
 
 $this->title = '会员详情';
 ?>
 <?= $this->render('_top_header'); ?>
-    <div class="grid-view">
-        <table class="table table-bordered table-hover" style="margin-bottom: 20px;">
-            <thead>
-            <tr>
-                <th>序号</th>
-                <th>订单时间</th>
-                <th>平台</th>
-                <th>平台订单号</th>
-                <th>商品类型</th>
-                <th>商品名称</th>
-                <th>订单状态</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($orderList as $key => $value): ?>
-                <tr>
-                    <td><?= $key + 1 ?></td>
-                    <td><?= date('Y-m-d H:i:s', ArrayHelper::getValue($value, 'createTime')) ?></td>
-                    <td>电商</td>
-                    <td><?= $orderNo = ArrayHelper::getValue($value, 'no') ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'productName') ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'productName') ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'orderStatus') ?></td>
-                    <td><?= Html::a('查看详情', 'javascript:void(0)', [
-                            'data-url' => Url::to(['/order/platform', 'platform_order_id' => $orderNo]),
-                            'class' => 'markOrder']) ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
 
-        </table>
-        <div class="row text-right">
-            <div class="col-xs-12"><?= LinkPager::widget(['pagination' => $pagination]); ?></div>
-        </div>
-    </div>
+
+<?= GridView::widget([
+    'dataProvider' => $dataProvider,
+    'columns' => [
+        [
+            'class' => 'yii\grid\SerialColumn',
+            'header' => '序号',
+        ],
+        'create_time:datetime',
+        'platform_order_no',
+        'pro_type',
+        'pro_name',
+        'statusName',
+        [
+            'class' => 'yii\grid\ActionColumn',
+            'template' => '{view}',
+            'header' => '操作',
+            'buttons' => [
+                'view' => function ($url, $model, $key) {
+                    return Html::a('查看详情', 'javascript:void(0)', [
+                        'data-url' => Url::to(['/order/platform', 'platform_order_id' => $model->platform_order_no]),
+                        'class' => 'markOrder']);
+                }
+            ]
+        ],
+    ],
+]); ?>
+
 <?php $this->beginBlock('javascript') ?>
     <script type="text/javascript">
         $(document).ready(function () {

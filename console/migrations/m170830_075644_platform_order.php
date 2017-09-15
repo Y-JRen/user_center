@@ -15,7 +15,13 @@ class m170830_075644_platform_order extends Migration
             'id' => $this->primaryKey()->notNull(),
             'uid' => $this->integer()->notNull(),
             'platform_order_id' => $this->integer()->notNull(),
+            'platform_order_no' => $this->string()->notNull(),
+            'pro_type' => $this->string()->notNull(),
+            'pro_name' => $this->string()->notNull(),
+            'status' => $this->boolean()->notNull(),
+            'create_time' => $this->integer()->notNull(),
             'created_at' => $this->integer()->notNull(),
+            'updated_at' => $this->integer()->notNull(),
         ], $tableOptions);
     }
 

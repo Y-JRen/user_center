@@ -177,24 +177,14 @@ class UserController extends BaseController
      */
     public function actionOrder($uid)
     {
-        $query = PlatformOrder::find()->where(['uid' => $uid]);
         $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+            'query' => PlatformOrder::find()->where(['uid' => $uid]),
             'sort' => [
                 'defaultOrder' => ['platform_order_id' => SORT_DESC]
             ]
         ]);
 
-        $models = $dataProvider->getModels();
-
-        $result = [];
-        if ($models) {
-            $ids = ArrayHelper::getColumn($models, 'platform_order_id');
-            $object = new OrderContract();
-            $result = $object->queryByIdList($ids);
-        }
-
-        return $this->render('order', ['orderList' => $result, 'pagination' => $dataProvider->pagination]);
+        return $this->render('order', ['dataProvider' => $dataProvider]);
     }
 
     /**

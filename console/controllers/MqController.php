@@ -88,30 +88,35 @@ class MqController extends Controller
 
         /** 具体执行业务逻辑 */
         $body = json_decode(ArrayHelper::getValue($arrMessage, 'body', ''), true);
-        $action = ArrayHelper::getValue($body, 'mqAction');
 
-        if (strtoupper($action) == 'ADD') {
-            // 获取orders ['id', 'uid']
-            $id = ArrayHelper::getValue($body, ['param', 'orders', 'id']);
-            $uid = ArrayHelper::getValue($body, ['param', 'orders', 'userId']);
-            Yii::error(var_export([$id, $uid], true));
+        // 获取orders ['id', 'uid']
+        $id = ArrayHelper::getValue($body, ['param', 'orders', 'id']);
+
+        /* @var $model PlatformOrder */
+        $model = PlatformOrder::find()->where(['platform_order_id' => $id])->one();
+        if (!$model) {
             $model = new PlatformOrder();
-            $model->uid = $uid;
             $model->platform_order_id = $id;
-            $model->created_at = time();
-            if ($model->save()) {
-                //操作完后删除消息体
-                $config = ArrayHelper::getValue(Yii::$app->params, 'MQ.orderCenter');
-                $topic = ArrayHelper::getValue($config, 'topicIds.order');
-                $url = ArrayHelper::getValue($config, 'url');
-                $ak = ArrayHelper::getValue($config, 'ak');
-                $sk = ArrayHelper::getValue($config, 'sk');
-                $cid = ArrayHelper::getValue($config, 'cid');
-                $consumer = new HttpConsumer($topic, $url, $ak, $sk, $cid);
-                $consumer->toldMqDelete(json_decode($message, true));
-            } else {
-                Yii::error(var_export($model->errors, true));
-            }
+            $model->uid = ArrayHelper::getValue($body, ['param', 'orders', 'userId']);
+            $model->platform_order_no = ArrayHelper::getValue($body, ['param', 'orders', 'no'], '');
+            $model->create_time = intval(ArrayHelper::getValue($body, ['param', 'orders', 'createTime']) / 1000);
+            $model->pro_name = ArrayHelper::getValue($body, ['param', 'cars', '0', 'itemCar', 'carName'], '');
+            $model->pro_type = ArrayHelper::getValue($body, ['param', 'cars', '0', 'itemCar', 'carName'], '');
+        }
+        $model->status = ArrayHelper::getValue($body, ['param', 'orders', 'orderStatus']);
+
+        if ($model->save()) {
+            //操作完后删除消息体
+            $config = ArrayHelper::getValue(Yii::$app->params, 'MQ.orderCenter');
+            $topic = ArrayHelper::getValue($config, 'topicIds.order');
+            $url = ArrayHelper::getValue($config, 'url');
+            $ak = ArrayHelper::getValue($config, 'ak');
+            $sk = ArrayHelper::getValue($config, 'sk');
+            $cid = ArrayHelper::getValue($config, 'cid');
+            $consumer = new HttpConsumer($topic, $url, $ak, $sk, $cid);
+            $consumer->toldMqDelete(json_decode($message, true));
+        } else {
+            Yii::error(var_export($model->errors, true));
         }
 
         return true;
