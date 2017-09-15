@@ -27,12 +27,12 @@ $this->title = '会员详情';
             <?php foreach ($orderList as $key => $value): ?>
                 <tr>
                     <td><?= $key + 1 ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'insertTime') ?></td>
+                    <td><?= date('Y-m-d H:i:s', ArrayHelper::getValue($value, 'createTime')) ?></td>
                     <td>电商</td>
-                    <td><?= $orderNo = ArrayHelper::getValue($value, 'orderNo') ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'typeName') ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'name') ?></td>
-                    <td><?= ArrayHelper::getValue($value, 'statusName') ?></td>
+                    <td><?= $orderNo = ArrayHelper::getValue($value, 'no') ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'productName') ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'productName') ?></td>
+                    <td><?= ArrayHelper::getValue($value, 'orderStatus') ?></td>
                     <td><?= Html::a('查看详情', 'javascript:void(0)', [
                             'data-url' => Url::to(['/order/platform', 'platform_order_id' => $orderNo]),
                             'class' => 'markOrder']) ?></td>
