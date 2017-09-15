@@ -310,6 +310,7 @@ class OrderForm extends Order
         } catch (Exception $e) {
             $this->exceptionHandle();
             $transaction->rollBack();
+            $this->setOrderFail();
             throw $e;
         }
     }
