@@ -81,4 +81,44 @@ class UserFreeze extends BaseModel
         $this->updated_at = time();
         return $this->save();
     }
+
+    /**
+     * 增加用户余额
+     * 为了替换 plus 方法
+     *
+     * @param $amount
+     * @param Order $order
+     * @return bool
+     */
+    public function addMoney($amount, $order)
+    {
+        $this->amount += $amount;
+        $this->updated_at = time();
+        if ($this->save()) {
+            return $order->addPoolFreeze(PoolFreeze::STYLE_PLUS);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 减少用户余额
+     * 为了替换 less 方法
+     *
+     * @param $amount
+     * @param Order $order
+     * @return bool
+     */
+    public function cutMoney($amount, $order)
+    {
+        $result = self::find()->where(['uid' => $this->uid])->asArray()->one();
+        $userAmount = ArrayHelper::getValue($result, 'amount', 0);
+        $this->amount = $userAmount - $amount;
+        $this->updated_at = time();
+        if ($this->save()) {
+            return $order->addPoolFreeze(PoolFreeze::STYLE_LESS);
+        } else {
+            return false;
+        }
+    }
 }

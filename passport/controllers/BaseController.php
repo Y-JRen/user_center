@@ -121,6 +121,9 @@ class BaseController extends Controller
         2006 => 'jsapi支付openid 必填',
         2007 => '参数异常',
         2010 => '充值参数有误',
+        // 冻结类
+        3001 => '冻结失败',
+        3002 => '解冻失败',
     ];
 
     /**

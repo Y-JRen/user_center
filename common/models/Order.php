@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use common\traits\FreezeTrait;
+use Exception;
 use passport\helpers\Config;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -40,6 +42,7 @@ use yii\helpers\ArrayHelper;
  */
 class Order extends BaseModel
 {
+    use FreezeTrait;
     /**
      * 订单处理类型
      */
@@ -486,6 +489,15 @@ class Order extends BaseModel
         return Config::getWeChatConfig($this->order_subtype);
     }
 
+    /**
+     * 获取充值订单的扩展数据
+     * @return \yii\db\ActiveQuery|RechargeExtend
+     */
+    public function getRechargeExtend()
+    {
+        return $this->hasOne(RechargeExtend::className(), ['order_no' => 'order_id']);
+    }
+
     public function beforeSave($insert)
     {
         if ($this->isNewRecord) {
@@ -495,5 +507,27 @@ class Order extends BaseModel
             }
         }
         return parent::beforeSave($insert);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        // 充值成功后的一些处理
+        if ($this->order_type == self::TYPE_RECHARGE) {
+            if ((ArrayHelper::getValue($changedAttributes, 'status', 0) == self::STATUS_PENDING) && ($this->status == self::STATUS_SUCCESSFUL)) {
+                if ($this->rechargeExtend) {
+                    // 当前订单用户是备用金
+                    if ($this->rechargeExtend->use == 'intention_gold') {
+                        $transaction = Yii::$app->db->beginTransaction();
+                        try {
+                            $this->createFreeze($this);
+                            $transaction->commit();
+                        } catch (Exception $e) {
+                            $transaction->rollBack();
+                            Yii::error($e->getMessage(), 'order_after_save');
+                        }
+                    }
+                }
+            }
+        }
     }
 }
