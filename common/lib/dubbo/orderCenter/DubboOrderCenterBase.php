@@ -38,7 +38,6 @@ abstract class DubboOrderCenterBase extends DubboBase
         $result = '';
         if ($this->cheDubbo instanceof  CheDubbo) {
             $result = $this->cheDubbo->callServiceMethod($service, $uriPath, $method, $params);
-            var_dump($result);
         }
         return $this->formatResult($result);
     }
