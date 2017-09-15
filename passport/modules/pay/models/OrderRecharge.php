@@ -26,7 +26,7 @@ class OrderRecharge extends Order
     {
         return [
             [['uid', 'order_type', 'amount', 'order_subtype'], 'required'],
-            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
+            [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay', 'platform'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             ['amount', 'compare', 'compareValue' => 0, 'operator' => '>'],
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
@@ -119,7 +119,10 @@ class OrderRecharge extends Order
     {
         if ($insert) {
             if (in_array($this->order_subtype, OrderClose::$allowCloseSubtype)) {
-                Yii::$app->queue_second->delay(SystemConf::getValue('recharge_order_valid_time') * 60)->push(new OrderCloseJob([
+                $valid_time = Yii::$app->request->post('valid_time');
+                $seconds = empty($valid_time) ? SystemConf::getValue('recharge_order_valid_time') * 60 : $valid_time * 60;
+
+                Yii::$app->queue_second->delay($seconds)->push(new OrderCloseJob([
                     'order_id' => $this->order_id
                 ]));
             }
@@ -135,8 +138,11 @@ class OrderRecharge extends Order
     {
         /* @var $redis yii\redis\Connection */
         $redis = Yii::$app->redis;
+        $valid_time = Yii::$app->request->post('valid_time');
+        $seconds = empty($valid_time) ? SystemConf::getValue('recharge_order_valid_time') * 60 : $valid_time * 60;
+
         $redis->set("order_{$id}_return_data", json_encode($data));
-        $redis->expire("order_{$id}_return_data", SystemConf::getValue('recharge_order_valid_time') * 60);
+        $redis->expire("order_{$id}_return_data", $seconds);
     }
 
     /**

@@ -109,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="display: none">
             <div class="form-group">
                 <label class="col-sm-2 control-label">充值是否允许拆单：</label>
                 <div class="col-sm-2">

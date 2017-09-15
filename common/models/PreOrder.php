@@ -123,6 +123,21 @@ class PreOrder extends BaseModel
         }
     }
 
+    /**
+     * 设置为关闭
+     * @return bool
+     */
+    public function setClose()
+    {
+        $this->status = self::STATUS_CLOSE;
+        if ($this->save()) {
+            return true;
+        } else {
+            Yii::error(var_export($this->errors, true), 'PreOrder');
+            return false;
+        }
+    }
+
     public function behaviors()
     {
         return [

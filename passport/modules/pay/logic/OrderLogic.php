@@ -272,7 +272,7 @@ class OrderLogic extends Logic
             try {
                 $status = 1;
                 $order->receipt_amount = $amount;
-                $order->counter_fee = ($amount - $order->amount);
+                $order->counter_fee = intval(($amount - $order->amount)*100)/100;
                 if (!$order->setOrderSuccess())// 更新订单状态
                 {
                     throw new Exception('订单更新失败');

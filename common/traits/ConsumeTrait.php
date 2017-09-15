@@ -67,7 +67,7 @@ trait ConsumeTrait
         $model = new Order();
         $model->uid = $order->uid;
         $model->platform_order_id = $order->platform_order_id;
-        $model->order_id = ConfigHelper::createOrderId();
+        $model->order_id = ConfigHelper::createOrderId($order->platform);
         $model->order_type = Order::TYPE_CONSUME;
         $model->order_subtype = Order::SUB_TYPE_CONSUME_QUICK_PAY;
         $model->amount = $order->amount;
