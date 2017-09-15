@@ -93,7 +93,7 @@ class MqController extends Controller
         if (strtoupper($action) == 'ADD') {
             // 获取orders ['id', 'uid']
             $id = ArrayHelper::getValue($body, ['param', 'orders', 'id']);
-            $uid = ArrayHelper::getValue($body, ['param', 'orders', 'uid']);
+            $uid = ArrayHelper::getValue($body, ['param', 'orders', 'userId']);
             $model = new PlatformOrder();
             $model->uid = $uid;
             $model->platform_order_id = $id;
