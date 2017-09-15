@@ -35,6 +35,7 @@ class MqController extends Controller
         $consumer = new HttpConsumer($topic, $url, $ak, $sk, $cid);
         //启动消息订阅者
         $consumer->process(function ($message) {
+            Yii::error(var_export($message, true));
             //进程数控制
             $this->checkMqDealWithProcessNum();
 
@@ -50,7 +51,8 @@ class MqController extends Controller
     /**
      * MQ进程数过高的时候应该等待进程处理之后降下来了再接收MQ消息
      */
-    private function checkMqDealWithProcessNum(){
+    private function checkMqDealWithProcessNum()
+    {
         $processNum = $this->getMqDealWithProcessNum();
         while (self::$maxMqDealWithProcessNum <= $processNum) {
             usleep(100);//停100微秒
@@ -61,13 +63,14 @@ class MqController extends Controller
      * 检查MQ进程数
      * @return mixed
      */
-    private function getMqDealWithProcessNum(){
+    private function getMqDealWithProcessNum()
+    {
         $arrMqDealProcess = [
             'yii mq/exec',
         ];
         $strGrep = implode('|', $arrMqDealProcess);
         $cmd = "ps -ef | grep -E '{$strGrep}' | wc  -l ";
-        $num = intval(shell_exec($cmd)) ;
+        $num = intval(shell_exec($cmd));
         return max(($num - 2), 0);
     }
 
