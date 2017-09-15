@@ -14,10 +14,10 @@ class DubboBase
     public function __construct()
     {
         $this->dubboPubicParam = [
-            'productName' => PROD_NAME,
-            'productCode' => PROD_CODE,
-            'appName' => APP_NAME,
-            'appCode' => APP_ID,
+            'productName' => 'UC',
+            'productCode' => 600,
+            'appName' => '用户中心',
+            'appCode' => 601,
             'ip' => $this->getServerIp(),
         ];
     }
