@@ -16,10 +16,12 @@ use yii\helpers\ArrayHelper;
 
 class MqController extends Controller
 {
+    private static $maxMqDealWithProcessNum = 8;//处理消息队列的进程数 最多允许同时存在8个进程
+
     /**
      * 订单中心的消息队列监听接口
      *
-     * /usr/local/php/bin/php ./yii mq/order &
+     * /usr/local/php/bin/php ./yii mq/exec &
      *
      */
     public function actionListen()
@@ -33,6 +35,9 @@ class MqController extends Controller
         $consumer = new HttpConsumer($topic, $url, $ak, $sk, $cid);
         //启动消息订阅者
         $consumer->process(function ($message) {
+            //进程数控制
+            $this->checkMqDealWithProcessNum();
+
             $jsonMessage = json_encode($message);
             $rootPath = dirname(Yii::$app->basePath) . '/';
             $command = '/usr/local/php/bin/php ' . $rootPath . 'yii mq/exec '; // php命令要用绝对路径 cron 脚本
@@ -40,6 +45,30 @@ class MqController extends Controller
             pclose(popen($command, 'w'));
             return true;
         });
+    }
+
+    /**
+     * MQ进程数过高的时候应该等待进程处理之后降下来了再接收MQ消息
+     */
+    private function checkMqDealWithProcessNum(){
+        $processNum = $this->getMqDealWithProcessNum();
+        while (self::$maxMqDealWithProcessNum <= $processNum) {
+            usleep(100);//停100微秒
+        }
+    }
+
+    /**
+     * 检查MQ进程数
+     * @return mixed
+     */
+    private function getMqDealWithProcessNum(){
+        $arrMqDealProcess = [
+            'yii mq/exec',
+        ];
+        $strGrep = implode('|', $arrMqDealProcess);
+        $cmd = "ps -ef | grep -E '{$strGrep}' | wc  -l ";
+        $num = intval(shell_exec($cmd)) ;
+        return max(($num - 2), 0);
     }
 
     /**
