@@ -87,11 +87,14 @@ class MqController extends Controller
         $arrMessage = json_decode($message, true);
 
         /** 具体执行业务逻辑 */
-        $action = ArrayHelper::getValue($arrMessage, ['body', 'mqAction']);
+        $body = json_decode(ArrayHelper::getValue($arrMessage, 'body', ''), true);
+        $action = ArrayHelper::getValue($body, 'mqAction');
+
         if (strtoupper($action) == 'ADD') {
             // 获取orders ['id', 'uid']
-            $id = ArrayHelper::getValue($arrMessage, ['body', 'orders', 'id']);
-            $uid = ArrayHelper::getValue($arrMessage, ['body', 'orders', 'uid']);
+            $orders = json_decode(ArrayHelper::getValue($body, 'orders', ''), true);
+            $id = ArrayHelper::getValue($orders, 'id');
+            $uid = ArrayHelper::getValue($orders, 'uid');
             $model = new PlatformOrder();
             $model->uid = $uid;
             $model->platform_order_id = $id;
