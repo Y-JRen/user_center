@@ -10,7 +10,6 @@ namespace passport\modules\inside\controllers;
 
 
 use passport\modules\inside\models\User;
-use passport\modules\pay\models\OrderForm;
 use Yii;
 use passport\controllers\BaseController;
 use passport\modules\inside\models\Order;

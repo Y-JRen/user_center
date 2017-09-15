@@ -11,6 +11,7 @@ namespace passport\modules\inside\controllers;
 
 use passport\modules\inside\models\Order;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * 充值接口
@@ -34,7 +35,7 @@ class RechargeController extends BaseController
         $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
 
         foreach ($keys as $key) {
-            if ($value =Yii::$app->request->post($key)) {
+            if ($value = Yii::$app->request->post($key)) {
                 $remark[$key] = $value;
             }
         }
@@ -46,6 +47,38 @@ class RechargeController extends BaseController
             $param['remark'] = json_encode($remark);
         }
 
+        if ($model->load($param, '') && $model->save()) {
+            $data['platform_order_id'] = $model->platform_order_id;
+            $data['order_id'] = $model->order_id;
+            $data['notice_platform_param'] = $model->notice_platform_param;
+
+            return $this->_return($data);
+        } else {
+            return $this->_error(2001, current($model->getFirstErrors()));
+        }
+    }
+
+    /**
+     * 内部拉卡拉充值订单生成
+     * @return array
+     */
+    public function actionLakala()
+    {
+        $param = Yii::$app->request->post();
+        if ($param['order_type'] != Order::TYPE_RECHARGE) {
+            return $this->_error(2007);
+        }
+
+        if ($param['order_subtype'] != Order::SUB_TYPE_LAKALA) {
+            return $this->_error(2007);
+        }
+
+        if (empty(ArrayHelper::getValue($param, 'platform_order_id'))) {
+            return $this->_error(2007);
+        }
+
+        $model = new Order();
+        $param['notice_status'] = 4;
         if ($model->load($param, '') && $model->save()) {
             $data['platform_order_id'] = $model->platform_order_id;
             $data['order_id'] = $model->order_id;

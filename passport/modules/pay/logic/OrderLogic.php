@@ -9,6 +9,7 @@
 namespace passport\modules\pay\logic;
 
 
+use common\jobs\LakalaOrderJob;
 use common\jobs\OrderCallbackJob;
 use common\jobs\RechargePushJob;
 use common\models\PoolBalance;
@@ -271,7 +272,7 @@ class OrderLogic extends Logic
             try {
                 $status = 1;
                 $order->receipt_amount = $amount;
-                $order->counter_fee = ($amount - $order->amount);
+                $order->counter_fee = intval(($amount - $order->amount)*100)/100;
                 if (!$order->setOrderSuccess())// 更新订单状态
                 {
                     throw new Exception('订单更新失败');
@@ -296,14 +297,19 @@ class OrderLogic extends Logic
 
                 $transaction->commit();
 
-                // 异步回调通知平台
-                Yii::$app->queue_second->push(new OrderCallbackJob([
-                    'notice_platform_param' => $order->notice_platform_param,
-                    'order_id' => $order->order_id,
-                    'platform_order_id' => $order->platform_order_id,
-                    'quick_pay' => $order->quick_pay,
-                    'status' => $status,
-                ]));
+                // 拉卡拉订单执行后续操作
+                Yii::$app->queue_second->push(new LakalaOrderJob(['platform_order_id' => $order->platform_order_id]));
+
+                // 电商异步回调通知平台，拉卡拉为客户端，无法异步回调
+                if ($order->platform == 1) {
+                    Yii::$app->queue_second->push(new OrderCallbackJob([
+                        'notice_platform_param' => $order->notice_platform_param,
+                        'order_id' => $order->order_id,
+                        'platform_order_id' => $order->platform_order_id,
+                        'quick_pay' => $order->quick_pay,
+                        'status' => $status,
+                    ]));
+                }
 
                 // 添加充值到账的记录,并推送到财务系统 @todo 拉卡拉pos机流水账号，其他参数未好
                 Yii::$app->queue_second->push(new RechargePushJob([

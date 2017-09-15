@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= Html::textInput('capped[]', $value['capped'], ['class' => 'form-control']) ?>
                     </td>
                     <td class="text-center">
-                        <?= Html::radioList("is_modify_rate[{$key}][]", ArrayHelper::getValue($value,'is_modify_rate'), [1 => ' 是', 0 => '否']) ?>
+                        <?= Html::radioList("is_modify_rate[{$key}][]", ArrayHelper::getValue($value, 'is_modify_rate'), [1 => ' 是', 0 => '否']) ?>
                     </td>
                     <td class="text-center">
                         <?= Html::radioList("is_show[{$key}][]", $value['is_show'], [1 => ' 是', 0 => '否']) ?>
@@ -91,17 +91,39 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
 
 
-        <div class="form-group">
-            <label class="col-sm-2 control-label">默认卡：</label>
-            <div>
-                <?= Html::dropDownList('default_checked', $defaultChecked, \yii\helpers\ArrayHelper::map($info, 'type', 'label')) ?>
+        <div class="row">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">默认卡：</label>
+                <div>
+                    <?= Html::dropDownList('default_checked', $defaultChecked, \yii\helpers\ArrayHelper::map($info, 'type', 'label')) ?>
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label class="col-sm-2 control-label">是否可更改手续费：</label>
-            <div class="col-sm-2">
-                <?= Html::radioList('is_modify', $isModify, [1 => '允许', 0 => '不允许']) ?>
+        <div class="row">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">是否可更改手续费：</label>
+                <div class="col-sm-2">
+                    <?= Html::radioList('is_modify', $isModify, [1 => '允许', 0 => '不允许']) ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="display: none">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">充值是否允许拆单：</label>
+                <div class="col-sm-2">
+                    <?= Html::radioList('recharge_is_split', $rechargeIsSplit, [1 => '允许', 0 => '不允许']) ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">支付是否允许拆单：</label>
+                <div class="col-sm-2">
+                    <?= Html::radioList('pay_is_split', $payIsSplit, [1 => '允许', 0 => '不允许']) ?>
+                </div>
             </div>
         </div>
 

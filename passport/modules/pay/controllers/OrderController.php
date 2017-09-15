@@ -10,11 +10,11 @@ namespace passport\modules\pay\controllers;
 
 
 use common\helpers\JsonHelper;
-use common\jobs\OrderCloseJob;
-use common\models\SystemConf;
 use passport\controllers\AuthController;
 use passport\modules\pay\models\OrderClose;
 use passport\modules\pay\models\OrderRecharge;
+use passport\modules\pay\models\PreOrder;
+use passport\modules\pay\models\RechargeForm;
 use passport\modules\sso\models\UserInfo;
 use Yii;
 use passport\modules\pay\models\OrderForm;
@@ -53,14 +53,17 @@ class OrderController extends AuthController
             return $this->_error(2007);
         }
 
-        $model = new OrderRecharge();
+        $form = new RechargeForm();
+
         $param['notice_status'] = 1;
-        $model->load($param, '');
-        $model->initSet();
+        $form->load($param, '');
+
+        /* @var $model OrderRecharge|PreOrder */
+        $model = $form->createObject();
 
         if ($data = $model->checkOld()) {
             return $this->_return($data);
-        }else{
+        } else {
             if ($model->save()) {// 创建充值订单
                 $result = PayLogic::instance()->pay($model);
 
@@ -205,6 +208,9 @@ class OrderController extends AuthController
 
     /**
      * 提现确认
+     * @param $uid
+     * @param $username
+     * @return array
      */
     public function cashVerify($uid, $username)
     {

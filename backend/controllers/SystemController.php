@@ -22,6 +22,8 @@ class SystemController extends BaseController
 
         $defaultChecked = ArrayHelper::getValue($data, 'default_checked', []);
         $isModify = ArrayHelper::getValue($data, 'is_modify', []);
+        $rechargeIsSplit = ArrayHelper::getValue($data, 'recharge_is_split', []);
+        $payIsSplit = ArrayHelper::getValue($data, 'pay_is_split', []);
 
         if (Yii::$app->request->isPost) {
             $info = [];
@@ -45,12 +47,16 @@ class SystemController extends BaseController
             $defaultChecked = ArrayHelper::getValue($post, 'default_checked', ArrayHelper::getValue(current($info), 'type'));
 
             $isModify = ArrayHelper::getValue($post, 'is_modify', 1);
+            $rechargeIsSplit = ArrayHelper::getValue($post, 'recharge_is_split', 0);
+            $payIsSplit = ArrayHelper::getValue($post, 'pay_is_split', 0);
 
             $model->value = json_encode(
                 [
                     'info' => $info,
                     'default_checked' => $defaultChecked,
-                    'is_modify' => $isModify
+                    'is_modify' => $isModify,
+                    'recharge_is_split' => $rechargeIsSplit,
+                    'pay_is_split' => $payIsSplit,
                 ]);
 
             if (!$model->save()) {
@@ -63,7 +69,13 @@ class SystemController extends BaseController
 
         $info = ArrayHelper::getValue($data, 'info', []);
 
-        return $this->render('rate', ['info' => $info, 'defaultChecked' => $defaultChecked, 'isModify' => $isModify]);
+        return $this->render('rate', [
+            'info' => $info,
+            'defaultChecked' => $defaultChecked,
+            'isModify' => $isModify,
+            'rechargeIsSplit' => $rechargeIsSplit,
+            'payIsSplit' => $payIsSplit,
+        ]);
     }
 
     /**

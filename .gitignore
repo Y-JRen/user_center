@@ -40,3 +40,4 @@ phpunit.phar
 /passport/runtime/
 /passport/web/assets/
 
+/common/dubbo
