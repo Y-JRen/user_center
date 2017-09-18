@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "car_housekeeper".
@@ -11,6 +12,7 @@ use Yii;
  * @property integer $uid
  * @property string $terminal_no
  * @property integer $car_management_id
+ * @property string $client_device_no
  * @property integer $created_at
  * @property integer $updated_at
  */
@@ -30,9 +32,9 @@ class CarHousekeeper extends BaseModel
     public function rules()
     {
         return [
-            [['uid', 'terminal_no', 'car_management_id', 'created_at', 'updated_at'], 'required'],
+            [['uid', 'terminal_no', 'car_management_id'], 'required'],
             [['uid', 'car_management_id', 'created_at', 'updated_at'], 'integer'],
-            [['terminal_no'], 'string', 'max' => 32],
+            [['terminal_no', 'client_device_no'], 'string', 'max' => 32],
             [['terminal_no'], 'unique'],
         ];
     }
@@ -45,10 +47,18 @@ class CarHousekeeper extends BaseModel
         return [
             'id' => 'ID',
             'uid' => 'Uid',
-            'terminal_no' => '终端序列号',
+            'terminal_no' => 'Terminal No',
             'car_management_id' => 'Car Management ID',
-            'created_at' => '创建时间',
-            'updated_at' => '最后更新时间',
+            'client_device_no' => 'Client Device No',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
         ];
     }
 }

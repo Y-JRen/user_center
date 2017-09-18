@@ -22,6 +22,7 @@ class m170912_101158_car_housekeeper extends Migration
             'uid' => $this->integer()->notNull(),
             'terminal_no' => $this->string(32)->unique()->notNull()->comment('终端序列号'),
             'car_management_id' => $this->integer()->notNull(),
+            'client_device_no' => $this->string(32)->notNull()->defaultValue('')->comment('客户端设备号'),
             'created_at' => $this->integer()->notNull()->comment('创建时间'),
             'updated_at' => $this->integer()->notNull()->comment('最后更新时间'),
         ], $tableOptions);
