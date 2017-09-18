@@ -70,7 +70,7 @@ class AlipayLogic extends Logic
 
         if ($html) {
             Redis::setAlipayOrderHtml($order->order_id, $html);
-            $result['data']['url'] = $url = Url::to(['/alipay/show', 'orderId' => $order->order_id], true);
+            $result['data']['qrCodeData'] = $result['data']['url'] = $url = Url::to(['/alipay/show', 'orderId' => $order->order_id], true);
             $result['data']['qrcode'] = Url::to(['/default/qrcode', 'url' => $url], true);
         } else {
             $result['status'] = 2004;
