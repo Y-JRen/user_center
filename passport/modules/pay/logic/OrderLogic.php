@@ -127,11 +127,6 @@ class OrderLogic extends Logic
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
-                if (!$order->setOrderSuccess())// 更新订单状态
-                {
-                    throw new Exception('订单更新失败');
-                }
-
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额添加失败');
                 }
@@ -143,6 +138,11 @@ class OrderLogic extends Logic
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
                     $status = ($res ? 1 : 3);
+                }
+
+                if (!$order->setOrderSuccess())// 更新订单状态
+                {
+                    throw new Exception('订单更新失败');
                 }
 
                 $transaction->commit();
