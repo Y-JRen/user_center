@@ -35,7 +35,9 @@ class ConsumeController extends BaseController
         }
         $model = new Order();
         $param['notice_status'] = 4;
-        if ($model->load($param, '') && $model->save()) {
+        $model->load($param, '');
+        $model->initSet();
+        if ($model->save()) {
 
             $transaction = Yii::$app->db->beginTransaction();
             try {
