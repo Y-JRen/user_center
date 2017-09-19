@@ -54,11 +54,6 @@ class OrderLogic extends Logic
             try {
                 $status = 1;// 充值成功、快捷支付成功
 
-                //充值成功
-                if (!$order->setOrderSuccess()) {
-                    throw new Exception('订单更新失败');
-                }
-
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额更新失败');
                 }
@@ -71,6 +66,11 @@ class OrderLogic extends Logic
                 if ($order->quick_pay) {
                     $result = $order->addQuickPayOrder();
                     $status = $result ? 1 : 3;// 快捷支付，终止成功，消费失败
+                }
+
+                //充值成功
+                if (!$order->setOrderSuccess()) {
+                    throw new Exception('订单更新失败');
                 }
 
                 $transaction->commit();
@@ -127,11 +127,6 @@ class OrderLogic extends Logic
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
-                if (!$order->setOrderSuccess())// 更新订单状态
-                {
-                    throw new Exception('订单更新失败');
-                }
-
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额添加失败');
                 }
@@ -143,6 +138,11 @@ class OrderLogic extends Logic
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
                     $status = ($res ? 1 : 3);
+                }
+
+                if (!$order->setOrderSuccess())// 更新订单状态
+                {
+                    throw new Exception('订单更新失败');
                 }
 
                 $transaction->commit();
@@ -198,11 +198,6 @@ class OrderLogic extends Logic
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $status = 1;
-                if (!$order->setOrderSuccess())// 更新订单状态
-                {
-                    throw new Exception('订单更新失败');
-                }
-
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额添加失败');
                 }
@@ -214,6 +209,11 @@ class OrderLogic extends Logic
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
                     $status = ($res ? 1 : 3);
+                }
+
+                if (!$order->setOrderSuccess())// 更新订单状态
+                {
+                    throw new Exception('订单更新失败');
                 }
 
                 $transaction->commit();
@@ -273,10 +273,6 @@ class OrderLogic extends Logic
                 $status = 1;
                 $order->receipt_amount = $amount;
                 $order->counter_fee = intval(($amount - $order->amount)*100)/100;
-                if (!$order->setOrderSuccess())// 更新订单状态
-                {
-                    throw new Exception('订单更新失败');
-                }
 
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额添加失败');
@@ -293,6 +289,11 @@ class OrderLogic extends Logic
                 if ($order->quick_pay) {// 快捷支付
                     $res = $order->addQuickPayOrder();
                     $status = ($res ? 1 : 3);
+                }
+
+                if (!$order->setOrderSuccess())// 更新订单状态
+                {
+                    throw new Exception('订单更新失败');
                 }
 
                 $transaction->commit();

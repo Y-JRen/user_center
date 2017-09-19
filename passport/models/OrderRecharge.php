@@ -23,7 +23,7 @@ class OrderRecharge extends Order
     public function rules()
     {
         return [
-            [['uid', 'order_type', 'amount', 'order_subtype'], 'required'],
+            [['uid', 'order_type', 'amount', 'order_subtype', 'platform'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
             ['amount', 'compare', 'compareValue' => 0, 'operator' => '>'],
