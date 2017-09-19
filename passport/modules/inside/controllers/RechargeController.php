@@ -115,7 +115,7 @@ class RechargeController extends BaseController
                     // 返回值加入缓存
                     $model->addCache($model->id, $data);
                 }
-                return $this->_return($data);
+                return $this->_return($data, $status);
             } else {
                 return $this->_error(2001, current($model->getFirstErrors()));
             }
