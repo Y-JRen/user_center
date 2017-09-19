@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Order;
 use backend\models\search\OrderSearch;
+use backend\models\User;
 use common\logic\HttpLogic;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
@@ -13,7 +14,6 @@ use common\models\UserInfo;
 use moonland\phpexcel\Excel;
 use passport\helpers\Config;
 use Yii;
-use common\models\User;
 use backend\models\search\UserSearch;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
