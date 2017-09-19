@@ -6,11 +6,10 @@
  * Time: 上午11:47
  */
 
-namespace passport\modules\pay\models;
+namespace passport\models;
 
 
 use common\helpers\ConfigHelper;
-use passport\models\Order;
 use Yii;
 
 /**
@@ -54,6 +53,7 @@ class RechargeForm extends \yii\base\Model
     public $quick_pay = 0;// 是否快捷支付
     public $openid;// 微信 js sdk 使用
     public $return_url; // 支付宝同步回调地址
+    public $use;
 
 
     /**
@@ -64,7 +64,7 @@ class RechargeForm extends \yii\base\Model
         return [
             [['uid', 'order_type', 'status', 'notice_status', 'quick_pay'], 'integer'],
             [['amount', 'receipt_amount', 'counter_fee', 'discount_amount'], 'number'],
-            [['platform_order_id', 'order_subtype', 'notice_platform_param', 'remark', 'desc', 'openid', 'return_url'], 'string'],
+            [['platform_order_id', 'order_subtype', 'notice_platform_param', 'remark', 'desc', 'openid', 'return_url', 'use'], 'string'],
         ];
     }
 
@@ -76,7 +76,9 @@ class RechargeForm extends \yii\base\Model
         // 新增订单时，设置平台、订单号、初始状态
         $this->quick_pay = (empty($this->quick_pay) ? 0 : $this->quick_pay);
 
-        $this->uid = Yii::$app->user->id;
+        //设置用户id，以token获取的uid为准
+        Yii::$app->user->id ? $this->uid = Yii::$app->user->id : null;
+
         $this->platform = ConfigHelper::getPlatform();
         $this->order_id = ConfigHelper::createOrderId();
         $this->status = Order::STATUS_PENDING;
