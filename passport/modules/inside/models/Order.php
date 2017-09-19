@@ -133,5 +133,12 @@ class Order extends \passport\models\Order
         return parent::fields();
     }
 
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            $this->initSet();
+        }
+        return parent::beforeSave($insert);
+    }
 
 }
