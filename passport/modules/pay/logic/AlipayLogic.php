@@ -17,7 +17,7 @@ use common\lib\pay\alipay\PayWap;
 use passport\helpers\Config;
 use passport\helpers\Redis;
 use passport\logic\Logic;
-use passport\modules\pay\models\OrderRecharge;
+use passport\models\OrderRecharge;
 use yii\helpers\Url;
 
 class AlipayLogic extends Logic
