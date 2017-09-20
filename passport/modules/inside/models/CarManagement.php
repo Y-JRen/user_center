@@ -14,8 +14,8 @@ class CarManagement extends \common\models\CarManagement
             'frame_no' => function ($model) {
                 return $model->frame_number;
             },
-            'car_brand_son_type_name',
-            'car_brand_type_name',
+            'model_name',
+            'series_name',
             'brand_name',
             'driving_licenses' => function ($model) {
                 return explode(',', $model->driving_license);
