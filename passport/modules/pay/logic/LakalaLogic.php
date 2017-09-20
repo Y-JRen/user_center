@@ -24,6 +24,7 @@ class LakalaLogic extends Logic
     {
         return [
             'data' => [
+                'qrCodeData' => $order->order_id,
                 'qrcode' => Url::to(['/default/qrcode', 'url' => $order->order_id], true),
             ],
             'status' => 0

@@ -16,6 +16,10 @@ use yii\helpers\ArrayHelper;
 
 class Order extends \passport\models\Order
 {
+    public $openid;// 微信jssdk使用
+    public $return_url; // 支付宝同步回调地址
+    public $use;// 用途
+
     public function rules()
     {
         return [
@@ -26,48 +30,20 @@ class Order extends \passport\models\Order
             [['platform_order_id', 'order_id'], 'string', 'max' => 30],
             [['order_subtype', 'desc', 'notice_platform_param'], 'string', 'max' => 255],
             ['order_id', 'unique'],
-            [['remark'], 'string'],
+            [['openid', 'return_url', 'remark', 'use'], 'string'],
             ['platform_order_id', 'required', 'when' => function ($model) {
                 return $model->order_type != self::TYPE_RECHARGE;
-            }]
-//            ['platform_order_id', 'validatorPlatformOrderId'],
+            }],
         ];
     }
 
-    /**
-     * 2017-07-07 11:48 去除该验证，用户中心不管这块逻辑
-     * 验证电商订单号是否正确，只有贷款入账的充值才需要验证
-     * @return bool
-     */
-    public function validatorPlatformOrderId()
-    {
-        if ($this->order_type != self::TYPE_RECHARGE) {
-            return true;
-        }
-        $model = Order::find()->where(['platform_order_id' => $this->platform_order_id])->orderBy(['id' => 'desc'])->one();
-        if ($model) {
-            if ($model->uid == $this->uid) {
-                return true;
-            } else {
-                $this->addError('platform_order_id', '电商订单号用户与入账用户不匹配');
-                return false;
-            }
-        } else {
-            $this->addError('platform_order_id', '该电商订单号不存在');
-            return false;
-        }
-    }
-
-    public function beforeSave($insert)
+    public function initSet()
     {
         // 新增订单时，设置平台、订单号、初始状态
-        if ($this->isNewRecord) {
-            $this->quick_pay = 0;
-            $this->platform = Config::getPlatform();
-            $this->order_id = Config::createOrderId();
-            $this->status = self::STATUS_PENDING;
-        }
-        return parent::beforeSave($insert);
+        $this->quick_pay = empty($this->quick_pay) ? 0 : $this->quick_pay;
+        $this->platform = Config::getPlatform();
+        $this->order_id = Config::createOrderId();
+        $this->status = self::STATUS_PENDING;
     }
 
     /**
@@ -156,4 +132,13 @@ class Order extends \passport\models\Order
         }
         return parent::fields();
     }
+
+    public function beforeSave($insert)
+    {
+        if ($this->isNewRecord) {
+            $this->initSet();
+        }
+        return parent::beforeSave($insert);
+    }
+
 }

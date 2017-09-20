@@ -315,3 +315,13 @@ INSERT INTO `order` (`id`, `uid`, `platform_order_id`, `order_id`, `order_type`,
 VALUES
 	(4076, 158031, '', 'U201708251434331723', 1, 'line_down', 5999.00, 2, '用户：133xxxx4286充值', 1, '{\"orderPayType\":3}', 1503642873, 1503643455, '{\"accountName\":\"徐银明\",\"bankName\":\"中国建设银行\",\"payType\":3,\"referenceImg\":[\"http://img.che.com/che/170825/6268fab267434d40aea0398b8eeb5fd1.jpg\"],\"referenceNumber\":\"082551034950\",\"transferDate\":\"2017-08-25\"}', 1, 0, 5999.00, 0.00, 0.00);
 
+
+2017-09-02 邮件任务,清除用户余额
+
+INSERT INTO `user_balance` (`uid`, `amount`, `updated_at`)
+VALUES
+	(121380, 6386.00, 1503043522);
+
+INSERT INTO `order` (`id`, `uid`, `platform_order_id`, `order_id`, `order_type`, `order_subtype`, `amount`, `status`, `desc`, `notice_status`, `notice_platform_param`, `created_at`, `updated_at`, `remark`, `platform`, `quick_pay`, `receipt_amount`, `counter_fee`, `discount_amount`)
+VALUES
+	(4784, 121380, '', 'U201709021604213732', 2, '消费', 6291.26, 2, '订单消费', 1, '', 1504332127, 1504332127, '账目核销，保险未扣', 1, 0, 6291.26, 0.00, 0.00);

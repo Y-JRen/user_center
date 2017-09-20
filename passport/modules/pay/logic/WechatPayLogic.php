@@ -86,6 +86,7 @@ class WechatPayLogic extends Logic
             return [
                 'data' => [
                     'qrcode' => $qrCode,
+                    'qrCodeData' => $result['code_url'],
                 ],
                 'status' => 0
             ];

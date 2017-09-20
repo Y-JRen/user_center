@@ -89,18 +89,24 @@ $this->registerJsFile('/dist/js/user/date.js', [
         ],
         'reg_ip',
         [
+            'class' => FilterColumn::className(),
+            'attribute' => 'balance',
             'label' => '可用余额',
             'format' => 'currency',
             'value' => function ($model) {
                 return ArrayHelper::getValue($model->balance, 'amount');
-            }
+            },
+            'filterArray' => \backend\models\search\UserSearch::$balanceArray
         ],
         [
+            'class' => FilterColumn::className(),
+            'attribute' => 'freeze',
             'label' => '冻结金额',
             'format' => 'currency',
             'value' => function ($model) {
                 return ArrayHelper::getValue($model->freeze, 'amount');
-            }
+            },
+            'filterArray' => \backend\models\search\UserSearch::$freezeArray
         ],
         [
             'class' => FilterColumn::className(),

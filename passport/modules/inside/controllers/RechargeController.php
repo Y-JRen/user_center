@@ -9,8 +9,14 @@
 namespace passport\modules\inside\controllers;
 
 
+use common\models\RechargeExtend;
+use passport\models\OrderRecharge;
+use passport\models\RechargeForm;
 use passport\modules\inside\models\Order;
+use passport\modules\inside\models\PreOrder;
+use passport\modules\pay\logic\PayLogic;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * 充值接口
@@ -19,41 +25,101 @@ use Yii;
  */
 class RechargeController extends BaseController
 {
+    /**
+     * 总充值入口
+     * @return array
+     */
+    public function actionIndex()
+    {
+        $param = Yii::$app->request->post();
+        return $this->recharge($param);
+    }
+
+    /**
+     * 线下充值
+     * @return array
+     */
     public function actionLineDown()
     {
         $param = Yii::$app->request->post();
-        if ($param['order_type'] != Order::TYPE_RECHARGE) {
+        $param['order_subtype'] = Order::SUB_TYPE_LINE_DOWN;
+
+        return $this->recharge($param);
+    }
+
+    /**
+     * 内部拉卡拉充值订单生成
+     * @return array
+     */
+    public function actionLakala()
+    {
+        $param = Yii::$app->request->post();
+        if (empty(ArrayHelper::getValue($param, 'platform_order_id'))) {
             return $this->_error(2007);
         }
 
-        if ($param['order_subtype'] != Order::SUB_TYPE_LINE_DOWN) {
-            return $this->_error(2007);
-        }
+        $param['order_subtype'] = Order::SUB_TYPE_LAKALA;
 
-        $remark = [];
-        $keys = ['payType', 'transferDate', 'amount', 'referenceNumber', 'bankName', 'bankCard', 'accountName', 'referenceImg'];
+        return $this->recharge($param);
+    }
 
-        foreach ($keys as $key) {
-            if ($value =Yii::$app->request->post($key)) {
-                $remark[$key] = $value;
+    /**
+     * 获取用户待处理的意向金信息
+     * @param $uid
+     * @return array
+     */
+    public function actionIntentionGoldInfo($uid)
+    {
+        /* @var $models RechargeExtend[] */
+        $models = RechargeExtend::find()->where(['uid' => $uid, 'use' => 'intention_gold'])->orderBy('id DESC')->all();
+        foreach ($models as $model) {
+            $result = $model->getOrder()->where(['status' => Order::STATUS_PENDING])->one();
+            if ($result) {
+                return $this->_return($result);
             }
         }
+        return $this->_return(null);
+    }
 
-        $model = new Order();
+    /**
+     * 公共方法
+     * @param $param
+     * @return array
+     */
+    private function recharge($param)
+    {
+        $param['order_type'] = Order::TYPE_RECHARGE;
         $param['notice_status'] = 4;
 
-        if (!empty($remark)) {
-            $param['remark'] = json_encode($remark);
-        }
+        $form = new RechargeForm();
 
-        if ($model->load($param, '') && $model->save()) {
-            $data['platform_order_id'] = $model->platform_order_id;
-            $data['order_id'] = $model->order_id;
-            $data['notice_platform_param'] = $model->notice_platform_param;
+        $param['notice_status'] = 1;
+        $form->load($param, '');
 
+        /* @var $model OrderRecharge|PreOrder */
+        $model = $form->createObject();
+
+        if ($data = $model->checkOld()) {
             return $this->_return($data);
         } else {
-            return $this->_error(2001, current($model->getFirstErrors()));
+            if ($model->save()) {
+                $result = PayLogic::instance()->pay($model);
+
+                $status = ArrayHelper::getValue($result, 'status', 0);
+                $data = ArrayHelper::getValue($result, 'data');
+                if ($status == 0) {
+                    $data['platform_order_id'] = $model->platform_order_id;
+                    $data['order_id'] = $model->order_id;
+                    $data['notice_platform_param'] = $model->notice_platform_param;
+
+                    // 返回值加入缓存
+                    $model->addCache($model->id, $data);
+                    return $this->_return($data);
+                }
+                return $this->_error($status, ArrayHelper::getValue($result, 'return_msg'));
+            } else {
+                return $this->_error(2001, current($model->getFirstErrors()));
+            }
         }
     }
 }

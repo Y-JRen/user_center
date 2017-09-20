@@ -17,7 +17,7 @@ use common\lib\pay\alipay\PayWap;
 use passport\helpers\Config;
 use passport\helpers\Redis;
 use passport\logic\Logic;
-use passport\modules\pay\models\OrderRecharge;
+use passport\models\OrderRecharge;
 use yii\helpers\Url;
 
 class AlipayLogic extends Logic
@@ -70,7 +70,8 @@ class AlipayLogic extends Logic
 
         if ($html) {
             Redis::setAlipayOrderHtml($order->order_id, $html);
-            $result['data']['url'] = Url::to(['/alipay/show', 'orderId' => $order->order_id], true);
+            $result['data']['qrCodeData'] = $result['data']['url'] = $url = Url::to(['/alipay/show', 'orderId' => $order->order_id], true);
+            $result['data']['qrcode'] = Url::to(['/default/qrcode', 'url' => $url], true);
         } else {
             $result['status'] = 2004;
         }
