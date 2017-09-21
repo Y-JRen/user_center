@@ -38,7 +38,9 @@ class Order extends \common\models\Order
             'statusName' => function ($model) {
                 return $model->orderStatus;
             },
-            'notice_platform_param',
+            'notice_platform_param' => function ($model) {
+                return (($model->notice_platform_param == 'unknown') ? '' : $model->notice_platform_param);
+            },
             'platform' => function ($model) {
                 return ArrayHelper::getValue(Config::getPlatformArray(), $model->platform);
             },
