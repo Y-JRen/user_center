@@ -9,6 +9,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 <?php $form = ActiveForm::begin([
+    'id' => 'createForm',
     'options' => ['class' => 'form-horizontal'],
     'fieldConfig' => [
         'template' => "{label} <div class='col-sm-8'> {input} </div>{hint}",
@@ -28,9 +29,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'order_type')->radioList([3 => '增加', '2' => '扣减'])->label('操作方式') ?>
 
-    <?= $form->field($model, 'desc')->label('简述')->textInput(['placeholder' => '例：扣除保险金额; 活动返现;']) ?>
-
     <?= $form->field($model, 'amount')->label('核销金额') ?>
+
+    <?= $form->field($model, 'desc')->label('简述')->textInput(['placeholder' => '例：扣除保险金额; 活动返现;']) ?>
 
     <?= $form->field($model, 'platform_order_id')->label('电商订单号')->textInput(['placeholder' => '针对电商那笔订单进行核销，可不填']) ?>
 

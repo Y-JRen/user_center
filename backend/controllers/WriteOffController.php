@@ -8,7 +8,9 @@
 
 namespace backend\controllers;
 
+use backend\models\search\OrderSearch;
 use common\helpers\ConfigHelper;
+use common\helpers\ModelError;
 use common\models\User;
 use Yii;
 use backend\models\Order;
@@ -24,16 +26,10 @@ class WriteOffController extends BaseController
 {
     public function actionIndex()
     {
-        $query = Order::find()->where(['order_subtype' => Order::SUB_TYPE_WRITE_OFF]);
-
-        $query->andFilterWhere(['order_type' => Yii::$app->request->get('order_type')]);
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'sort' => [
-                'defaultOrder' => ['id' => SORT_DESC]
-            ]
-        ]);
+        $params = Yii::$app->request->queryParams;
+        $params['order_subtype'] = Order::SUB_TYPE_WRITE_OFF;
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search($params);
 
         return $this->render('index', ['dataProvider' => $dataProvider,]);
     }
@@ -45,6 +41,8 @@ class WriteOffController extends BaseController
         $model->order_subtype = Order::SUB_TYPE_WRITE_OFF;
 
         if (Yii::$app->request->isPost) {
+            Yii::$app->response->format = 'json';
+            $result = ['status' => true];
             $model->load(Yii::$app->request->post());
             $user = User::find()->where(['phone' => $model->phone])->one();
             $model->uid = ArrayHelper::getValue($user, 'id');
@@ -66,16 +64,19 @@ class WriteOffController extends BaseController
 
                 if ($status) {
                     $db->commit();
-
                     $model->addLogReview('添加核销记录');
                     Yii::$app->session->setFlash('success', '添加核销记录成功');
+                    return $result;
+                } else {
+                    $result['msg'] = '用户余额处理失败';
                 }
             } else {
-                var_dump($model->errors);
-                exit;
+                Yii::error(var_export($model->errors, true));
+                $result['msg'] = ModelError::htmlP($model->errors);
             }
-
             $db->rollBack();
+            $result['status'] = false;
+            return $result;
         }
 
         return $this->renderPartial('create', ['model' => $model]);

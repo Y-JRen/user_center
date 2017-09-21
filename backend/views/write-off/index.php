@@ -9,16 +9,31 @@ use backend\grid\GridView;
 use yii\helpers\Url;
 
 $this->title = '资金核销';
+
+$this->registerJsFile('/dist/plugins/daterangepicker/moment.min.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/plugins/daterangepicker/daterangepicker.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
+$this->registerJsFile('/dist/js/user/date.js', [
+    'depends' => ['backend\assets\AdminLteAsset']
+]);
 ?>
-    <div class="mb-md clearfix">
-        <?= Html::a('核销', 'javascript:void(0);', [
-            'class' => 'btn btn-primary btn-sm mr-md pull-left mark_new']) ?>
-    </div>
+
 <?php $form = ActiveForm::begin([
     'action' => ['index'],
     'method' => 'get',
 ]);
 ?>
+
+<?= $this->render('_search') ?>
+
+    <div class="mb-md clearfix">
+        <?= Html::a('核销', 'javascript:void(0);', [
+            'class' => 'btn btn-primary btn-sm mr-md pull-left mark_new']) ?>
+    </div>
+
 <?php Pjax::begin() ?>
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -98,7 +113,17 @@ $this->title = '资金核销';
             });
 
             $('body').delegate(".mark_submit", "click", function () {
-
+                $(this).prop("disabled", true);
+                var url = $('#createForm').attr('action');
+                $.post(url, $('#createForm').serialize(), function (result) {
+                    if (result.status) {
+                        layer.closeAll();
+                        location.reload();
+                    } else {
+                        $('.mark_submit').prop("disabled", false);
+                        layer.msg(result.msg, {icon: 2});
+                    }
+                });
             });
 
             $('body').delegate(".mark_cancel", "click", function () {
