@@ -46,7 +46,7 @@ class WriteOffController extends BaseController
             $model->load(Yii::$app->request->post());
             $user = User::find()->where(['phone' => $model->phone])->one();
             $model->uid = ArrayHelper::getValue($user, 'id');
-            $model->platform = 6;
+            $model->platform = 100;
             $model->order_id = ConfigHelper::createOrderId();
             $model->status = Order::STATUS_SUCCESSFUL;
             $model->notice_status = 4;
