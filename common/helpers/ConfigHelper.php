@@ -87,6 +87,7 @@ class ConfigHelper
             3 => 'erp',
             4 => 'lkl',
             5 => 'tmp_tep',
+            100 => 'user_center',
         ];
     }
 
@@ -95,7 +96,8 @@ class ConfigHelper
         2 => 'CRM',
         3 => 'ERP',
         4 => '拉卡拉',
-        5 => '租车'
+        5 => '租车',
+        100 => '用户中心'
     ];
 
     /**
