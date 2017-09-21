@@ -2,6 +2,7 @@
 
 use yii\helpers\ArrayHelper;
 use backend\models\User;
+use yii\helpers\Url;
 
 /* @var $userModel User */
 /* @var $carHousekeeper \backend\models\CarHousekeeper */
@@ -64,18 +65,20 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
 
         <div class="panel boxshadow-none bdb">
             <div class="panel-heading">
-                <p class="pull-right"><a href="#" class="btn btn-primary">新增</a></p>
+                <p class="pull-right"><a href="javascript:void(0);" class="btn btn-primary mark_new">新增</a></p>
                 <h4><strong>车管家车辆信息</strong></h4>
             </div>
             <?php foreach ($userModel->carHousekeepers as $carHousekeeper): ?>
                 <?php if ($carManagement = $carHousekeeper->carManagement): ?>
                     <div class="panel-heading">
                         <p class="pull-right">
-                            <a href="#" class="btn btn-primary btn-xs">编辑</a>
-                            <a href="#" class="btn btn-danger btn-xs">删除</a>
+                            <a href="javascript:void(0);" class="btn btn-primary btn-xs mark_update"
+                               data-url="<?= Url::to(['/car-housekeeper/update', 'id' => $carHousekeeper->id]) ?>">编辑</a>
+                            <a href="<?= Url::to(['/car-housekeeper/delete', 'id' => $carHousekeeper->id]) ?>"
+                               class="btn btn-danger btn-xs" data-method="delete" data-confirm="确定要删除吗？">删除</a>
                         </p>
                         <h5>
-                            <strong><?= $carManagement->brand_name, '--', $carManagement->car_brand_type_name ?></strong>
+                            <strong><?= $carManagement->brand_name, '--', $carManagement->series_name ?></strong>
                         </h5>
                     </div>
                     <dl class="clearfix">
@@ -90,7 +93,7 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                         <div class="col-md-4 mb-md clearfix">
                             <dd style="float:left;width:100px;">品牌车系车型：</dd>
                             <dd class="col-sm-7">
-                                <?= $carManagement->brand_name, '--', $carManagement->car_brand_type_name, '--', $carManagement->car_brand_son_type_name ?>
+                                <?= $carManagement->brand_name, '--', $carManagement->series_name, '--', $carManagement->model_name ?>
                             </dd>
                         </div>
                         <div class="col-md-4 mb-md clearfix">
@@ -120,6 +123,7 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                         </div>
                     </dl>
                     <div class="clear"></div>
+                    <hr>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
@@ -140,5 +144,34 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                 anim: 5
             });
         }
+
+        $(function ($) {
+            $(".mark_new").click(function () {
+                $.get("<?=Url::to(['/car-housekeeper/create', 'uid' => $userModel->id])?>", function (html) {
+                    layer.open({
+                        type: 1,
+                        title: '新增车辆信息',
+                        area: ['600px', '600px'],
+                        shadeClose: true,
+                        content: html
+                    });
+                });
+            });
+
+            $(".mark_update").click(function () {
+                var url = $(this).attr('data-url');
+                $.get(url, function (html) {
+                    layer.open({
+                        type: 1,
+                        title: '更新车辆信息',
+                        area: ['600px', '600px'],
+                        shadeClose: true,
+                        content: html
+                    });
+                });
+            });
+        });
+
+
     </script>
 <?php $this->endBlock() ?>

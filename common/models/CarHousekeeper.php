@@ -47,7 +47,7 @@ class CarHousekeeper extends BaseModel
         return [
             'id' => 'ID',
             'uid' => 'Uid',
-            'terminal_no' => 'Terminal No',
+            'terminal_no' => '智能终端设备号',
             'car_management_id' => 'Car Management ID',
             'client_device_no' => 'Client Device No',
             'created_at' => 'Created At',
