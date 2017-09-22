@@ -109,6 +109,7 @@ class Order extends BaseModel
     const SUB_TYPE_CONSUME_FEE = 'fee';// 手续费消费
     const SUB_TYPE_LOAN_RECORD = 'loan_record';// 贷款入账 充值、消费时都使用
     const SUB_TYPE_LOAN_REFUND = 'loan_refund';// 贷款退款
+    const SUB_TYPE_WRITE_OFF = 'write_off';//核销 消费+退款
 
     /**
      * @inheritdoc
