@@ -20,6 +20,7 @@ use backend\models\search\UserSearch;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -185,6 +186,23 @@ class UserController extends BaseController
         ]);
 
         return $this->render('order', ['dataProvider' => $dataProvider]);
+    }
+
+    /**
+     * 通过手机号查找用户信息
+     * @param $phone
+     * @return string
+     */
+    public function actionPhone($phone)
+    {
+        $user = User::find()->where(['phone' => $phone])->one();
+        if ($user) {
+            $html = '<p>' . Html::a($phone, ['/user/view', 'uid' => $user->id], ['target' => '_blank']) . '</p>';
+            $html .= '<p>当前可用余额：' . ArrayHelper::getValue($user->balance, 'amount', 0) . '<p>';
+        } else {
+            $html = "<p class='alert alert-danger'>手机号[{$phone}]不存在</p>";
+        }
+        return $html;
     }
 
     /**
