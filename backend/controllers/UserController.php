@@ -4,7 +4,9 @@ namespace backend\controllers;
 
 use backend\models\Order;
 use backend\models\search\OrderSearch;
+use common\lib\dubbo\orderCenter\OrderContract;
 use common\logic\HttpLogic;
+use common\models\PlatformOrder;
 use common\models\PoolBalance;
 use common\models\PoolFreeze;
 use common\models\UserBalance;
@@ -176,17 +178,14 @@ class UserController extends BaseController
      */
     public function actionOrder($uid)
     {
-        $path = Yii::$app->params['projects']['che.com']['apiDomain'] . 'api/account/order';
-        $params = ['accountId' => $uid, 'pageIndex' => Yii::$app->request->get('page', 1), 'pagesize' => 20];
+        $dataProvider = new ActiveDataProvider([
+            'query' => PlatformOrder::find()->where(['uid' => $uid]),
+            'sort' => [
+                'defaultOrder' => ['platform_order_id' => SORT_DESC]
+            ]
+        ]);
 
-        $result = json_decode(HttpLogic::instance()->http($path . '?' . http_build_query($params), 'GET'), true);
-
-        $detail = ArrayHelper::getValue($result, 'detail', []);
-        $orderList = ArrayHelper::getValue($detail, 'orderList', []);
-
-        $pagination = new Pagination(['totalCount' => ArrayHelper::getValue($detail, 'totalCount', 0)]);
-
-        return $this->render('order', ['orderList' => $orderList, 'pagination' => $pagination]);
+        return $this->render('order', ['dataProvider' => $dataProvider]);
     }
 
     /**
