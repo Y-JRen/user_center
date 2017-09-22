@@ -76,7 +76,7 @@ trait LoanTrait
     public function refund($uid, $refundAmount, $platform_order_id)
     {
         $result = ['status' => false];
-        $data = ['amount' => $refundAmount, 'onlineSaleNo' => $platform_order_id];
+        $data = ['amount' => $refundAmount, 'ocOrderNo' => $platform_order_id];
         $confirm = RefundLogin::instance()->amountConfirm($data);
         if ($confirm) {
             try {

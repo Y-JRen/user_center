@@ -257,7 +257,7 @@ class OrderForm extends Order
         $data = [
             'amount' => $this->amount,
             'financeId' => intval($this->finance_id),
-            'onlineSaleNo' => $this->platform_order_id
+            'ocOrderNo' => $this->platform_order_id
         ];
         return RefundLogin::instance()->orderConfirm($data);
     }
