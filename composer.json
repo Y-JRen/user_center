@@ -5,6 +5,9 @@
     "homepage": "http://www.yiiframework.com/",
     "type": "project",
     "license": "BSD-3-Clause",
+    "repositories": [
+        {"type": "composer", "url": "http://packagist.che.com"}
+    ],
     "support": {
         "issues": "https://github.com/yiisoft/yii2/issues?state=open",
         "forum": "http://www.yiiframework.com/forum/",
@@ -23,7 +26,8 @@
         "2amigos/yii2-qrcode-helper": "~1.0",
         "dmstr/yii2-adminlte-asset": "2.*",
         "zhuravljov/yii2-queue": "^1.0",
-        "moonlandsoft/yii2-phpexcel": "*"
+        "moonlandsoft/yii2-phpexcel": "*",
+        "che/framework": ">=1.0.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
@@ -34,7 +38,8 @@
         "codeception/verify": "~0.3.1"
     },
     "config": {
-        "process-timeout": 1800
+        "process-timeout": 1800,
+        "secure-http": false
     },
     "extra": {
         "asset-installer-paths": {
