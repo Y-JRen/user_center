@@ -9,10 +9,11 @@
 namespace backend\models;
 
 
+use common\models\PoolBalance;
 use common\models\User;
-use common\models\UserBalance;
 use common\models\UserInfo;
 use yii\helpers\ArrayHelper;
+use Yii;
 
 /**
  * Class Order
@@ -20,13 +21,16 @@ use yii\helpers\ArrayHelper;
 class Order extends \common\models\Order
 {
     const SCENARIO_FINANCE_CONFIRM = 'finance_confirm';// 财务确认 线下充值确认、提现确认
+    const SCENARIO_WRITE_OFF = 'write_off';// 核销
+
+    public $phone;
 
     /**
      * @inheritdoc
      */
     public function rules()
     {
-        return [
+        $defaultRules = [
             [['uid', 'order_id', 'order_type', 'amount', 'status'], 'required'],
             [['uid', 'order_type', 'status', 'notice_status', 'created_at', 'updated_at', 'platform', 'quick_pay'], 'integer'],
             [['amount'], 'number'],
@@ -35,13 +39,26 @@ class Order extends \common\models\Order
             [['order_id'], 'unique'],
             [['remark'], 'string'],
         ];
+
+        if ($this->scenario == self::SCENARIO_WRITE_OFF) {
+            return ArrayHelper::merge($defaultRules, self::$writeOffRules);
+        } else {
+            return $defaultRules;
+        }
     }
+
+    public static $writeOffRules = [
+        [['remark', 'phone', 'desc'], 'required'],
+        ['order_type', 'in', 'range' => [self::TYPE_REFUND, self::TYPE_CONSUME]],
+    ];
+
 
     public function scenarios()
     {
         return [
             self::SCENARIO_DEFAULT => [],
             self::SCENARIO_FINANCE_CONFIRM => ['remark', 'status', 'updated_at'],
+            self::SCENARIO_WRITE_OFF => ['phone', 'order_subtype', 'desc', 'remark', 'amount', 'order_type'],
         ];
     }
 
@@ -108,6 +125,7 @@ class Order extends \common\models\Order
         'lakala' => '拉卡拉POS机',
         self::SUB_TYPE_TMALL => '天猫',
         'ddsbtk' => '订单失败退款',
+        self::SUB_TYPE_WRITE_OFF => '核销',
     ];
 
     public function attributeLabels()
@@ -115,6 +133,7 @@ class Order extends \common\models\Order
         return [
             'id' => 'ID',
             'uid' => '手机号',
+            'phone' => '手机号',
             'platform_order_id' => '平台订单号',
             'order_id' => '会员中心单号',
             'order_type' => '交易类型',
@@ -153,6 +172,7 @@ class Order extends \common\models\Order
         if (!$model->save()) {
             $result['status'] = false;
             $result['info'] = current($model->getFirstErrors());
+            Yii::error(var_export($model->errors, true));
         }
 
         return $result;
@@ -180,5 +200,16 @@ class Order extends \common\models\Order
     public function getUserInfo()
     {
         return $this->hasOne(UserInfo::className(), ['uid' => 'uid']);
+    }
+
+    /**
+     * 获取平账订单资金记录
+     * 只适用于核销订单相关
+     *
+     * @return \yii\db\ActiveQuery|PoolBalance
+     */
+    public function getPoolBalance()
+    {
+        return $this->hasOne(PoolBalance::className(), ['order_id' => 'order_id']);
     }
 }
