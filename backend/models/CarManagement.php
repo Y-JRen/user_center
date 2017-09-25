@@ -6,6 +6,9 @@ use Yii;
 
 class CarManagement extends \common\models\CarManagement
 {
+    public $file;
+    public $delete_driving_license;
+
     /**
      * @inheritdoc
      */
@@ -19,7 +22,7 @@ class CarManagement extends \common\models\CarManagement
             [['frame_number', 'engine_number', 'model_name', 'series_name', 'brand_name'], 'string', 'max' => 100],
             [['insurance_price'], 'string', 'max' => 30],
             [['factory_name'], 'string', 'max' => 255],
-            [['driving_license'], 'string', 'max' => 1000],
+            [['driving_license', 'delete_driving_license'], 'string', 'max' => 1000],
             [['plate_number'], 'unique'],
         ];
     }
@@ -29,6 +32,13 @@ class CarManagement extends \common\models\CarManagement
 
         if (!parent::beforeSave($insert)) {
             return false;
+        }
+
+        if (!empty($this->delete_driving_license) && !empty($this->driving_license)) {
+            $data = explode(',', $this->driving_license);
+            $deleteData = explode(',', $this->delete_driving_license);
+            $license = array_diff($data, $deleteData);
+            $this->driving_license = join(',', $license);
         }
 
         $this->plate_number = strtoupper($this->plate_number);

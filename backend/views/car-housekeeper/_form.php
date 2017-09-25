@@ -1,9 +1,11 @@
 <?php
 
 use common\logic\CheLogic;
+use kartik\file\FileInput;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\CarHousekeeper */
@@ -22,9 +24,65 @@ if ($model->isNewRecord) {
     $seriesItems = CheLogic::instance()->series($carManagementModel->brand_id, $carManagementModel->factory_id);
     $modelItems = CheLogic::instance()->model($carManagementModel->series_id);
 }
+
+
+$initialPreview = explode(',', $carManagementModel->driving_license);
+$initialPreviewConfig = [];
+foreach ($initialPreview as $key => $data) {
+    $key++;
+    $initialPreviewConfig[] = ['caption' => "缩略图({$key})", 'key' => $data];
+}
+
+$fileArray = [
+    'options' => [
+        'multiple' => true,
+        'accept' => 'image/*'
+    ],
+    'pluginOptions' => [
+        'initialPreview' => $initialPreview,
+        'initialPreviewAsData' => true,
+        'overwriteInitial' => false,
+        'uploadUrl' => Url::to(['/upload/file', 'name' => 'CarManagement']),
+        'deleteUrl' => Url::to(['/upload/delete']),
+        'maxFileCount' => 10,
+        'showRemove' => false,
+        'showClose' => false,
+        'dropZoneEnabled' => false,
+        'initialPreviewConfig' => $initialPreviewConfig,
+    ],
+    'pluginEvents' => [
+        "filepredelete" => "function(event, key, jqXHR, data) {
+            var url = $('#carmanagement-delete_driving_license').val();
+            if(url==''){
+                url = key;
+            }else{
+                url = url+','+key;
+            }
+            $('#carmanagement-delete_driving_license').val(url);
+        }",
+        "filesuccessremove" => "function(event, key) {
+            console.log(event);
+            console.log(key);
+        }",
+        "fileuploaded" => "function (event, data, id, index) {
+            if(data.response.status)
+            {
+                var url = $('#carmanagement-driving_license').val();
+                if(url==''){
+                    url = data.response.url;
+                }else{
+                    url = url+','+data.response.url;
+                }
+                $('#carmanagement-driving_license').val(url);
+            }
+        }",
+
+    ],
+];
+
 ?>
 
-<div class="car-management-form box-body">
+<div class="car-management-form">
 
     <?php $form = ActiveForm::begin([
         'options' => ['class' => 'form-horizontal'],
@@ -42,6 +100,9 @@ if ($model->isNewRecord) {
     <input type="hidden" id="carmanagement-model_name" name="CarManagement[model_name]"
            value="<?= $carManagementModel->model_name ?>">
 
+    <?= $form->field($carManagementModel, 'driving_license')->hiddenInput()->label(false) ?>
+    <?= $form->field($carManagementModel, 'delete_driving_license')->hiddenInput()->label(false) ?>
+
     <?= $form->field($model, 'terminal_no')->textInput() ?>
 
     <?= $form->field($carManagementModel, 'brand_id')->dropDownList(CheLogic::instance()->brand()) ?>
@@ -55,6 +116,8 @@ if ($model->isNewRecord) {
     <?= $form->field($carManagementModel, 'plate_number')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($carManagementModel, 'frame_number')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($carManagementModel, 'file[]')->widget(FileInput::className(), $fileArray)->label('行驶证') ?>
 
     <div class="form-group">
         <?= Html::button('提交', ['class' => 'btn btn-primary mark_submit center']) ?>

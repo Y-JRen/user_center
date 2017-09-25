@@ -52,13 +52,15 @@ class CarHousekeeperController extends BaseController
             return $result;
         }
 
-        return $this->renderPartial('create', ['model' => $model]);
+        return $this->renderAjax('create', ['model' => $model]);
     }
 
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         if (Yii::$app->request->isPost) {
+
+
             Yii::$app->response->format = 'json';
             $result = ['status' => true, 'msg' => ''];
             $managementModel = $model->carManagement;
@@ -76,7 +78,7 @@ class CarHousekeeperController extends BaseController
             return $result;
         }
 
-        return $this->renderPartial('update', ['model' => $model]);
+        return $this->renderAjax('update', ['model' => $model]);
     }
 
     /**
