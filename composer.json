@@ -27,7 +27,9 @@
         "dmstr/yii2-adminlte-asset": "2.*",
         "zhuravljov/yii2-queue": "^1.0",
         "moonlandsoft/yii2-phpexcel": "*",
-        "che/framework": ">=1.0.1"
+        "che/framework": ">=1.0.1",
+        "aliyuncs/oss-sdk-php": "^2.2",
+        "kartik-v/yii2-widget-fileinput": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
