@@ -60,10 +60,6 @@ $fileArray = [
             }
             $('#carmanagement-delete_driving_license').val(url);
         }",
-        "filesuccessremove" => "function(event, key) {
-            console.log(event);
-            console.log(key);
-        }",
         "fileuploaded" => "function (event, data, id, index) {
             if(data.response.status)
             {
@@ -87,7 +83,7 @@ $fileArray = [
     <?php $form = ActiveForm::begin([
         'options' => ['class' => 'form-horizontal'],
         'fieldConfig' => [
-            'template' => "{label}<div class='col-sm-8'>{input}</div>{hint}",
+            'template' => "{label}<div class='col-sm-9'>{input}</div>{hint}",
             'labelOptions' => ['class' => 'control-label col-sm-2']
         ]]);
     ?>
@@ -119,7 +115,7 @@ $fileArray = [
 
     <?= $form->field($carManagementModel, 'file[]')->widget(FileInput::className(), $fileArray)->label('行驶证') ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right" style="padding-right: 80px;">
         <?= Html::button('提交', ['class' => 'btn btn-primary mark_submit center']) ?>
     </div>
 
@@ -171,14 +167,15 @@ $fileArray = [
         });
 
         $('.car-management-form').delegate('.mark_submit', 'click', function () {
-            $(this).prop("disabled", true);
+            var $this = $(this);
+            $this.prop("disabled", true);
             var url = $('form').attr('action');
             $.post(url, $('form').serialize(), function (result) {
                 if (result.status) {
                     layer.closeAll();
                     location.reload();
                 } else {
-                    $(this).prop("disabled", false);
+                    $this.prop("disabled", false);
                     layer.msg(result.msg, {icon: 2});
                 }
             });
