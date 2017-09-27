@@ -39,16 +39,21 @@ class OrderLogic extends Logic
     {
         $orderId = ArrayHelper::getValue($param, 'out_trade_no');
         if (!$orderId) {
+            Yii::error('order id no exist');
             return false;
         }
 
         $order = $this->findOrder($orderId);
         if (!$order) {
+            Yii::error('order id invalid');
             return false;
         }
 
         $cashFee = ArrayHelper::getValue($param, 'total_fee');
-        if ($order->amount * 100 == $cashFee) {
+
+        $orderAmount = (string)($order->amount * 100);
+
+        if ($orderAmount == $cashFee) {
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
@@ -96,8 +101,11 @@ class OrderLogic extends Logic
                 return true;
             } catch (Exception $e) {
                 $transaction->rollBack();
+                Yii::error(var_export($e->getMessage(), true));
                 throw $e;
             }
+        } else {
+            Yii::error("money error [{$orderAmount}] [{$cashFee}]");
         }
         return false;
     }
@@ -272,7 +280,7 @@ class OrderLogic extends Logic
             try {
                 $status = 1;
                 $order->receipt_amount = $amount;
-                $order->counter_fee = intval(($amount - $order->amount)*100)/100;
+                $order->counter_fee = intval(($amount - $order->amount) * 100) / 100;
 
                 if (!$order->userBalance->plus($order->amount)) {
                     throw new Exception('余额添加失败');
