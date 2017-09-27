@@ -10,7 +10,6 @@ namespace backend\models;
 
 
 use common\models\PoolBalance;
-use common\models\User;
 use common\models\UserInfo;
 use yii\helpers\ArrayHelper;
 use Yii;
