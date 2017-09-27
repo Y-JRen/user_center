@@ -25,7 +25,9 @@ class UploadController extends BaseController
         $result = ['status' => false];
         $file = ArrayHelper::getValue($_FILES, [$name, 'tmp_name', 'file', '0']);
         if ($file) {
-            $suffixName = end(explode('.', ArrayHelper::getValue($_FILES, [$name, 'name', 'file', '0'], '')));
+            $filename = ArrayHelper::getValue($_FILES, [$name, 'name', 'file', '0'], '');
+            $fileExtension = explode('.', $filename);
+            $suffixName = end($fileExtension);
             $saveName = 'user_center/' . rand(11, 22) . '/' . rand(11, 22);
             $saveName .= ($suffixName ? time() . '/.' . $suffixName : '');
 
