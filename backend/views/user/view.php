@@ -94,7 +94,9 @@ $freeze = ArrayHelper::getValue($userModel->freeze, 'amount', 0);
                     <div class="col-md-4 mb-md clearfix">
                         <dd style="float:left;width:100px;">品牌车系车型：</dd>
                         <dd class="col-sm-7">
-                            <?= $carManagement->brand_name, '--', $carManagement->series_name, '--', $carManagement->model_name ?>
+                            <?= $carManagement->brand_name, '--', $carManagement->series_name ?>
+                            <?= $carManagement->model_name ? '--' . $carManagement->series_name : '' ?>
+
                         </dd>
                     </div>
                     <div class="col-md-4 mb-md clearfix">
