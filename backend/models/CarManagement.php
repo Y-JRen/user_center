@@ -15,7 +15,7 @@ class CarManagement extends \common\models\CarManagement
     public function rules()
     {
         return [
-            [['uid', 'plate_number', 'frame_number', 'model_name', 'model_id', 'series_name', 'series_id', 'brand_name', 'brand_id', 'status', 'factory_id'], 'required'],
+            [['uid', 'plate_number', 'frame_number', 'series_name', 'series_id', 'brand_name', 'brand_id', 'status', 'factory_id'], 'required'],
             [['uid', 'model_id', 'series_id', 'brand_id', 'status', 'factory_id', 'platform', 'created_at', 'updated_at'], 'integer'],
             [['insurance_end_date'], 'safe'],
             [['plate_number'], 'string', 'max' => 10],
@@ -32,6 +32,10 @@ class CarManagement extends \common\models\CarManagement
 
         if (!parent::beforeSave($insert)) {
             return false;
+        }
+
+        if (empty($this->model_id)) {
+            $this->model_name = '';
         }
 
         if (!empty($this->delete_driving_license) && !empty($this->driving_license)) {
